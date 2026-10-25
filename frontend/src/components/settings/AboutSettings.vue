@@ -311,7 +311,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import navigation from '../../../public/site-navigation.json';
+import navigation from '@/site-navigation.json';
 import TermsModal from "@/components/modal/settings/TermsModal.vue";
 import PrivacyModal from "@/components/modal/settings/PrivacyModal.vue";
 import LicenseModal from "@/components/modal/settings/LicenseModal.vue";

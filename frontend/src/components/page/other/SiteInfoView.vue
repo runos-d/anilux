@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import navigation from '../../../../public/site-navigation.json';
+import navigation from '@/site-navigation.json';
 const route = useRoute();
 const document = computed(() => navigation.documents.find(item => item.path === route.path));
 </script>

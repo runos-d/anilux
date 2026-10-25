@@ -191,6 +191,7 @@ const progressPercentage = computed(() => {
 
 const showDetail = (achievement: Achievement) => {
   selectedAchievement.value = achievement;
+  showDetailModal.value = true;
 };
 
 const formatDate = (dateString: string) => {

@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import navigation from '../../../../public/site-navigation.json';
+import navigation from '@/site-navigation.json';
 
 const route = useRoute();
 const docName = computed(() => {

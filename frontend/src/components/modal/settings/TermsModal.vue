@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import navigation from '../../../../public/site-navigation.json';
+import navigation from '@/site-navigation.json';
 const document = navigation.documents.find(item => item.path === '/terms');
 defineProps<{
   show: boolean;

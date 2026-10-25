@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { RouterLink, createMemoryHistory, createRouter } from 'vue-router';
 import SeoNavigation from './SeoNavigation.vue';
-import navigation from '../../../public/site-navigation.json';
+import navigation from '@/site-navigation.json';
 
 describe('global footer', () => {
   it('renders the same links without an SEO request, including on errors and private routes', async () => {

@@ -1,0 +1,5 @@
+<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AniLux</title><style>body{font:16px system-ui;background:#15111a;color:#fff;max-width:520px;padding:48px 24px;margin:auto}input,button{font:inherit;padding:12px;border-radius:10px;max-width:100%;box-sizing:border-box}input{width:100%;margin:16px 0}button{background:#fa4c99;color:white;border:0;cursor:pointer}p{line-height:1.6}#error{color:#ff8cb5}</style>
+<h1>AniLux</h1><p>Не удалось открыть сайт. Проверьте подключение или укажите его новый адрес.</p>
+<form id="connection"><label for="server">Адрес сайта</label><input type="url" id="server" required placeholder="https://example.org"><button>Подключиться</button></form><p id="error" role="alert"></p>
+<script>window.aniluxNative.server().then(url=>document.querySelector('#server').value=url);document.querySelector('#connection').onsubmit=async event=>{event.preventDefault();try{await window.aniluxNative.configureServer(document.querySelector('#server').value);}catch(error){document.querySelector('#error').textContent=error.message;}};</script></html>

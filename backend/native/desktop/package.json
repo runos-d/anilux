@@ -1,0 +1,56 @@
+{
+  "name": "anilux-app",
+  "version": "0.1.0",
+  "description": "AniLux desktop application",
+  "author": "AniLux",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "main.cjs",
+  "desktopName": "org.anilux.app.desktop",
+  "devDependencies": {
+    "electron": "45.0.0",
+    "electron-builder": "26.18.0"
+  },
+  "overrides": {
+    "@electron/asar": "4.3.1"
+  },
+  "build": {
+    "appId": "org.anilux.app",
+    "productName": "AniLux",
+    "asar": true,
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "offline.html",
+      "app.config.json",
+      "icon.png"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "deb": {"compression": "gz"},
+    "linux": {
+      "target": [
+        "deb",
+        "AppImage"
+      ],
+      "category": "AudioVideo",
+      "icon": "icon.png",
+      "maintainer": "AniLux",
+      "syncDesktopName": true
+    },
+    "flatpak": {
+      "runtimeVersion": "26.08",
+      "baseVersion": "26.08",
+      "finishArgs": [
+        "--share=ipc",
+        "--socket=x11",
+        "--socket=wayland",
+        "--socket=pulseaudio",
+        "--share=network",
+        "--device=dri",
+        "--talk-name=org.freedesktop.Notifications"
+      ]
+    }
+  }
+}

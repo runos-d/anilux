@@ -1,0 +1,25 @@
+name: AniLux
+options:
+  bundleIdPrefix: org.anilux
+  deploymentTarget:
+    iOS: '15.0'
+targets:
+  AniLux:
+    type: application
+    platform: iOS
+    sources:
+      - App.swift
+      - Site.json
+      - Assets.xcassets
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.anilux.app
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: AniLux
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_NSCameraUsageDescription: Камера для сообщений и публикаций
+        INFOPLIST_KEY_NSMicrophoneUsageDescription: Микрофон для голосовых сообщений
+        INFOPLIST_KEY_NSPhotoLibraryUsageDescription: Вложения в сообщения и публикации
+        SWIFT_VERSION: '5.0'
+        TARGETED_DEVICE_FAMILY: '1,2'

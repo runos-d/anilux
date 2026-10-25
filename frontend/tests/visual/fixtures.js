@@ -311,6 +311,12 @@ const json = (route, body, status = 200) => route.fulfill({
   body: JSON.stringify(body),
 });
 
+const mediaPlaceholder = `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480">
+  <defs><linearGradient id="g" x2="1" y2="1"><stop stop-color="#171024"/><stop offset="1" stop-color="#7654a3"/></linearGradient></defs>
+  <rect width="480" height="480" fill="url(#g)"/><circle cx="240" cy="188" r="82" fill="#f4bed5" opacity=".78"/>
+  <path d="M92 446c20-100 76-150 148-150s128 50 148 150" fill="#0b0814" opacity=".72"/>
+</svg>`;
+
 export async function installVisualApi(page, theme) {
   await page.route("https://fonts.googleapis.com/**", (route) => route.fulfill({
     status: 200,
@@ -323,6 +329,13 @@ export async function installVisualApi(page, theme) {
     contentType: "text/html; charset=utf-8",
     body: '<!doctype html><html><body style="margin:0;background:#08060d;color:#d8cee9;display:grid;place-items:center;height:100vh;font:14px system-ui">Стабильная область видеоплеера</body></html>',
   }));
+  const fulfillMedia = (route) => route.fulfill({
+    status: 200,
+    contentType: "image/svg+xml; charset=utf-8",
+    body: mediaPlaceholder,
+  });
+  await page.route("**/data/media/**", fulfillMedia);
+  await page.route("**/media/**", fulfillMedia);
   await page.route("**/api/**", async (route) => {
     const request = route.request();
     const url = new URL(request.url());

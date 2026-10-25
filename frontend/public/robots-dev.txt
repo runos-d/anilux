@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /
+# localhost / staging -не индексируется

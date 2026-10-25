@@ -1,0 +1,205 @@
+.chat-content-card {
+  display: block;
+  width: 100%;
+  position: relative;
+  padding: 0.6rem 0.75rem;
+  background: var(--chat-msg-other-bg, var(--surface-3));
+  border-radius: var(--chat-anime-card-radius, var(--chat-bubble-radius, var(--radius-lg)));
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transform-origin: top left;
+  transition: transform 0.18s ease, border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+  text-align: left;
+  font-family: inherit;
+}
+
+.chat-content-card.is-own {
+  background: var(--chat-msg-mine-bg, linear-gradient(135deg, var(--accent) 0%, var(--accent-press) 100%));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border-default));
+}
+
+.chat-content-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border-default));
+  background: var(--surface-4);
+  z-index: 3;
+  transform: scale(1.025);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.22);
+}
+
+.chat-content-card.is-own { transform-origin: top right; }
+
+.chat-content-card.is-own:hover {
+  background: color-mix(in srgb, var(--chat-msg-mine-bg, var(--accent)) 85%, var(--surface-4));
+  border-color: var(--accent);
+}
+
+.chat-content-card.is-playlist {
+  border-radius: var(--chat-playlist-card-radius, var(--chat-bubble-radius, var(--radius-lg)));
+}
+
+.chat-card-shared-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.chat-card-shared-author {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.chat-card-shared-date {
+  font-size: 0.6875rem;
+  color: var(--chat-msg-other-text, var(--text-tertiary));
+}
+
+.chat-content-card.is-own .chat-card-shared-date {
+  color: var(--chat-msg-mine-text, var(--text-on-accent));
+  opacity: 0.7;
+}
+
+.chat-card-shared-text {
+  font-size: 0.8125rem;
+  color: var(--chat-msg-other-text, var(--text-secondary));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-content-card.is-own .chat-card-shared-text {
+  color: var(--chat-msg-mine-text, var(--text-on-accent));
+  opacity: 0.9;
+}
+
+.chat-card-shared-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 0.35rem;
+}
+
+.chat-card-anime-info {
+  min-width: 0;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.chat-card-anime-text { min-width: 0; flex: 1; }
+
+.chat-card-anime-poster {
+  width: 44px;
+  height: 66px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.chat-card-anime-title {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  overflow-wrap: normal;
+  word-break: normal;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--chat-msg-other-text, var(--text-primary));
+  line-height: 1.25;
+}
+
+.chat-content-card.is-own .chat-card-anime-title {
+  color: var(--chat-msg-mine-text, var(--text-on-accent));
+}
+
+.chat-card-anime-subtitle {
+  font-size: 0.6875rem;
+  color: var(--chat-msg-other-text, var(--text-tertiary));
+  line-height: 1.2;
+}
+
+.chat-content-card.is-own .chat-card-anime-subtitle {
+  color: var(--chat-msg-mine-text, var(--text-on-accent));
+  opacity: 0.75;
+}
+
+.chat-card-playlist-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  min-width: 0;
+}
+
+.chat-card-playlist-cover {
+  width: 44px;
+  height: 66px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--surface-4);
+}
+
+.chat-card-shorts-thumb {
+  width: 44px;
+  height: 66px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--surface-4);
+}
+
+.chat-card-playlist-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.chat-card-playlist-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--chat-msg-other-text, var(--text-primary));
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-content-card.is-own .chat-card-playlist-title {
+  color: var(--chat-msg-mine-text, var(--text-on-accent));
+}
+
+.chat-card-playlist-meta {
+  font-size: 0.6875rem;
+  color: var(--chat-msg-other-text, var(--text-tertiary));
+  line-height: 1.2;
+}
+
+.chat-content-card.is-own .chat-card-playlist-meta {
+  color: var(--chat-msg-mine-text, var(--text-on-accent));
+  opacity: 0.75;
+}
+
+.chat-card-card-time {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.35rem;
+  font-size: 0.6875rem;
+  line-height: 1;
+  color: var(--chat-msg-other-text, var(--text-tertiary));
+  pointer-events: none;
+}
+
+.chat-content-card.is-own .chat-card-card-time {
+  color: var(--chat-msg-mine-text, var(--text-on-accent));
+  opacity: 0.7;
+}
+
+
+.chat-content-card:disabled { opacity: 1; cursor: default; }

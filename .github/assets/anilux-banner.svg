@@ -1,0 +1,182 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="460" viewBox="0 0 1280 460" role="img" aria-labelledby="title desc">
+  <title id="title">AniLux</title>
+  <desc id="desc">AniLux в теме «Полночная» с падающими лепестками сакуры</desc>
+
+  <defs>
+    <linearGradient id="midnight" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#08040f" />
+      <stop offset="0.48" stop-color="#120a21" />
+      <stop offset="1" stop-color="#0a0613" />
+    </linearGradient>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff4fa3" />
+      <stop offset="0.52" stop-color="#b24bff" />
+      <stop offset="1" stop-color="#35e0ff" />
+      <animate attributeName="x1" values="-.3;0;.3;-.3" dur="8s" repeatCount="indefinite" />
+      <animate attributeName="x2" values=".7;1;1.3;.7" dur="8s" repeatCount="indefinite" />
+    </linearGradient>
+    <linearGradient id="petal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd4e7" />
+      <stop offset="0.55" stop-color="#ff86b2" />
+      <stop offset="1" stop-color="#e8689b" />
+    </linearGradient>
+    <radialGradient id="pinkGlow">
+      <stop offset="0" stop-color="#ff4fa3" stop-opacity=".34" />
+      <stop offset="1" stop-color="#ff4fa3" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="violetGlow">
+      <stop offset="0" stop-color="#8b5cff" stop-opacity=".31" />
+      <stop offset="1" stop-color="#8b5cff" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="cyanGlow">
+      <stop offset="0" stop-color="#35e0ff" stop-opacity=".2" />
+      <stop offset="1" stop-color="#35e0ff" stop-opacity="0" />
+    </radialGradient>
+    <pattern id="stars" width="72" height="72" patternUnits="userSpaceOnUse">
+      <circle cx="8" cy="16" r="1" fill="#ffffff" opacity=".2" />
+      <circle cx="48" cy="42" r="1.4" fill="#c4adff" opacity=".22" />
+      <circle cx="67" cy="7" r=".7" fill="#ff9ccb" opacity=".3" />
+    </pattern>
+    <pattern id="grid" width="44" height="44" patternUnits="userSpaceOnUse">
+      <path d="M44 0H0V44" fill="none" stroke="#c4adff" stroke-opacity=".045" />
+    </pattern>
+    <filter id="softGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="16" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <filter id="wordGlow" x="-30%" y="-50%" width="160%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 .4 0 0 0  0 0 1 0 0  0 0 0 .55 0" />
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <filter id="petalShadow" x="-70%" y="-70%" width="240%" height="240%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#ff4fa3" flood-opacity=".36" />
+    </filter>
+
+    <path id="petalShape" d="M0 0C-15-10-31-30-23-54-19-65-8-63 0-52 8-63 19-65 23-54 31-30 15-10 0 0Z" />
+    <g id="petalMark">
+      <use href="#petalShape" fill="url(#petal)" stroke="#4a1d3f" stroke-width="2.4" />
+      <path d="M-18-48C-23-39-22-30-17-23" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".8" />
+    </g>
+    <g id="flower">
+      <use href="#petalMark" />
+      <use href="#petalMark" transform="rotate(72)" />
+      <use href="#petalMark" transform="rotate(144)" />
+      <use href="#petalMark" transform="rotate(216)" />
+      <use href="#petalMark" transform="rotate(288)" />
+      <circle r="9" fill="#e0467f" stroke="#4a1d3f" stroke-width="3" />
+      <circle r="4" fill="#ff9ccb" />
+      <circle cx="-2.7" cy="-3" r="1.6" fill="#fff" />
+    </g>
+  </defs>
+
+  <rect width="1280" height="460" rx="34" fill="url(#midnight)" />
+  <rect width="1280" height="460" rx="34" fill="url(#grid)" />
+  <rect width="1280" height="460" rx="34" fill="url(#stars)" />
+
+  <ellipse cx="175" cy="94" rx="360" ry="285" fill="url(#pinkGlow)">
+    <animate attributeName="opacity" values=".65;1;.65" dur="7s" repeatCount="indefinite" />
+  </ellipse>
+  <ellipse cx="674" cy="418" rx="420" ry="235" fill="url(#violetGlow)">
+    <animate attributeName="opacity" values="1;.62;1" dur="9s" repeatCount="indefinite" />
+  </ellipse>
+  <ellipse cx="1180" cy="126" rx="330" ry="270" fill="url(#cyanGlow)">
+    <animate attributeName="opacity" values=".55;1;.55" dur="8s" repeatCount="indefinite" />
+  </ellipse>
+
+  <path d="M-80 384C224 211 316 491 615 318S1030 86 1362 214" fill="none" stroke="url(#brand)" stroke-width="1.5" opacity=".24" />
+  <path d="M-60 405C270 261 330 514 652 342S1052 122 1342 239" fill="none" stroke="#c4adff" stroke-width="1" opacity=".12" />
+
+  <!-- Falling petals reuse the flower geometry from frontend/public/sakura.svg. -->
+  <g transform="translate(86 0)" filter="url(#petalShadow)" opacity=".76">
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0 -110;74 540" dur="8.2s" begin="-5.4s" repeatCount="indefinite" />
+      <g transform="scale(.18)">
+        <animateTransform attributeName="transform" type="rotate" values="0;260;720" dur="8.2s" begin="-5.4s" repeatCount="indefinite" additive="sum" />
+        <use href="#petalMark" />
+      </g>
+    </g>
+  </g>
+  <g transform="translate(232 0)" filter="url(#petalShadow)" opacity=".5">
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0 -90;-48 535" dur="11s" begin="-2.1s" repeatCount="indefinite" />
+      <g transform="scale(.13)">
+        <animateTransform attributeName="transform" type="rotate" values="0;-320;-650" dur="11s" begin="-2.1s" repeatCount="indefinite" additive="sum" />
+        <use href="#petalMark" />
+      </g>
+    </g>
+  </g>
+  <g transform="translate(372 0)" filter="url(#petalShadow)" opacity=".64">
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0 -125;92 535" dur="9.6s" begin="-7.8s" repeatCount="indefinite" />
+      <g transform="scale(.16)">
+        <animateTransform attributeName="transform" type="rotate" values="0;410;790" dur="9.6s" begin="-7.8s" repeatCount="indefinite" additive="sum" />
+        <use href="#petalMark" />
+      </g>
+    </g>
+  </g>
+  <g transform="translate(548 0)" filter="url(#petalShadow)" opacity=".44">
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0 -100;-72 530" dur="12.4s" begin="-9.5s" repeatCount="indefinite" />
+      <g transform="scale(.11)">
+        <animateTransform attributeName="transform" type="rotate" values="0;-380;-760" dur="12.4s" begin="-9.5s" repeatCount="indefinite" additive="sum" />
+        <use href="#petalMark" />
+      </g>
+    </g>
+  </g>
+  <g transform="translate(730 0)" filter="url(#petalShadow)" opacity=".72">
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0 -105;65 535" dur="8.8s" begin="-3.8s" repeatCount="indefinite" />
+      <g transform="scale(.19)">
+        <animateTransform attributeName="transform" type="rotate" values="0;300;690" dur="8.8s" begin="-3.8s" repeatCount="indefinite" additive="sum" />
+        <use href="#petalMark" />
+      </g>
+    </g>
+  </g>
+  <g transform="translate(890 0)" filter="url(#petalShadow)" opacity=".48">
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0 -100;-86 530" dur="10.7s" begin="-6.4s" repeatCount="indefinite" />
+      <g transform="scale(.14)">
+        <animateTransform attributeName="transform" type="rotate" values="0;-270;-620" dur="10.7s" begin="-6.4s" repeatCount="indefinite" additive="sum" />
+        <use href="#petalMark" />
+      </g>
+    </g>
+  </g>
+  <g transform="translate(1056 0)" filter="url(#petalShadow)" opacity=".7">
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0 -115;72 540" dur="9.2s" begin="-1.7s" repeatCount="indefinite" />
+      <g transform="scale(.17)">
+        <animateTransform attributeName="transform" type="rotate" values="0;360;740" dur="9.2s" begin="-1.7s" repeatCount="indefinite" additive="sum" />
+        <use href="#petalMark" />
+      </g>
+    </g>
+  </g>
+  <g transform="translate(1202 0)" filter="url(#petalShadow)" opacity=".42">
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0 -92;-54 525" dur="12s" begin="-8.2s" repeatCount="indefinite" />
+      <g transform="scale(.12)">
+        <animateTransform attributeName="transform" type="rotate" values="0;-300;-670" dur="12s" begin="-8.2s" repeatCount="indefinite" additive="sum" />
+        <use href="#petalMark" />
+      </g>
+    </g>
+  </g>
+
+  <g transform="translate(640 112)" filter="url(#softGlow)">
+    <g transform="scale(.66)">
+      <use href="#flower" />
+    </g>
+    <animateTransform attributeName="transform" type="translate" values="640 112;640 105;640 112" dur="5s" repeatCount="indefinite" />
+  </g>
+
+  <text x="640" y="280" text-anchor="middle" fill="url(#brand)" font-family="Segoe UI,Inter,Arial,sans-serif" font-size="104" font-weight="850" letter-spacing="-5" filter="url(#wordGlow)">AniLux</text>
+  <text x="640" y="329" text-anchor="middle" fill="#f6eaff" font-family="Segoe UI,Inter,Arial,sans-serif" font-size="22" font-weight="600" letter-spacing="7">СМОТРИ · СОБИРАЙ · ОБСУЖДАЙ</text>
+  <text x="640" y="374" text-anchor="middle" fill="#b9a4d8" font-family="Segoe UI,Inter,Arial,sans-serif" font-size="16" letter-spacing="2">ТВОЯ АНИМЕ-ВСЕЛЕННАЯ</text>
+
+  <rect x="1.5" y="1.5" width="1277" height="457" rx="32.5" fill="none" stroke="url(#brand)" stroke-width="3" opacity=".52" />
+</svg>

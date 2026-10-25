@@ -1,0 +1,133 @@
+services:
+  native_builder:
+    extends:
+      file: docker-compose.native.yml
+      service: native_builder
+  mysql:
+    image: registry-1.docker.io/library/mysql:8.0@sha256:7dcddc01f13bab2f15cde676d44d01f61fc9f99fe7785e86196dfc07d358ae2b
+    container_name: anilux_mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "127.0.0.1:3307:3306"
+    volumes:
+      - ./backend/data/mysql:/var/lib/mysql
+    networks:
+      - anilux_network
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=\"$$MYSQL_ROOT_PASSWORD\" mysqladmin ping --protocol=tcp -h 127.0.0.1 -u root --silent"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 5m
+
+  migrate:
+    build: ./backend
+    restart: "no"
+    env_file: .env
+    command: ["python", "manage.py", "migrate", "--noinput"]
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - ./backend/data:/app/data
+    networks:
+      - anilux_network
+
+  backend:
+    build: ./backend
+    container_name: anilux_backend
+    restart: always
+    env_file: .env
+    command: ["python", "docker_entrypoint.py", "daphne", "-b", "0.0.0.0", "-p", "8000", "config.asgi:application"]
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_started
+    volumes:
+      - ./backend:/app
+      - ./backend/data:/app/data
+      - seo_shell:/app/frontend_dist:ro
+      - ./frontend/public/site-navigation.json:/app/site-navigation.json:ro
+    networks:
+      - anilux_network
+
+  celery_worker:
+    build: ./backend
+    container_name: anilux_celery_worker
+    restart: always
+    env_file: .env
+    command: ["python", "docker_entrypoint.py", "celery", "-A", "config", "worker", "-l", "info", "--concurrency=2"]
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      migrate:
+        condition: service_completed_successfully
+    volumes:
+      - ./backend:/app
+      - ./backend/data:/app/data
+    networks:
+      - anilux_network
+
+  celery_beat:
+    build: ./backend
+    container_name: anilux_celery_beat
+    restart: always
+    env_file: .env
+    command: ["python", "docker_entrypoint.py", "celery", "-A", "config", "beat", "-l", "info", "--schedule", "/app/data/celerybeat/celerybeat-schedule"]
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      migrate:
+        condition: service_completed_successfully
+    volumes:
+      - ./backend:/app
+      - ./backend/data:/app/data
+    networks:
+      - anilux_network
+
+  redis:
+    image: registry-1.docker.io/library/redis:7@sha256:4fa24486b8bcca8eec45ee0eb166edc674795e53a2b53d1a9ef263eecebaac85
+    container_name: anilux_redis
+    restart: always
+    ports:
+      - "127.0.0.1:6379:6379"
+    networks:
+      - anilux_network
+
+  mailpit:
+    image: docker.io/axllent/mailpit:v1.21.8@sha256:81370195cd4a0eab9604d17c2617a7525b0486f9365555253b6c5376c6350f1a
+    container_name: project_mailpit
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${MAILPIT_UI_PORT:-8025}:8025"
+      - "127.0.0.1:${MAILPIT_SMTP_PORT:-1025}:1025"
+    networks:
+      - anilux_network
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  anilux_network:
+    driver: bridge
+
+volumes:
+  native_build_cache:
+  seo_shell:

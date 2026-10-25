@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <script>
+      try {
+        const theme = JSON.parse(localStorage.getItem('appearance:v1') || 'null')?.s?.theme;
+        const resolved = theme === 'system' ? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark') : theme;
+        if (['dark', 'light', 'polnochnaya'].includes(resolved)) {
+          document.documentElement.dataset.theme = resolved;
+          document.documentElement.style.colorScheme = resolved === 'light' ? 'light' : 'dark';
+        }
+      } catch { /* The normal appearance module remains authoritative. */ }
+    </script>
+    <meta charset="UTF-8" />
+    <script>
+      (() => {
+        try {
+          const path = location.pathname, params = new URLSearchParams(location.search), section = params.get('section');
+          const token = localStorage.getItem('anilux_access_token_v1') || '';
+          const reads = path === '/' ? ['/api/anime/home/?v=episodes-v1']
+            : path === '/anime' && section === 'catalog' && !params.has('search') ? ['/api/anime/?page=1&page_size=50&ordering=-score&group_franchises=true']
+            : path === '/anime' && section === 'calendar' ? ['/api/anime/calendar/?timezone=' + encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC')]
+            : path === '/anime' && section === 'recommendations' ? ['/api/anime/home/personalized/?sections=top_rated,new_season,based_on_watched,classics,short,movies']
+            : path === '/feed' && token ? ['/api/social/feed/extended/?page=1&page_size=20&sort=new&date_range=all']
+            : path === '/chats' && token ? ['/api/social/private-chats/'] : [];
+          window.__initialReads = reads.map(url => {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 15000);
+            const promise = fetch(url, { credentials:'include', signal:controller.signal,
+              headers:token ? { Accept:'application/json', Authorization:'Bearer '+token } : { Accept:'application/json' } })
+              .then(async response => response.ok ? { data:await response.json(), status:response.status,
+                headers:Object.fromEntries(response.headers) } : null).catch(() => null).finally(() => clearTimeout(timer));
+            return { url, token, created:Date.now(), controller, promise };
+          });
+        } catch { /* Normal query requests remain the fallback. */ }
+      })();
+    </script>
+    <link rel="icon" href="/favicon.ico" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <meta name="theme-color" content="#090613" />
+    <link rel="apple-touch-icon" href="/pwa/apple-touch-icon.png" />
+
+    <meta name="robots" content="noindex,follow" />
+    <title>AniLux</title>
+  </head>
+  <body class="bg-surface-1">
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+
+    <script>
+      if (window.matchMedia("(display-mode: standalone)").matches) {
+        document.documentElement.style.setProperty(
+          "--safe-area-inset-top",
+          "env(safe-area-inset-top)",
+        );
+        document.documentElement.style.setProperty(
+          "--safe-area-inset-bottom",
+          "env(safe-area-inset-bottom)",
+        );
+        document.documentElement.style.setProperty(
+          "--safe-area-inset-left",
+          "env(safe-area-inset-left)",
+        );
+        document.documentElement.style.setProperty(
+          "--safe-area-inset-right",
+          "env(safe-area-inset-right)",
+        );
+      }
+    </script>
+  </body>
+</html>

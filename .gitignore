@@ -124,18 +124,6 @@ _backup_edits/
 _removed_unused/
 pinegrow.json
 
-# Private local workspace metadata
-/.workspace-local/
-/.workspace-local/
-/.workspace-ui/
-**/.workspace-ui/
-/.workspace-private/
-**/.workspace-private/
-/skills/
-/private-tokens.json
-/PRIVATE_NOTES.md
-/frontend/.codex-build-temp/
-
 # One-off root diagnostics and repair helpers
 /check_*.py
 /diag_*.py

@@ -213,13 +213,11 @@ kms-generated: true
 | Этап 11. Переключение и завершение | Разворачивать по feature flag: новая схема → миграция копии → новые сервисы/API → новый UI → контрольная сверка → включение. | D0003, D0005, D0009, D0016 | W-chat, W-presence, W-api-client, W-checks |  |
 | 5. Обязательная матрица приёмки | Каждая строка проходит для допустимых ролей и отдельно проверяется на отказ доступа. Критерий «готово» - совпадение сохранённого состояния и… | D0003, D0005, D0009, D0016 | W-chat, W-presence, W-api-client, W-checks |  |
 | 6. Последовательность поставок | Baseline, спецификация и regression cases для найденных дефектов. | D0003, D0005, D0009, D0016 | W-chat, W-presence, W-api-client, W-checks |  |
-| 7. Модель для реализации | Рекомендация: **implementation profile, reviewed implementation settings**. | D0003, D0005, D0009, D0016 | W-chat, W-presence, W-api-client, W-checks |  |
-
 ### `docs/CHAT_SYSTEM_REBUILD_STATUS.md`
 
 | Раздел | Содержание | Решения | Watch paths | last-verified |
 | --- | --- | --- | --- | --- |
-| Переделка чатов: состояние реализации | октября 2026 года. Ветка `chat-system-rebuild`. | D0003, D0005, D0009, D0016 | W-chat, W-presence, W-api-client, W-checks |  |
+| Переделка чатов: состояние реализации | Состояние реализации на октябрь 2026 года. | D0003, D0005, D0009, D0016 | W-chat, W-presence, W-api-client, W-checks | |
 | Реализовано | Общая Conversation, типизированные публичные ID, последовательности/version, ограничения БД и идемпотентные команды. HTTP, WS и scheduled wo… | D0003, D0005, D0009, D0016 | W-chat, W-presence, W-api-client, W-checks |  |
 | Проверки | Следующая таблица сохраняет результаты первой приёмки. Актуальная общая проверка после исправления блокеров: **165 backend-тестов, 14 Vitest… | D0003, D0005, D0009, D0016 | W-chat, W-presence, W-api-client, W-checks |  |
 | Локальный выпуск | По уточнению пользователя целевой стенд - localhost. Автономные образы пересобраны через официальный registry, общие type-check/миграционные… | D0003, D0005, D0009, D0016 | W-chat, W-presence, W-api-client, W-checks |  |

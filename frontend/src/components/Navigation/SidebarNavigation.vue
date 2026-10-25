@@ -45,7 +45,7 @@
             <rect x="14" y="14" width="7" height="7" rx="1" />
           </svg>
         </span>
-        <span class="nav-label">Главная</span>
+        <span class="nav-label">Главная страница</span>
       </router-link>
 
       <router-link to="/feed" class="nav-item" :class="{ active: isActiveRoute('/feed') }">

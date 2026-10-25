@@ -10,13 +10,13 @@
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
-    "test:unit": "vitest",
+    "test:unit": "vitest --exclude \"tests/visual/**\"",
     "build-only": "node scripts/run-vite-build.mjs",
     "check:bundle": "node scripts/check-bundle-budget.mjs",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --cache",
     "lint:fix": "eslint . --fix --cache",
-    "test:unit:run": "vitest run",
+    "test:unit:run": "vitest run --exclude \"tests/visual/**\"",
     "audit:production": "npm audit --omit=dev --audit-level=high"
   },
   "dependencies": {

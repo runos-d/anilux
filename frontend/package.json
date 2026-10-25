@@ -17,6 +17,7 @@
     "lint": "eslint . --cache",
     "lint:fix": "eslint . --fix --cache",
     "test:unit:run": "vitest run --exclude \"tests/visual/**\"",
+    "test:visual": "playwright test",
     "audit:production": "npm audit --omit=dev --audit-level=high"
   },
   "dependencies": {

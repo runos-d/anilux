@@ -44,6 +44,15 @@ const ChatInviteView = () => import("@/components/page/chats/ChatInviteView.vue"
 const IdeasView = () => import("@/components/page/ideas/IdeasView.vue")
 const RouletteView = () => import("@/components/page/anime/RouletteView.vue")
 
+const visualTestRoutes = import.meta.env.DEV || import.meta.env.MODE === 'visual' ? [
+  {
+    path: '/__visual__/modals',
+    name: 'visual-modal-gallery',
+    component: () => import('@/dev/VisualModalGallery.vue'),
+    meta: { hideAppNav: true },
+  },
+] : []
+
 const optionalFeatureRoutes = [
   ...(features.dubs ? [
     { path: '/people/:id', name: 'people-detail', component: PeopleDetailView, props: true },
@@ -423,6 +432,7 @@ const router = createRouter({
       component: ChatInviteView,
       props: (route) => ({ token: route.params.token }),
     },
+    ...visualTestRoutes,
     { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('@/components/page/other/NotFoundView.vue') },
   ],
 });

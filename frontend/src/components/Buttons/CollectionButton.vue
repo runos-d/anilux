@@ -1,0 +1,574 @@
+﻿<template>
+  <div class="col-btn-wrap" ref="wrapRef">
+    <button
+      class="col-btn"
+      :class="{ 'has-status': !!libraryStatus }"
+      :style="
+        libraryStatus
+          ? { borderColor: currentStatus?.color, color: currentStatus?.color }
+          : {}
+      "
+      @click="toggleDropdown"
+      :disabled="loading"
+      type="button"
+    >
+      <SakuraIcon
+        v-if="libraryStatus && currentStatus?.icon"
+        :name="currentStatus.icon"
+        :size="16"
+        style="color: currentStatus?.color"
+      />
+      <svg
+        v-else
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path
+          d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+        />
+        <polyline points="17 21 17 13 7 13 7 21" />
+        <polyline points="7 3 7 8 15 8" />
+      </svg>
+      <span class="col-label">{{ currentStatus?.label ?? "В коллекцию" }}</span>
+      <svg
+        class="chevron"
+        :class="{ open: dropOpen }"
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+      >
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </button>
+
+    <Transition name="drop">
+      <div v-if="dropOpen" class="col-drop">
+        <div class="drop-label">Добавить в коллекцию</div>
+        <button
+          v-for="s in STATUS_LIST"
+          :key="s.key"
+          class="drop-item"
+          :class="{ active: libraryStatus === s.key }"
+          @click="selectStatus(s.key)"
+        >
+          <SakuraIcon :name="s.icon" :size="14" class="di-icon" />
+          <span class="di-label">{{ s.label }}</span>
+          <svg
+            v-if="libraryStatus === s.key"
+            class="di-check"
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </button>
+        <div v-if="libraryStatus" class="drop-sep"></div>
+        <button
+          v-if="libraryStatus"
+          class="drop-item remove"
+          @click="removeFromLibrary"
+        >
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+          </svg>
+          Удалить из коллекции
+        </button>
+      </div>
+    </Transition>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
+import apiClient from "@/api/client";
+import SakuraIcon from "@/components/icons/SakuraIcon.vue";
+import { useWatchProgressStore } from "@/stores/watchProgress";
+
+const props = defineProps<{
+  animeId: number | string;
+}>();
+
+const STATUS_LIST = [
+  {
+    key: "started",
+    icon: "watching",
+    label: "В процессе",
+    color: "var(--accent)",
+  },
+  {
+    key: "completed",
+    icon: "completed",
+    label: "Просмотрено",
+    color: "#22c55e",
+  },
+  {
+    key: "planned",
+    icon: "plan-to-watch",
+    label: "Запланировано",
+    color: "#a78bfa",
+  },
+  { key: "on_hold", icon: "on-hold", label: "Отложено", color: "#f59e0b" },
+  { key: "dropped", icon: "dropped", label: "Брошено", color: "#ef4444" },
+];
+
+const libraryStatus = ref<string | null>(null);
+const libraryItemId = ref<number | null>(null);
+const loading = ref(false);
+const dropOpen = ref(false);
+const wrapRef = ref<HTMLElement | null>(null);
+const progressStore = useWatchProgressStore();
+
+const currentStatus = computed(
+  () => STATUS_LIST.find((s) => s.key === libraryStatus.value) ?? null,
+);
+
+const checkLibrary = async () => {
+  if (!props.animeId) return;
+  try {
+    const res = await apiClient.get("/users/library/check_anime/", {
+      params: { anime_id: props.animeId },
+    });
+    if (res.data.in_library) {
+      libraryStatus.value = res.data.status;
+      const listRes = await apiClient.get("/users/library/", {
+        params: { status: res.data.status },
+      });
+      const items = Array.isArray(listRes.data)
+        ? listRes.data
+        : (listRes.data.results ?? []);
+      const found = (
+        items as Array<{ id: number; anime?: number }>
+      ).find((i) => i.anime === Number(props.animeId));
+      if (found) libraryItemId.value = found.id;
+    }
+  } catch {
+  }
+};
+
+const toggleDropdown = () => {
+  dropOpen.value = !dropOpen.value;
+};
+
+const selectStatus = async (status: string) => {
+  dropOpen.value = false;
+  loading.value = true;
+  try {
+    if (libraryItemId.value) {
+      await apiClient.patch(`/users/library/${libraryItemId.value}/`, {
+        status,
+      });
+    } else {
+      const res = await apiClient.post("/users/library/", {
+        anime: props.animeId,
+        status,
+      });
+      libraryItemId.value = res.data.id;
+    }
+    libraryStatus.value = status;
+    const animeId = Number(props.animeId);
+    if (Number.isFinite(animeId)) progressStore.setProgress(animeId, { status });
+  } catch (e) {
+    console.error(e);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const removeFromLibrary = async () => {
+  dropOpen.value = false;
+  if (!libraryItemId.value) return;
+  loading.value = true;
+  try {
+    await apiClient.delete(`/users/library/${libraryItemId.value}/`);
+    libraryStatus.value = null;
+    libraryItemId.value = null;
+    const animeId = Number(props.animeId);
+    if (Number.isFinite(animeId)) progressStore.clearProgress(animeId);
+  } catch (e) {
+    console.error(e);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const onOutsideClick = (e: MouseEvent) => {
+  if (wrapRef.value && !wrapRef.value.contains(e.target as Node)) {
+    dropOpen.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("click", onOutsideClick, true);
+  checkLibrary();
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", onOutsideClick, true);
+});
+
+watch(
+  () => props.animeId,
+  () => checkLibrary(),
+);
+</script>
+
+<style scoped>
+.col-btn-wrap {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.col-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.625rem 1.1rem;
+  background: var(--surface-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--duration-base);
+  white-space: nowrap;
+}
+
+.col-btn:hover {
+  border-color: var(--border-default);
+  color: var(--text-primary);
+  background: var(--surface-4);
+}
+.col-btn.has-status {
+  background: transparent;
+  border-color: currentColor;
+  color: var(--accent);
+}
+
+.di-icon {
+  line-height: 1;
+  color: currentColor;
+}
+.di-label {
+  flex: 1;
+  font-weight: 500;
+}
+
+.chevron {
+  transition: transform var(--duration-base);
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.chevron.open {
+  transform: rotate(180deg);
+}
+
+.col-drop {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 500;
+  background: var(--surface-3);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  padding: var(--space-1);
+  min-width: 210px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+
+.drop-label {
+  padding: 6px var(--space-3) 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.drop-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  height: 34px;
+  padding: 0 var(--space-3);
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--duration-base);
+  text-align: left;
+}
+
+.drop-item:hover {
+  background: var(--surface-4);
+  color: var(--text-primary);
+}
+.drop-item.active {
+  color: var(--accent);
+  background: var(--accent-subtle);
+}
+.drop-item.remove {
+  color: var(--danger);
+}
+.drop-item.remove:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.di-check {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.drop-sep {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 3px 0;
+}
+
+.drop-enter-active,
+.drop-leave-active {
+  transition:
+    opacity 0.15s,
+    transform 0.15s;
+}
+.drop-enter-from,
+.drop-leave-to {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.96);
+}
+
+@media (max-width: 768px) {
+  .col-btn {
+    padding: 0.5rem 0.875rem;
+    font-size: 0.8125rem;
+    gap: 6px;
+  }
+
+  .col-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .chevron {
+    width: 10px;
+    height: 10px;
+  }
+
+  .col-drop {
+    min-width: 190px;
+    padding: 3px;
+  }
+
+  .drop-label {
+    font-size: 9px;
+    padding: 5px 10px 3px;
+  }
+
+  .drop-item {
+    height: 32px;
+    padding: 0 10px;
+    font-size: 0.8125rem;
+    gap: 6px;
+  }
+
+  .di-icon {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .col-btn {
+    padding: 0.4375rem 0.75rem;
+    font-size: 0.75rem;
+    gap: 5px;
+    border-radius: 0.375rem;
+  }
+
+  .col-btn svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .chevron {
+    width: 9px;
+    height: 9px;
+  }
+
+  .col-drop {
+    min-width: 175px;
+    padding: 3px;
+    border-radius: 0.625rem;
+  }
+
+  .drop-label {
+    font-size: 8px;
+    padding: 4px 8px 2px;
+    letter-spacing: 0.05em;
+  }
+
+  .drop-item {
+    height: 30px;
+    padding: 0 8px;
+    font-size: 0.75rem;
+    gap: 5px;
+    border-radius: 0.375rem;
+  }
+
+  .di-icon {
+    font-size: 12px;
+  }
+
+  .di-check {
+    width: 10px;
+    height: 10px;
+  }
+
+  .drop-sep {
+    margin: 2px 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .col-btn {
+    padding: 0.375rem 0.625rem;
+    font-size: 0.6875rem;
+    gap: 4px;
+  }
+
+  .col-btn svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .chevron {
+    width: 8px;
+    height: 8px;
+  }
+
+  .col-drop {
+    min-width: 160px;
+  }
+
+  .drop-label {
+    font-size: 7.5px;
+    padding: 3px 7px 2px;
+  }
+
+  .drop-item {
+    height: 28px;
+    padding: 0 7px;
+    font-size: 0.6875rem;
+    gap: 4px;
+  }
+
+  .di-icon {
+    font-size: 11px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .col-btn {
+    padding: 0.5rem 0.875rem;
+    font-size: 0.8125rem;
+  }
+
+  .col-drop {
+    min-width: 200px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .col-btn {
+    padding: 0.5625rem 1rem;
+    font-size: 0.84375rem;
+  }
+
+  .col-drop {
+    min-width: 205px;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .col-btn {
+    min-height: 40px;
+  }
+
+  .col-btn:hover {
+    border-color: var(--border-subtle);
+    color: var(--text-secondary);
+    background: var(--surface-3);
+  }
+
+  .col-btn:active:not(:disabled) {
+    border-color: var(--border-default);
+    color: var(--text-primary);
+    background: var(--surface-4);
+  }
+
+  .drop-item {
+    min-height: 40px;
+  }
+
+  .drop-item:hover {
+    background: none;
+    color: var(--text-secondary);
+  }
+
+  .drop-item:active {
+    background: var(--surface-4);
+    color: var(--text-primary);
+  }
+
+  .drop-item.active:hover {
+    background: var(--accent-subtle);
+    color: var(--accent);
+  }
+
+  .drop-item.remove:hover {
+    background: none;
+    color: var(--danger);
+  }
+
+  .drop-item.remove:active {
+    background: rgba(239, 68, 68, 0.1);
+  }
+}
+
+@media (max-width: 360px) {
+  .col-btn {
+    min-height: 34px;
+  }
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+  .col-drop {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+}
+</style>

@@ -311,7 +311,7 @@ const json = (route, body, status = 200) => route.fulfill({
   body: JSON.stringify(body),
 });
 
-export async function installVisualApi(page) {
+export async function installVisualApi(page, theme) {
   await page.route("https://fonts.googleapis.com/**", (route) => route.fulfill({
     status: 200,
     contentType: "text/css; charset=utf-8",
@@ -335,7 +335,31 @@ export async function installVisualApi(page) {
     if (path === "/seo/page/") return json(route, seoPayload(url.searchParams.get("path") || "/"));
     if (["/users/profile/", "/users/me/"].includes(path)) return json(route, user);
     if (path.includes("/token/refresh/")) return json(route, { access: "visual-access", refresh: "visual-refresh" });
-    if (path === "/users/settings/" || path === "/settings/") return json(route, { theme: "dark", language: "ru", notifications_enabled: true, privacy: {} });
+    if (path === "/users/theme-settings/") return json(route, {
+      theme,
+      theme_accents: {},
+      custom_theme: {},
+      use_shared_background: true,
+      custom_background: "default",
+      font_family: "system",
+      font_size: 14,
+      line_spacing: 1.5,
+      font_weight: "normal",
+      smooth_animations: false,
+      scroll_effects: false,
+      parallax_effect: false,
+      truncate_names: true,
+      compact_lists: true,
+      hide_avatars: false,
+      show_time_everywhere: false,
+      small_emojis: true,
+      high_contrast: false,
+      sakura_enabled: false,
+      new_year_enabled: false,
+      halloween_enabled: false,
+      love_day_enabled: false,
+    });
+    if (path === "/users/settings/" || path === "/settings/") return json(route, { theme, language: "ru", notifications_enabled: true, privacy: {} });
     if (path === "/users/sessions/") return json(route, [{ id: 1, device: "Chrome", location: "Москва", current: true, last_activity: "2026-01-15T12:00:00Z" }]);
     if (path.includes("/users/library/statistics")) return json(route, { total: 42, completed: 28, watching: 6, planned: 8, hours_watched: 280, favorite_genres: ["Драма", "Фэнтези"] });
     if (path.includes("/users/library/wrapped")) return json(route, { year: 2025, total_anime: 42, total_episodes: 630, hours: 280, top_genres: ["Драма", "Фэнтези"], top_anime: animeList.slice(0, 3) });
@@ -411,7 +435,10 @@ export async function installVisualApi(page) {
 
 export async function installVisualSession(page, theme) {
   await page.addInitScript(({ currentTheme, currentUser }) => {
+    const legacyTheme = currentTheme === "light" ? "light" : "dark";
     localStorage.setItem("appearance:v1", JSON.stringify({ s: { theme: currentTheme, smoothAnimations: false, sakuraEnabled: false }, o: {} }));
+    localStorage.setItem("userSettings", JSON.stringify({ theme: legacyTheme, ui_style: "modern", text_size: "medium" }));
+    localStorage.setItem("currentSettings", JSON.stringify({ theme: legacyTheme, textSize: "medium", uiStyle: "modern" }));
     localStorage.setItem("anilux_access_token_v1", "visual-access");
     localStorage.setItem("anilux_refresh_token_v1", "visual-refresh");
     localStorage.setItem("anilux_user_v1", JSON.stringify(currentUser));
@@ -425,5 +452,5 @@ export async function installVisualSession(page, theme) {
     }
     Object.defineProperty(window, "WebSocket", { value: VisualWebSocket, configurable: true });
   }, { currentTheme: theme, currentUser: user });
-  await installVisualApi(page);
+  await installVisualApi(page, theme);
 }

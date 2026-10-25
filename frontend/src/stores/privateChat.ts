@@ -1,0 +1,413 @@
+import { defineStore } from "pinia";
+import { ref, computed } from "vue";
+import apiClient, { isRequestCancelled } from "@/api/client";
+import { useCachedReads } from '@/composables/useCachedReads';
+import { normalizeMessage } from "@/utils/normalizers";
+import { useAuthStore } from "@/stores/auth";
+
+export interface PrivateChat {
+  user_settings?: { notifications: boolean; muted_until: string | null; archived: boolean; pinned: boolean; blocked: boolean };
+  name?: string;
+  public_id?: number;
+  conversation_id?: number;
+  is_support?: boolean;
+  id: number;
+  code: string;
+  user1: {
+    id: number;
+    username: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    display_name?: string;
+    avatar?: string;
+    avatar_url?: string;
+    is_online?: boolean;
+  };
+  user2: {
+    id: number;
+    username: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    display_name?: string;
+    avatar?: string;
+    avatar_url?: string;
+    is_online?: boolean;
+  };
+
+  other_user?: {
+    id: number;
+    username: string;
+    display_name?: string;
+    avatar?: string;
+    avatar_url?: string;
+    is_online?: boolean;
+  };
+  created_at: string;
+  last_message_at: string | null;
+  last_message?: {
+    id: number;
+    text: string;
+    created_at: string;
+    sender: {
+      id: number;
+      username: string;
+    };
+  };
+  unread_count?: number;
+  user1_notifications: boolean;
+  user2_notifications: boolean;
+  user1_muted_until: string | null;
+  user2_muted_until: string | null;
+  user1_archived: boolean;
+  user2_archived: boolean;
+  user1_pinned: boolean;
+  user2_pinned: boolean;
+  user1_blocked: boolean;
+  user2_blocked: boolean;
+}
+
+interface Message {
+  id: number;
+  text: string;
+  media: string | null;
+  media_type: string | null;
+  sender: {
+    id: number;
+    username: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+  };
+  reply_to: Message | null;
+  reactions: Record<string, number[]>;
+  is_edited: boolean;
+  edited_at: string | null;
+  is_deleted: boolean;
+  deleted_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export const usePrivateChatStore = defineStore("privateChat", () => {
+  const read = useCachedReads();
+  const chats = ref<PrivateChat[]>([]);
+  const currentChat = ref<PrivateChat | null>(null);
+  const messages = ref<Message[]>([]);
+
+  const loadingChats = ref(false);
+  const loadingMessages = ref(false);
+  const sendingMessage = ref(false);
+
+  const authStore = useAuthStore();
+
+  const otherUser = computed(() => {
+    if (!currentChat.value) return null;
+    const currentUserId = authStore.user?.id;
+    if (!currentUserId) return currentChat.value.other_user || null;
+    return currentChat.value.user1.id === currentUserId
+      ? currentChat.value.user2
+      : currentChat.value.user1;
+  });
+
+  const chatSettings = computed(() => {
+    if (!currentChat.value) return {};
+    const currentUserId = authStore.user?.id;
+    const isUser1 = currentChat.value.user1.id === currentUserId;
+
+    return {
+      notifications: isUser1
+        ? currentChat.value.user1_notifications
+        : currentChat.value.user2_notifications,
+      muted_until: isUser1
+        ? currentChat.value.user1_muted_until
+        : currentChat.value.user2_muted_until,
+      archived: isUser1
+        ? currentChat.value.user1_archived
+        : currentChat.value.user2_archived,
+      pinned: isUser1
+        ? currentChat.value.user1_pinned
+        : currentChat.value.user2_pinned,
+      blocked: isUser1
+        ? currentChat.value.user1_blocked
+        : currentChat.value.user2_blocked,
+    };
+  });
+
+  const loadChats = async () => {
+    loadingChats.value = true;
+    try {
+      return await read(['private-chats'], async signal => (await apiClient.get('/social/private-chats/', { signal })).data,
+        data => { chats.value = data.results || data; });
+    } catch (error) {
+      if (!isRequestCancelled(error)) console.error("Error loading private chats:", error);
+      return [];
+    } finally {
+      loadingChats.value = false;
+    }
+  };
+
+  const createOrGetChat = async (userId: number) => {
+    try {
+      const response = await apiClient.post("/social/private-chats/", {
+        user_id: userId,
+      });
+      const chat = response.data;
+
+      const existingIndex = chats.value.findIndex((c) => c.id === chat.id);
+      if (existingIndex === -1) {
+        chats.value.unshift(chat);
+      } else {
+        chats.value[existingIndex] = chat;
+      }
+
+      currentChat.value = chat;
+      return chat;
+    } catch (error) {
+      console.error("Error creating/getting private chat:", error);
+      throw error;
+    }
+  };
+
+  const ensureAdministratorChat = async () => {
+    const response = await apiClient.post("/social/private-chats/administrator/");
+    const chat = response.data as PrivateChat;
+    const existingIndex = chats.value.findIndex((item) => item.id === chat.id);
+    if (existingIndex === -1) chats.value.unshift(chat);
+    else chats.value[existingIndex] = chat;
+    return chat;
+  };
+
+  const loadChat = async (chatId: number) => {
+    try {
+      const response = await apiClient.get(`/social/private-chats/${chatId}/`);
+      currentChat.value = response.data;
+
+      const existingIndex = chats.value.findIndex((c) => c.id === chatId);
+      if (existingIndex !== -1) {
+        chats.value[existingIndex] = response.data;
+      }
+    } catch (error) {
+      console.error("Error loading private chat:", error);
+      throw error;
+    }
+  };
+
+  const loadMessages = async (chatId: number) => {
+    loadingMessages.value = true;
+    try {
+      const response = await apiClient.get(
+        `/social/private-chats/${chatId}/messages/`,
+      );
+      messages.value = response.data;
+    } catch (error) {
+      console.error("Error loading messages:", error);
+      throw error;
+    } finally {
+      loadingMessages.value = false;
+    }
+  };
+
+  const sendMessage = async (
+    chatId: number,
+    text: string,
+    replyToId?: number,
+  ) => {
+    sendingMessage.value = true;
+    try {
+      const data: Record<string, unknown> = { text };
+      if (replyToId) {
+        data.reply_to = replyToId;
+      }
+
+      const response = await apiClient.post("/social/messages/", {
+        ...data,
+        chat_id: chatId,
+      });
+
+      let message = response.data;
+      message = normalizeMessage(message);
+      messages.value.unshift(message);
+
+      if (currentChat.value) {
+        currentChat.value.last_message_at = message.created_at;
+        currentChat.value.last_message = {
+          id: message.id,
+          text: message.text,
+          created_at: message.created_at,
+          sender: message.sender,
+        };
+      }
+
+      const chatIndex = chats.value.findIndex((c) => c.id === chatId);
+      if (chatIndex !== -1) {
+        const chat = chats.value[chatIndex]!;
+        chat.last_message_at = message.created_at;
+        chat.last_message = {
+          id: message.id,
+          text: message.text,
+          created_at: message.created_at,
+          sender: message.sender,
+        } as PrivateChat["last_message"];
+      }
+
+      return message;
+    } catch (error) {
+      console.error("Error sending message:", error);
+      throw error;
+    } finally {
+      sendingMessage.value = false;
+    }
+  };
+
+  const updateSettings = async (
+    chatId: number,
+    settings: Partial<{
+      notifications: boolean;
+      muted_until: string | null;
+      archived: boolean;
+      pinned: boolean;
+      blocked: boolean;
+    }>,
+  ) => {
+    try {
+      await apiClient.put(
+        `/social/private-chats/${chatId}/settings/`,
+        settings,
+      );
+      await loadChat(chatId);
+    } catch (error) {
+      console.error("Error updating chat settings:", error);
+      throw error;
+    }
+  };
+
+  const clearHistory = async (chatId: number) => {
+    try {
+      await apiClient.post(
+        `/social/private-chats/${chatId}/clear_history/?type=private`,
+      );
+
+      messages.value = [];
+    } catch (error) {
+      console.error("Error clearing history:", error);
+      throw error;
+    }
+  };
+
+  const clearChats = () => {
+    chats.value = [];
+    currentChat.value = null;
+    messages.value = [];
+  };
+
+  const deleteChat = async (chatId: number) => {
+    try {
+      await apiClient.delete(`/social/private-chats/${chatId}/`);
+
+      chats.value = chats.value.filter((c) => c.id !== chatId);
+      if (currentChat.value?.id === chatId) {
+        currentChat.value = null;
+        messages.value = [];
+      }
+    } catch (error) {
+      console.error("Error deleting private chat:", error);
+      throw error;
+    }
+  };
+
+  const markMessageAsRead = async (messageId: number) => {
+    try {
+      await apiClient.post(`/social/messages/${messageId}/read/`);
+    } catch (error) {
+      console.error("Error marking message as read:", error);
+      throw error;
+    }
+  };
+
+  const editMessage = async (messageId: number, newText: string) => {
+    try {
+      const response = await apiClient.post(
+        `/social/messages/${messageId}/edit/`,
+        {
+          text: newText,
+        },
+      );
+
+      const index = messages.value.findIndex((m) => m.id === messageId);
+      if (index !== -1) {
+        messages.value[index] = response.data;
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error("Error editing message:", error);
+      throw error;
+    }
+  };
+
+  const deleteMessage = async (messageId: number) => {
+    try {
+      await apiClient.post(`/social/messages/${messageId}/delete/`);
+
+      messages.value = messages.value.filter((m) => m.id !== messageId);
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      throw error;
+    }
+  };
+
+  const decrementUnreadCount = (chatId: number, count: number) => {
+    const chat = chats.value.find((c) => c.id === chatId);
+    if (!chat) return;
+    const current = chat.unread_count || 0;
+    const next = Math.max(0, current - count);
+    chat.unread_count = next;
+  };
+
+  const addReaction = async (messageId: number, emoji: string) => {
+    try {
+      const response = await apiClient.post(
+        `/social/messages/${messageId}/reaction/toggle/`,
+        { emoji },
+      );
+
+      const message = messages.value.find((m) => m.id === messageId);
+      if (message && response.data?.reactions) {
+        message.reactions = response.data.reactions;
+      }
+    } catch (error) {
+      console.error("Error adding reaction:", error);
+      throw error;
+    }
+  };
+
+  return {
+    chats,
+    currentChat,
+    messages,
+    loadingChats,
+    loadingMessages,
+    sendingMessage,
+
+    otherUser,
+    chatSettings,
+
+    loadChats,
+    createOrGetChat,
+    ensureAdministratorChat,
+    loadChat,
+    loadMessages,
+    sendMessage,
+    updateSettings,
+    clearHistory,
+    clearChats,
+    deleteChat,
+    markMessageAsRead,
+    editMessage,
+    deleteMessage,
+    addReaction,
+    decrementUnreadCount,
+  };
+});

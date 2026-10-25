@@ -1,0 +1,20 @@
+<title>{{ page.title }}</title>
+<meta name="description" content="{{ page.description }}">
+<meta name="robots" content="{{ page.robots }}">
+<link rel="canonical" href="{{ page.canonical }}">
+<meta property="og:title" content="{{ page.title }}">
+<meta property="og:description" content="{{ page.description }}">
+<meta property="og:url" content="{{ page.canonical }}">
+<meta property="og:site_name" content="{{ page.site }}">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:type" content="{% if page.kind == 'post' %}article{% else %}website{% endif %}">
+<meta name="twitter:card" content="{% if page.image %}summary_large_image{% else %}summary{% endif %}">
+<meta name="twitter:title" content="{{ page.title }}">
+<meta name="twitter:description" content="{{ page.description }}">
+{% if page.image %}<meta property="og:image" content="{{ page.image }}"><meta name="twitter:image" content="{{ page.image }}">{% endif %}
+<script nonce="{{ csp_nonce }}" type="application/ld+json" data-seo-jsonld="true">{{ json_ld|safe }}</script>
+<style id="seo-base-style">
+body{margin:0}.seo-page,.seo-page *{box-sizing:border-box}.seo-page{font:16px/1.6 system-ui,sans-serif;min-height:100vh}.seo-page h1{font-size:32px;font-weight:700;line-height:1.6;margin:.67em 0}.seo-page h2{font-size:24px;font-weight:700;line-height:1.6;margin:.83em 0}.seo-page p{margin:1em 0}
+.seo-page{max-width:1200px;margin:auto;padding:24px;color:var(--text-primary,#ece9f3);background:var(--surface-1,#100d1a);line-height:1.6}.seo-page a{color:var(--accent,#c5afff)}.seo-page nav{display:flex;flex-wrap:wrap;gap:14px;margin:18px 0}.seo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:20px}.seo-grid article{min-width:0}.seo-grid img{width:100%;height:auto;aspect-ratio:2/3;object-fit:cover;border-radius:12px}.seo-grid h2{font-size:1rem}.seo-text{white-space:pre-line}.seo-facts{display:flex;gap:16px;flex-wrap:wrap}.seo-poster{width:240px;height:360px;object-fit:cover;max-width:100%}
+.seo-page .seo-header{margin-bottom:24px;border-bottom:1px solid var(--border-subtle,#ffffff20);padding-bottom:16px}.seo-page .seo-header nav{font-size:13px;margin:0 0 12px}.seo-page .seo-header a{color:var(--text-secondary,#aaa3ba);text-decoration:none}.seo-page .seo-related{margin-top:32px;padding:24px;border:1px solid var(--border-subtle,#ffffff20);border-radius:16px;background:var(--surface-2,#1b1725)}.seo-page .seo-related h2{font-size:18px;margin:0 0 16px}.seo-page .seo-related nav{gap:8px;margin:0}.seo-page .seo-related a{display:inline-flex;padding:6px 10px;border:1px solid var(--border-subtle,#ffffff20);border-radius:8px;background:var(--surface-3,#241f30);color:var(--text-secondary,#aaa3ba);font-size:13px;text-decoration:none}
+</style>

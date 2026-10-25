@@ -1,0 +1,18 @@
+<section class="seo-page" aria-label="{{ page.h1 }}">
+  <header class="seo-header"><nav aria-label="Хлебные крошки">{% for crumb in page.crumbs %}<a href="{{ crumb.path }}">{{ crumb.name }}</a>{% endfor %}</nav>
+  <h1>{{ page.h1 }}</h1></header>
+  {% if page.kind == 'catalog' %}<nav aria-label="Режим каталога"><a href="/anime?section=catalog">Фильтры и перемешивание</a><a href="/anime/browse">Подборки по годам и жанрам</a></nav>{% endif %}
+  {% if page.image %}<img class="seo-poster" src="{{ page.image }}" width="240" height="360" alt="Постер {{ page.name }}" fetchpriority="high">{% endif %}
+  {% if page.facts %}<ul class="seo-facts">{% for fact in page.facts %}<li>{{ fact }}</li>{% endfor %}</ul>{% endif %}
+  {% if page.items %}<div class="seo-grid">{% for item in page.items %}
+    <article><a href="{{ item.path }}">{% if item.image %}<img src="{{ item.image }}" width="240" height="360" alt="Постер {{ item.name }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}" fetchpriority="{% if forloop.first %}high{% else %}auto{% endif %}" decoding="async">{% endif %}<h2>{{ item.name }}</h2></a><p>{% if item.year %}{{ item.year }}{% if item.year_end and item.year_end != item.year %}–{{ item.year_end }}{% endif %} · {% endif %}{{ item.kind }}</p></article>
+  {% endfor %}</div>{% endif %}
+  <p class="seo-text">{{ page.text }}</p>
+  {% if page.pages > 1 %}<nav aria-label="Страницы">
+    {% if page.number > 1 %}<a href="{{ page.first_url }}">Первая</a><a rel="prev" href="{{ page.previous_url }}">Предыдущая</a>{% endif %}
+    <span>Страница {{ page.number }} из {{ page.pages }}</span>
+    {% if page.number < page.pages %}<a rel="next" href="{{ page.next_url }}">Следующая</a>{% endif %}
+  </nav>{% endif %}
+  {% if page.related %}<section class="seo-related"><h2>Связанные страницы</h2><nav aria-label="Связанные страницы">{% for link in page.related %}<a href="{{ link.path }}">{{ link.name }}</a>{% endfor %}</nav></section>{% endif %}
+  {% if page.status != 200 %}<a href="/anime">Открыть каталог</a>{% endif %}
+</section>

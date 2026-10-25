@@ -1,0 +1,14 @@
+<footer class="seo-navigation" role="contentinfo" aria-label="Футер сайта">
+  <nav class="seo-navigation-panel" aria-label="Разделы сайта">
+    <div class="seo-navigation-heading">
+      <h2><img src="/sakura.svg" width="28" height="28" alt="" decoding="async"> AniLux</h2>
+      <p>Аниме, сообщество и ваша библиотека</p>
+      {% if navigation.email %}<a href="mailto:{{ navigation.email }}">{{ navigation.email }}</a>{% endif %}
+    </div>
+    <div class="collection-links-groups">
+      {% for group in navigation.groups %}<section class="collection-links-group"><h3>{{ group.name }}</h3><div class="collection-links-list">
+        {% for link in group.links %}<a href="{{ link.path }}">{{ link.name }}</a>{% endfor %}
+      </div></section>{% endfor %}
+    </div>
+  </nav>
+</footer>

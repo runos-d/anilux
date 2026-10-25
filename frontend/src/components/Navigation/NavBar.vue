@@ -1,0 +1,784 @@
+<template>
+  <nav class="navbar">
+    <div class="navbar-content">
+      <div class="navbar-search">
+        <SearchBar
+          variant="header"
+          placeholder="Поиск..."
+          :categories="searchCategories"
+          :min-query-length="3"
+          :debounce-time="400"
+          @search="handleSearch"
+        />
+      </div>
+
+      <div class="navbar-navigation">
+        <button
+          v-for="item in navigationItems"
+          :key="item.key"
+          @click="navigateToSection(item)"
+          :class="[
+            'nav-link',
+            { loading: item.key === 'random' && randomLoading },
+          ]"
+          :disabled="item.key === 'random' && randomLoading"
+          :title="item.label"
+          :aria-label="item.label"
+          type="button"
+        >
+          <span
+            class="nav-icon"
+            :class="{ spin: item.key === 'random' && randomLoading }"
+          >
+            <SakuraIcon v-if="isIconName(item.icon)" :name="item.icon" :size="18" />
+            <span v-else>{{ item.icon }}</span>
+          </span>
+          <span class="nav-label">{{ item.label }}</span>
+        </button>
+      </div>
+
+      <div class="navbar-actions">
+        <div class="navbar-notifications" v-if="isAuthenticated">
+          <button
+            :class="[
+              'navbar-icon-btn',
+              { 'bell-ringing': notificationStore.isBellRinging },
+            ]"
+            title="Уведомления"
+            type="button"
+            @click="toggleNotifications"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              :stroke="notificationStore.isBellRinging ? 'rgb(255, 126, 179)' : 'currentColor'"
+              stroke-width="2"
+              :class="{ 'bell-svg-ring': notificationStore.isBellRinging }"
+            >
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <span v-if="notificationStore.isBellRinging" class="bell-pulse-ring" />
+            <span v-if="notificationStore.hasUnread" class="notification-dot">
+              {{ notificationStore.unreadCount > 9 ? "9+" : notificationStore.unreadCount }}
+            </span>
+          </button>
+
+          <Transition name="dropdown">
+            <div v-if="showNotifications" class="notifications-dropdown" @click.stop>
+              <div class="notif-header">
+                <span class="notif-title">Уведомления</span>
+                <div class="notif-header-actions">
+                  <button
+                    v-if="notificationStore.hasUnread"
+                    @click="notificationStore.markAllRead()"
+                    class="mark-all-read-btn"
+                    type="button"
+                  >
+                    <SakuraIcon name="check" :size="16" /> Все
+                  </button>
+                </div>
+              </div>
+              <div class="notif-list" v-if="notificationStore.recentNotifications.length > 0">
+                <div
+                  v-for="notif in notificationStore.recentNotifications"
+                  :key="notif.id"
+                  :class="['notif-item', { unread: !notif.is_read }]"
+                  @click="handleNotificationClick(notif)"
+                >
+                  <div class="notif-icon">
+                    <SakuraIcon :name="notificationIcon(notif.type, notif.icon)" :size="20" />
+                  </div>
+                  <div class="notif-content">
+                    <div class="notif-text">{{ getNotifText(notif) }}</div>
+                    <div class="notif-time">{{ formatNotifTime(notif.created_at) }}</div>
+                  </div>
+                  <div v-if="!notif.is_read" class="notif-unread-dot"></div>
+                </div>
+              </div>
+              <div v-else class="notif-empty">
+                <span>Нет уведомлений</span>
+              </div>
+              <router-link to="/notifications" class="notif-footer" @click="showNotifications = false">
+                Все уведомления <SakuraIcon name="arrow-right" :size="16" />
+              </router-link>
+            </div>
+          </Transition>
+        </div>
+
+        <div class="navbar-profile">
+          <router-link :to="profileLink" class="profile-link">
+            <div class="profile-avatar">
+              <OptimizedImage v-if="userAvatar" :src="userAvatar" alt="Avatar" class="avatar-image" />
+              <div v-else class="avatar-placeholder">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </div>
+              <div v-if="isOnline" class="online-indicator"></div>
+            </div>
+          </router-link>
+        </div>
+      </div>
+    </div>
+  </nav>
+</template>
+
+<script setup lang="ts">
+import SakuraIcon from "@/components/icons/SakuraIcon.vue";
+import OptimizedImage from "@/components/common/OptimizedImage.vue";
+import SearchBar from "@/components/Search/SearchBar.vue";
+import { notificationIcon } from "@/lib/notificationIcon";
+import { notificationTitle } from "@/lib/systemUiText";
+import { useRandomAnime } from "@/composables/useRandomAnime";
+import { ref, computed, onMounted, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
+import { useNotificationStore } from "@/stores/notifications";
+import remindersApi from "@/api/reminders";
+import { TIMING } from "@/constants";
+import { afterInitialContent } from "@/lib/initialContent";
+
+const router = useRouter();
+const authStore = useAuthStore();
+const notificationStore = useNotificationStore();
+
+const showNotifications = ref(false);
+let reminderCheckInterval: ReturnType<typeof setInterval> | null = null;
+
+interface NavigationItem {
+  key: string;
+  label: string;
+  icon: string;
+  to: string | null;
+}
+
+interface NotificationLike {
+  id: number;
+  type?: string;
+  kind?: string;
+  title?: string;
+  text?: string;
+  icon?: string;
+  link?: string;
+  url?: string;
+  is_read?: boolean;
+  created_at?: string;
+}
+
+const searchCategories = [
+  { id: "anime", name: "Аниме", icon: "anime", enabled: true, limit: 5 },
+];
+
+const navigationItems: NavigationItem[] = [
+  { key: "ongoings", label: "Онгоинги", icon: "fire", to: "/anime?section=ongoings" },
+  { key: "recommendations", label: "Рекомендации", icon: "sparkles", to: "/anime?section=recommendations" },
+  { key: "calendar", label: "Календарь", icon: "calendar", to: "/anime?section=calendar" },
+  { key: "random", label: "Рандом", icon: "dice", to: null },
+];
+
+const isIconName = (icon: string): boolean => {
+  return /^[a-zA-Z][a-zA-Z0-9-]*$/.test(icon);
+};
+
+const { loading: randomLoading, openRandom } = useRandomAnime();
+
+const navigateToSection = async (item: NavigationItem) => {
+  if (item.key === "random") {
+    await openRandom();
+    return;
+  }
+  const pathAndQuery = item.to;
+  if (!pathAndQuery) return;
+  const [path, queryStr] = pathAndQuery.split("?");
+  const params = new URLSearchParams(queryStr);
+  const query: Record<string, string> = {};
+  params.forEach((value, key) => {
+    query[key] = value;
+  });
+  router.replace({ path, query });
+};
+
+const userAvatar = computed(() => authStore.user?.avatar);
+const isOnline = computed(() => authStore.user?.is_online ?? false);
+const isAuthenticated = computed(() => authStore.isAuthenticated);
+
+const profileLink = computed(() => {
+  const userId = authStore.user?.id;
+  return userId ? `/profile/${userId}` : "/profile";
+});
+
+const toggleNotifications = () => {
+  showNotifications.value = !showNotifications.value;
+  if (showNotifications.value) {
+    notificationStore.fetchRecent();
+  }
+};
+
+const handleSearch = (query: string) => {
+  router.push({ path: "/anime", query: { search: query } });
+};
+
+const handleOutsideClick = (e: MouseEvent) => {
+  const target = e.target as HTMLElement;
+  if (!target.closest(".navbar-notifications")) {
+    showNotifications.value = false;
+  }
+};
+
+const getNotifText = (notif: NotificationLike) => {
+  return (
+    notificationTitle(notif.title || notif.text, notif.type || notif.kind) ||
+    "Уведомление"
+  );
+};
+
+const formatNotifTime = (dateStr: string | undefined) => {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "только что";
+  if (mins < 60) return `${mins} мин назад`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours} ч назад`;
+  return date.toLocaleDateString("ru", { day: "numeric", month: "short" });
+};
+
+const handleNotificationClick = (notif: NotificationLike) => {
+  notificationStore.markRead(notif.id);
+  showNotifications.value = false;
+
+  const type = notif.type || notif.kind || "";
+  const isReminder = type.startsWith("reminder") || type === "reminder";
+
+  if (isReminder) {
+    router.push({ path: "/notifications", query: { tab: "reminders" } });
+    return;
+  }
+
+  const dest = notif.link || notif.url;
+  if (dest) {
+    router.push(dest);
+  } else {
+    router.push("/notifications");
+  }
+};
+
+const startTabBlink = (message: string) => {
+  window.dispatchEvent(
+    new CustomEvent("browserAttention", {
+      detail: { title: message, url: "/notifications" },
+    }),
+  );
+};
+
+const triggerReminderNotification = (
+  reminderId: number,
+  animeName: string,
+  comment?: string,
+) => {
+  const notifId = Date.now();
+
+  notificationStore.addNotification({
+    id: notifId,
+    type: "reminder",
+    title: `Напоминание: ${animeName}`,
+    content: `Пора смотреть${comment ? ` -${comment}` : ""}`,
+    icon: "clock",
+    link: "",
+    is_read: false,
+    is_important: false,
+    is_deleted: false,
+    created_at: new Date().toISOString(),
+    read_at: null,
+    expires_at: null,
+  });
+
+  notificationStore.startRinging(reminderId);
+  startTabBlink(`Напоминание: ${animeName}`);
+};
+
+const checkReminders = async () => {
+  if (!authStore.isAuthenticated) return;
+  try {
+    const response = await remindersApi.getUpcomingReminders();
+    const reminders = response.data;
+    const now = new Date();
+
+    for (const reminder of reminders) {
+      const reminderTime = new Date(reminder.reminder_time);
+      const diffMs = reminderTime.getTime() - now.getTime();
+
+      if (diffMs <= TIMING.MS_PER_MINUTE && diffMs > -TIMING.MS_PER_MINUTE) {
+        const animeName =
+          reminder.anime_detail?.title_ru ||
+          reminder.anime_detail?.title_en ||
+          "Аниме";
+        triggerReminderNotification(reminder.id, animeName, reminder.comment);
+
+        if (!reminder.repeat_weekly) {
+          await remindersApi.deactivateReminder(reminder.id);
+        }
+      }
+    }
+  } catch (_e) {
+    console.debug("Ignored reminder check error:", _e);
+  }
+};
+
+const handleNewNotificationEvent = (e: Event) => {
+  const notif = (e as CustomEvent).detail;
+  if (notif) {
+    notificationStore.addNotification(notif);
+  } else {
+    notificationStore.fetchRecent();
+    notificationStore.fetchCount();
+  }
+};
+
+onMounted(async () => {
+  document.addEventListener("click", handleOutsideClick);
+  window.addEventListener("newNotification", handleNewNotificationEvent);
+
+  afterInitialContent(() => {
+    if (authStore.isAuthenticated) {
+      void notificationStore.fetchCount();
+      notificationStore.fetchRecent();
+
+      checkReminders();
+      reminderCheckInterval = setInterval(checkReminders, TIMING.MS_PER_MINUTE);
+    }
+  });
+});
+
+onUnmounted(() => {
+  document.removeEventListener("click", handleOutsideClick);
+  window.removeEventListener("newNotification", handleNewNotificationEvent);
+  if (reminderCheckInterval) clearInterval(reminderCheckInterval);
+});
+</script>
+
+<style scoped>
+.navbar {
+  position: fixed;
+  top: 0;
+  left: var(--app-sidebar-offset, var(--sidebar-width, 280px));
+  right: 0;
+  height: var(--navbar-height);
+  /* Плотный фон без blur — иначе фризы */
+  background: var(--panel-topbar, var(--surface-2));
+  border-bottom: 1px solid var(--border-subtle);
+  z-index: var(--z-navbar);
+  display: flex;
+  align-items: center;
+  transition: left var(--sb-transition-duration) var(--sb-transition-ease);
+}
+
+.navbar-content {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-5);
+  width: 100%;
+  height: 100%;
+  gap: var(--space-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar {
+    transition-duration: 0.01ms;
+  }
+}
+
+/* ── Навигация ── */
+.navbar-navigation {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-lg);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: var(--text-base);
+  font-weight: 500;
+  transition:
+    color var(--duration-base) var(--ease-petal),
+    background-color var(--duration-base) var(--ease-petal);
+  white-space: nowrap;
+  cursor: pointer;
+  min-height: 34px;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 60%;
+  height: 2px;
+  background: var(--accent);
+  border-radius: var(--radius-full);
+  transition: transform var(--duration-base) var(--ease-petal);
+}
+
+.nav-link:hover {
+  background-color: var(--surface-4);
+  color: var(--text-primary);
+}
+.nav-link:hover::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+.nav-icon {
+  font-size: var(--text-md);
+  display: inline-block;
+  color: inherit;
+}
+.nav-link.loading {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.spin {
+  animation: nb-spin 0.7s linear infinite;
+}
+@keyframes nb-spin {
+  to { transform: rotate(360deg); }
+}
+.nav-label {
+  font-size: var(--text-base);
+}
+
+/* ── Поиск ── */
+.navbar-search {
+  width: 360px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: calc(var(--z-navbar) + 1);
+}
+
+/* ── Действия ── */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.navbar-icon-btn {
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--text-tertiary);
+  border-radius: 50%;
+  cursor: pointer;
+  transition:
+    color var(--duration-base) var(--ease-petal),
+    background-color var(--duration-base) var(--ease-petal),
+    box-shadow var(--duration-base) var(--ease-petal);
+  position: relative;
+  border: none;
+}
+
+.navbar-icon-btn:hover {
+  background: var(--surface-4);
+  color: var(--accent);
+  box-shadow: var(--shadow-sm-glow-sm);
+}
+
+.notification-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background: rgb(255, 126, 179);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--surface-2);
+  font-size: 9px;
+  font-weight: 700;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-shadow: 0 2px 8px rgba(255, 138, 138, 0.3);
+}
+
+/* ── Сверкание колокольчика ── */
+.bell-ringing {
+  animation: bell-flash 0.6s ease-in-out infinite;
+}
+.bell-svg-ring {
+  animation: bell-shake 0.5s ease-in-out infinite;
+  transform-origin: top center;
+}
+.bell-pulse-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid rgb(255, 126, 179);
+  animation: bell-pulse 1s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes bell-flash {
+  0%, 100% { background-color: transparent; }
+  50% { background-color: rgba(255, 138, 138, 0.18); }
+}
+@keyframes bell-shake {
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(12deg); }
+  30% { transform: rotate(-10deg); }
+  45% { transform: rotate(8deg); }
+  60% { transform: rotate(-6deg); }
+  75% { transform: rotate(4deg); }
+  90% { transform: rotate(-2deg); }
+}
+@keyframes bell-pulse {
+  0% { opacity: 0.8; transform: scale(0.85); }
+  70% { opacity: 0; transform: scale(1.7); }
+  100% { opacity: 0; transform: scale(1.7); }
+}
+
+/* ── Дропдаун уведомлений ── */
+.navbar-notifications {
+  position: relative;
+}
+
+.notifications-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 360px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm-lg);
+  z-index: calc(var(--z-navbar) + 10);
+  overflow: hidden;
+}
+
+.notif-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background: linear-gradient(180deg, var(--surface-3) 0%, var(--surface-2) 100%);
+}
+
+.notif-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.mark-all-read-btn {
+  font-size: 0.75rem;
+  color: var(--accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0;
+  transition: opacity 0.15s;
+}
+.mark-all-read-btn:hover { opacity: 0.8; }
+
+.notif-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.notif-list {
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem 1.25rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background-color 0.15s;
+  position: relative;
+}
+.notif-item:hover { background: var(--surface-3); }
+.notif-item.unread {
+  background: linear-gradient(90deg, var(--accent-subtle) 0%, transparent 100%);
+}
+.notif-item:last-child { border-bottom: none; }
+
+.notif-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.notif-content { flex: 1; min-width: 0; }
+
+.notif-text {
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  line-height: 1.4;
+  overflow: hidden;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.notif-time {
+  font-size: 0.6875rem;
+  color: var(--text-tertiary);
+  margin-top: 0.25rem;
+}
+
+.notif-unread-dot {
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+  box-shadow: var(--shadow-sm-glow-sm);
+}
+
+.notif-empty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 0.875rem;
+}
+
+.notif-footer {
+  display: block;
+  padding: 0.875rem 1rem;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-3);
+  transition: background-color 0.15s;
+}
+.notif-footer:hover { background: var(--surface-4); }
+
+/* ── Анимация дропдауна ── */
+.dropdown-enter-active {
+  transition:
+    opacity 0.2s var(--ease-petal),
+    transform 0.2s var(--ease-petal);
+}
+.dropdown-leave-active {
+  transition:
+    opacity 0.15s var(--ease-in),
+    transform 0.15s var(--ease-in);
+}
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.98);
+}
+
+/* ── Профиль ── */
+.navbar-profile {
+  display: flex;
+  align-items: center;
+}
+.profile-link { text-decoration: none; }
+
+.profile-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--surface-4) 0%, var(--surface-5) 100%);
+  border: 2px solid var(--border-default);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-base) var(--ease-petal),
+    box-shadow var(--duration-base) var(--ease-petal),
+    transform var(--duration-base) var(--ease-petal);
+}
+.profile-avatar:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-sm-glow-sm);
+  transform: scale(1.05);
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+}
+
+.online-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  background: linear-gradient(135deg, var(--success) 0%, #6ed396 100%);
+  border-radius: 50%;
+  border: 2px solid var(--surface-2);
+  box-shadow: 0 0 8px rgba(142, 212, 168, 0.4);
+}
+
+/* ── Адаптивность ── */
+@media (max-width: 1400px) {
+  .navbar-navigation { gap: 0; }
+  .nav-link { padding: var(--space-2); }
+  .nav-label { display: none; }
+  .nav-icon { font-size: var(--text-xl); }
+}
+
+@media (max-width: 1023px) {
+  .navbar {
+    left: 0;
+    transition: none; /* на мобильном сайдбар скрыт, left всегда 0 */
+  }
+  .navbar-navigation {
+    order: 3;
+    margin-left: auto;
+  }
+  .navbar-search { display: none; }
+}
+
+@media (max-width: 767px) {
+  .navbar { display: none; }
+}
+</style>

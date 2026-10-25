@@ -43,6 +43,7 @@ for (const key of modalKeys) {
       await installVisualSession(page, theme);
       await page.goto(`/__visual__/modals?name=${encodeURIComponent(key)}`, { waitUntil: "domcontentloaded" });
       await waitForVisualReady(page);
+      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       await page.waitForTimeout(80);
       await assertStableSurface(page, label);
       await captureSurface(page, `modal--${slug}--${theme}`, { fullPage: false });

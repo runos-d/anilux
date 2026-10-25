@@ -91,6 +91,7 @@ for (const [name, path] of pages) {
       const response = await page.goto(path, { waitUntil: "domcontentloaded" });
       expect(response, `${name}: navigation did not produce a response`).not.toBeNull();
       await waitForVisualReady(page);
+      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       await assertStableSurface(page, name);
       await captureSurface(page, `page--${name}--${theme}`);
       await page.setViewportSize({ width: 1440, height: 1000 });

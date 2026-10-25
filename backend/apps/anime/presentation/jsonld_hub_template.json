@@ -1,0 +1,8 @@
+{
+  "@context":"https://schema.org",
+  "@type":"CollectionPage",
+  "name":"Аниме жанра Боевик",
+  "description":"...",
+  "url":"https://SITE_URL/anime/genre/boevik",
+  "mainEntity":{"@type":"ItemList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"TVSeries","name":"...","url":"...","image":"..."}}]}
+}

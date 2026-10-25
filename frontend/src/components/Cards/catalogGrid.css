@@ -1,0 +1,16 @@
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+@media (max-width: 374px) {
+  .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
+}
+@media (min-width: 375px) and (max-width: 413px) {
+  .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+}
+@media (min-width: 414px) and (max-width: 767px) {
+  .catalog-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; }
+}

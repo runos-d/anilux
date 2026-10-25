@@ -1,0 +1,95 @@
+/* Shared intrinsic geometry. Theme files own colours, borders and shadows only. */
+:is(.anime-card, .playlist-card, .catalog-card-skeleton) {
+  --catalog-title-size: 14px;
+  --catalog-title-line: 1.35;
+  --catalog-info-gap: 7px;
+  --catalog-info-padding: 12px 13px 14px;
+  --catalog-info-block: calc(2 * 14px * 1.35 + 16px + 22px + 14px + 3 * 7px + 26px);
+  height: auto !important;
+  min-width: 0;
+  align-self: start;
+}
+:is(.anime-card, .playlist-card) > :is(.anime-poster, .playlist-cover) {
+  flex: none;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  padding-top: 0;
+}
+.playlist-card > .playlist-info {
+  display: grid;
+  grid-template-rows: calc(2 * var(--catalog-title-size) * var(--catalog-title-line)) 16px 22px 14px;
+  gap: var(--catalog-info-gap);
+  padding: var(--catalog-info-padding);
+  height: var(--catalog-info-block);
+  min-height: var(--catalog-info-block);
+  flex: none;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.anime-card > .anime-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catalog-info-gap);
+  padding: var(--catalog-info-padding);
+  height: var(--catalog-info-block);
+  min-height: var(--catalog-info-block);
+  flex: none;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.anime-card .anime-title {
+  font-size: var(--catalog-title-size);
+  line-height: 1.35 !important;
+  min-height: 2.7em !important;
+  height: 2.7em !important;
+  max-height: 2.7em !important;
+  margin: 0;
+  display: -webkit-box !important;
+  white-space: normal !important;
+  overflow: hidden !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+  text-overflow: ellipsis !important;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2;
+  contain: paint;
+}
+.playlist-card .playlist-title {
+  font-size: var(--catalog-title-size);
+  line-height: var(--catalog-title-line);
+  min-height: 0;
+  height: calc(2 * var(--catalog-title-size) * var(--catalog-title-line));
+  margin: 0;
+  overflow-wrap: normal;
+  word-break: normal;
+  text-overflow: ellipsis;
+}
+.playlist-card .playlist-meta {
+  grid-row: 2;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  white-space: nowrap;
+  gap: 6px;
+  min-width: 0;
+}
+.anime-card :is(.anime-meta, .anime-genres, .anime-progress) { grid-row: auto; margin-top: 0; min-width: 0; }
+.anime-card .anime-meta {
+  min-height: 16px;
+  max-height: 16px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.playlist-card .playlist-author { grid-row: 3; margin-top: 0; min-width: 0; }
+.playlist-card .playlist-description { grid-row: 4; font-size: 11px; line-height: 14px; color: var(--text-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; }
+.catalog-card-skeleton { border: 1px solid var(--border-subtle); }
+.catalog-card-skeleton .skeleton-info { height: var(--catalog-info-block); box-sizing: border-box; }
+@media (max-width: 767px) {
+  :is(.anime-card, .playlist-card, .catalog-card-skeleton) {
+    --catalog-title-size: 13px;
+    --catalog-info-gap: 6px;
+    --catalog-info-padding: 10px 11px 12px;
+    --catalog-info-block: calc(2 * 13px * 1.35 + 16px + 22px + 14px + 3 * 6px + 22px);
+  }
+}

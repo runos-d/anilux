@@ -1,0 +1,521 @@
+<template>
+  <div ref="rootRef">
+    <div class="rc-header">
+      <div class="rc-meta">
+        <span class="rc-icon">
+          <SakuraIcon v-if="isIconName(icon)" :name="icon || ''" :size="22" />
+          <span v-else>{{ icon }}</span>
+        </span>
+        <div class="rc-texts">
+          <h3 class="rc-title">{{ title }}</h3>
+          <p v-if="description" class="rc-desc">{{ description }}</p>
+        </div>
+      </div>
+      <button
+        v-if="showViewAllButton"
+        class="rc-view-all"
+        type="button"
+        @click="$emit('view-all')"
+      >
+        {{ viewAllLabel || "Все" }}
+        <SakuraIcon name="arrow-right" :size="14" />
+      </button>
+    </div>
+
+    <div v-if="loading || !visible" class="rc-track">
+      <div v-for="i in 8" :key="i" class="rc-skel">
+        <div class="rc-skel-poster"></div>
+        <div class="rc-skel-line"></div>
+        <div class="rc-skel-line short"></div>
+      </div>
+    </div>
+
+    <div v-else-if="!anime.length" class="rc-empty">
+      <svg
+        width="36"
+        height="36"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <path d="M8 15s1.5 2 4 2 4-2 4-2" />
+        <line x1="9" y1="9" x2="9.01" y2="9" />
+        <line x1="15" y1="9" x2="15.01" y2="9" />
+      </svg>
+      <div>
+        <div class="rc-empty-title">Пока пусто</div>
+        <div class="rc-empty-sub">Подборка соберётся, когда появится больше данных</div>
+      </div>
+    </div>
+
+    <div v-else class="rc-carousel-wrap">
+      <template v-if="showArrows">
+        <button
+          v-if="!atStart"
+          class="rc-arrow rc-arrow-left"
+          @click="scroll(-1)"
+          type="button"
+          aria-label="Назад"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+
+        <button
+          v-if="!atEnd"
+          class="rc-arrow rc-arrow-right"
+          @click="scroll(1)"
+          type="button"
+          aria-label="Вперёд"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
+      </template>
+
+      <div class="rc-track" ref="trackRef" @scroll="updateArrows">
+        <div class="rc-card-wrap" v-for="(a, index) in anime" :key="a.id">
+          <slot v-if="!windowed || (index >= cardRange.start && index < cardRange.end)" name="card" :item="a" :index="index">
+            <AnimeCard
+              :anime="toCardAnime(a)"
+              :show-actions="true"
+              :show-genres="true"
+              :max-genres="3"
+              :show-progress="false"
+              @click="goTo(a)"
+              @watch="goToWatch(a)"
+            />
+          </slot>
+          <div v-else class="rc-card-placeholder" aria-hidden="true" />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, nextTick, watch, computed, onMounted, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
+import AnimeCard from "./AnimeCard.vue";
+import SakuraIcon from "@/components/icons/SakuraIcon.vue";
+
+
+const isIconName = (icon: string | undefined): boolean => {
+  if (!icon) return false;
+  return /^[a-zA-Z][a-zA-Z0-9-]*$/.test(icon);
+};
+
+interface AnimeItem {
+  id: number;
+  title: string;
+  poster: string | null;
+  year?: number | null;
+  score?: string | null;
+  genres?: string[];
+  status?: string;
+  type?: string;
+  episodes?: number | null;
+  route?: string;
+  ratingCount?: number;
+  rank?: number;
+  slug?: string;
+  reason?: string;
+  latest_episode?: number;
+  unwatched_count?: number;
+}
+
+const props = defineProps<{
+  title: string;
+  description?: string;
+  icon?: string;
+  anime: AnimeItem[];
+  loading?: boolean;
+  hasViewAll?: boolean;
+  showViewAllButton?: boolean;
+  viewAllLabel?: string;
+  defer?: boolean;
+  windowed?: boolean;
+}>();
+
+defineEmits<{ "view-all": [] }>();
+
+const router = useRouter();
+const rootRef = ref<HTMLElement | null>(null);
+const visible = ref(!props.defer);
+let intersection: IntersectionObserver | null = null;
+onMounted(() => {
+  if (visible.value) return;
+  if (typeof IntersectionObserver === 'undefined' || !rootRef.value) { visible.value = true; return; }
+  intersection = new IntersectionObserver(entries => {
+    if (!entries.some(entry => entry.isIntersecting)) return;
+    visible.value = true;
+    intersection?.disconnect();
+  }, { rootMargin: '240px' });
+  intersection.observe(rootRef.value);
+});
+const trackRef = ref<HTMLElement | null>(null);
+
+const atStart = ref(true);
+const atEnd = ref(false);
+const hasOverflow = ref(false);
+const cardRange = ref({ start: 0, end: 8 });
+
+const MIN_FOR_ARROWS = 5;
+
+const showArrows = computed(
+  () => props.anime.length >= MIN_FOR_ARROWS && hasOverflow.value,
+);
+
+const CARD_W = 236;
+
+const updateArrows = () => {
+  const el = trackRef.value;
+  if (!el) return;
+  if (props.windowed) {
+    const width = el.firstElementChild?.getBoundingClientRect().width || 220;
+    const stride = width + (parseFloat(getComputedStyle(el).gap) || 16);
+    cardRange.value = { start: Math.max(0, Math.floor(el.scrollLeft / stride) - 2),
+      end: Math.min(props.anime.length, Math.ceil((el.scrollLeft + el.clientWidth) / stride) + 2) };
+  }
+
+  hasOverflow.value = el.scrollWidth > el.clientWidth + 4;
+
+  atStart.value = el.scrollLeft <= 4;
+  atEnd.value = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
+};
+
+const scroll = (dir: 1 | -1) => {
+  const el = trackRef.value;
+  if (!el) return;
+  el.scrollBy({ left: dir * CARD_W * 3, behavior: "smooth" });
+};
+
+watch(
+  () => props.anime,
+  async () => {
+    await nextTick();
+    updateArrows();
+  },
+);
+
+let ro: ResizeObserver | null = null;
+
+watch(
+  trackRef,
+  (el) => {
+    ro?.disconnect();
+    ro = null;
+    if (el) {
+      ro = new ResizeObserver(() => updateArrows());
+      ro.observe(el);
+      updateArrows();
+    }
+  },
+  { immediate: true },
+);
+
+onUnmounted(() => {
+  intersection?.disconnect();
+  ro?.disconnect();
+  ro = null;
+});
+
+defineExpose({ scroll });
+
+const toCardAnime = (a: AnimeItem) => ({
+  id: a.id,
+  title_ru: a.title || "",
+  title_en: "",
+  year: a.year ?? null,
+  status: a.status || "",
+  episodes: a.episodes ?? null,
+  score: a.score ? parseFloat(a.score) : null,
+  poster_url: a.poster || null,
+  poster_image_url: a.poster || null,
+  poster: null,
+  type: a.type || "",
+  genres: a.genres || [],
+});
+
+const goTo = (a: AnimeItem) => {
+  router.push(a.route || `/anime/${a.slug || a.id}`);
+};
+
+const goToWatch = (a: AnimeItem) => {
+  const base = a.route || `/anime/${a.slug || a.id}`;
+  if (base.includes("/watch")) {
+    const sep = base.includes("?") ? "&" : "?";
+    router.push(`${base}${sep}episode=1`);
+  } else {
+    router.push(`${base}/watch?episode=1`);
+  }
+};
+</script>
+
+<style scoped>
+.rc {
+  margin-bottom: var(--space-8);
+}
+
+.rc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+  margin-left: var(--space-4);
+  margin-right: var(--space-4);
+  padding-top: 10px;
+  gap: var(--space-4);
+}
+
+.rc-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.rc-icon {
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.rc-texts {
+  min-width: 0;
+}
+
+.rc-title {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+
+.rc-desc {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+  margin: 3px 0 0;
+}
+
+.rc-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-md);
+  transition: background-color var(--duration-base) var(--ease-out);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.rc-view-all:hover {
+  background: var(--accent-subtle);
+}
+
+.rc-empty {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  color: var(--text-tertiary);
+  font-size: var(--text-sm);
+  background: var(--surface-2);
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-xl);
+}
+
+.rc-empty svg {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+}
+
+.rc-empty-title {
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.rc-empty-sub {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.rc-carousel-wrap {
+  position: relative;
+  overflow: visible;
+  box-sizing: border-box;
+  padding-inline: 12px;
+}
+
+.rc-carousel-wrap::before,
+.rc-carousel-wrap::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 4px;
+  width: 48px;
+  z-index: 1;
+  pointer-events: none;
+}
+.rc-carousel-wrap::before {
+  left: 23px;
+  background: linear-gradient(to right, var(--surface-1, #0c0c0f), transparent);
+}
+.rc-carousel-wrap::after {
+  right: 23px;
+  background: linear-gradient(to left, var(--surface-1, #0c0c0f), transparent);
+}
+
+.rc-track {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  gap: var(--space-4);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-top: 4px;
+  scroll-padding-left: 23px;
+  padding-bottom: 4px;
+}
+.rc-track::-webkit-scrollbar {
+  display: none;
+}
+
+.rc-card-wrap {
+  flex: 0 0 220px;
+  width: 220px;
+  scroll-snap-align: start;
+}
+.rc-card-placeholder { min-height: 380px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rc-card-wrap {
+    animation: none;
+  }
+}
+
+.rc-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(calc(-50% - 2px));
+  z-index: 10;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--border-default);
+  background: rgba(12, 12, 15, 0.85);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: auto;
+  opacity: 0;
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    background-color var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out);
+  box-shadow: var(--shadow-sm-md, 0 4px 12px rgba(0, 0, 0, 0.4));
+}
+
+.rc-carousel-wrap:hover .rc-arrow {
+  opacity: 1;
+}
+
+.rc-arrow:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: translateY(calc(-50% - 2px)) scale(1.08);
+}
+
+.rc-arrow-left {
+  left: 2px !important;
+}
+.rc-arrow-right {
+  right: 2px !important;
+}
+
+.rc-skel {
+  flex: 0 0 220px;
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.rc-skel-poster {
+  aspect-ratio: 2/3;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    90deg,
+    var(--surface-3) 25%,
+    var(--surface-4) 50%,
+    var(--surface-3) 75%
+  );
+  background-size: 400% 100%;
+  animation: sk 1.4s ease-in-out infinite;
+}
+.rc-skel-line {
+  height: 12px;
+  width: 85%;
+  border-radius: var(--radius-xs);
+  background: linear-gradient(
+    90deg,
+    var(--surface-3) 25%,
+    var(--surface-4) 50%,
+    var(--surface-3) 75%
+  );
+  background-size: 400% 100%;
+  animation: sk 1.4s ease-in-out infinite;
+}
+.rc-skel-line.short {
+  width: 60%;
+}
+@keyframes sk {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .rc-card-wrap {
+    flex: 0 0 155px;
+    width: 155px;
+  }
+  .rc-skel {
+    flex: 0 0 155px;
+    width: 155px;
+  }
+  .rc-arrow {
+    display: none;
+  }
+}
+</style>

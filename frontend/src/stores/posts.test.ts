@@ -1,0 +1,20 @@
+import { beforeEach, afterEach, it, expect, vi } from 'vitest';
+import { createPinia, setActivePinia } from 'pinia';
+import type { FeedPost } from '@/api/feed';
+const mocks = vi.hoisted(() => ({ get:vi.fn(), invalidate:vi.fn() }));
+vi.mock('@/api/client', () => ({ default:{ get:mocks.get } }));
+vi.mock('@/lib/queryClient', () => ({ invalidateQueryGroups:mocks.invalidate }));
+import { usePostStore } from './posts';
+beforeEach(() => { setActivePinia(createPinia()); vi.useFakeTimers(); mocks.get.mockReset(); mocks.invalidate.mockReset(); });
+afterEach(() => { usePostStore().clear(); vi.useRealTimers(); });
+it('publishes a finished pending post into shared state and refreshes readers without WebSocket', async () => {
+  const store = usePostStore();
+  const queued = { id:'17',version:1,status:'processing',media_files:[] } as unknown as FeedPost;
+  store.upsert(queued); expect(store.pending).toHaveLength(1);
+  mocks.get.mockResolvedValueOnce({data:{results:[queued]}});
+  store.startPending(); await vi.advanceTimersByTimeAsync(0);
+  mocks.get.mockResolvedValueOnce({data:{results:[]}}).mockResolvedValueOnce({data:{...queued,status:'published',media_files:[{processing_state:'ready'}]}});
+  await vi.advanceTimersByTimeAsync(3000);
+  expect(store.entities['17']?.status).toBe('published'); expect(store.pending).toHaveLength(0);
+  expect(mocks.invalidate).toHaveBeenCalledTimes(1);
+});

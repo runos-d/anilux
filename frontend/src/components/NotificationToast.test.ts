@@ -1,0 +1,41 @@
+import { beforeEach, afterEach, expect, it, vi } from 'vitest';
+import { reactive, nextTick } from 'vue';
+import { mount, type VueWrapper } from '@vue/test-utils';
+import NotificationToast from './NotificationToast.vue';
+const markRead=vi.fn().mockResolvedValue(undefined);
+const notifications=reactive({recentNotifications:[] as Array<{id:number;is_read:boolean;title:string;content:string;link:string}>,markRead});
+const auth=reactive({user:{id:1}});
+vi.mock('@/stores/notifications',()=>({useNotificationStore:()=>notifications}));
+vi.mock('@/stores/auth',()=>({useAuthStore:()=>auth}));
+let wrapper: VueWrapper;
+const item=(id:number)=>({id,is_read:false,title:'New message',content:'A notification',link:'/feed'});
+beforeEach(()=>{ vi.useFakeTimers(); localStorage.clear(); markRead.mockClear(); auth.user.id=1; notifications.recentNotifications=[item(1)]; });
+afterEach(()=>{ wrapper.unmount(); document.body.innerHTML=''; vi.useRealTimers(); });
+it('keeps a manually closed notification dismissed while it remains unread',async()=>{
+  wrapper=mount(NotificationToast,{attachTo:document.body});
+  document.querySelector<HTMLButtonElement>('.notification-toast-close')!.click(); await nextTick();
+  await vi.advanceTimersByTimeAsync(6000);
+  expect(document.querySelector('.notification-toast')).toBeNull();
+  notifications.recentNotifications=[item(1),item(2)]; await nextTick();
+  expect(document.querySelectorAll('.notification-toast')).toHaveLength(1);
+});
+it('auto-dismisses once and clears old timers when the account changes',async()=>{
+  wrapper=mount(NotificationToast,{attachTo:document.body});
+  await vi.advanceTimersByTimeAsync(5500);
+  expect(document.querySelector('.notification-toast')).toBeNull();
+  notifications.recentNotifications=[]; auth.user.id=2; await nextTick();
+  notifications.recentNotifications=[item(3)]; await nextTick();
+  expect(document.querySelectorAll('.notification-toast')).toHaveLength(1);
+  await vi.advanceTimersByTimeAsync(5500);
+  expect(document.querySelector('.notification-toast')).toBeNull();
+});
+it('does not show the same unread notification again after remounting the app',async()=>{
+  wrapper=mount(NotificationToast,{attachTo:document.body});
+  await nextTick();
+  expect(document.querySelectorAll('.notification-toast')).toHaveLength(1);
+  wrapper.unmount();
+  document.body.innerHTML='';
+  wrapper=mount(NotificationToast,{attachTo:document.body});
+  await nextTick();
+  expect(document.querySelector('.notification-toast')).toBeNull();
+});

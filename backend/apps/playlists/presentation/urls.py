@@ -1,0 +1,21 @@
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from apps.playlists.presentation.views.playlists_views import (
+    PlaylistViewSet, PlaylistItemViewSet,
+    FavoriteAnimeViewSet, FavoritePlaylistViewSet,
+    AddToPlaylistView, PlaylistSearchView,
+    PlaylistByShareTokenView,
+)
+
+router = DefaultRouter()
+router.register(r'playlists', PlaylistViewSet, basename='playlist')
+router.register(r'playlist-items', PlaylistItemViewSet, basename='playlist-item')
+router.register(r'favorites/anime', FavoriteAnimeViewSet, basename='favorite-anime')
+router.register(r'favorites/playlists', FavoritePlaylistViewSet, basename='favorite-playlist')
+
+urlpatterns = [
+    path('add-to-playlist/', AddToPlaylistView.as_view(), name='add-to-playlist'),
+    path('playlists/search/', PlaylistSearchView.as_view(), name='playlist-search'),
+    path('playlists/shared/<str:token>/', PlaylistByShareTokenView.as_view(), name='playlist-by-token'),
+    path('', include(router.urls)),
+]

@@ -1,0 +1,11 @@
+# Исправление предупреждений MySQL (№2-5) и Redis (№1)
+# Применить на хосте / в контейнере:
+# /etc/mysql/my.cnf или /etc/my.cnf
+[mysqld]
+set-global host_cache_size=0
+lower_case_table_names=1
+# Для CA: заменить ca.pem доверенным или отключить ssl-ca в локальном режиме
+pid-file=/var/lib/mysql/mysqld.pid
+
+# redis-server /path/to/redis.conf
+# Указать redis.conf явно при запуске

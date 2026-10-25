@@ -1,0 +1,39 @@
+services:
+  native_builder:
+    build:
+      context: ./backend
+      dockerfile: native/builder.Dockerfile
+      additional_contexts:
+        backendbase: service:backend
+      args:
+        BACKEND_IMAGE: backendbase
+    image: anilux-native-builder:local-release
+    container_name: anilux_native_builder
+    init: true
+    restart: unless-stopped
+    cpus: 2
+    mem_limit: 4g
+    command: ["python", "docker_entrypoint.py", "celery", "-A", "config", "worker", "-Q", "native_builds", "-l", "info", "--concurrency=1", "--prefetch-multiplier=1", "--hostname=native-apps@%h"]
+    env_file: .env
+    environment:
+      DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-config.settings}
+      DATA_DIR: /app/data
+      npm_config_cache: /app/data/native_cache/npm
+      ELECTRON_CACHE: /app/data/native_cache/electron
+      ELECTRON_BUILDER_CACHE: /app/data/native_cache/electron-builder
+      GRADLE_USER_HOME: /app/data/native_cache/gradle
+      XDG_DATA_HOME: /app/data/native_cache/xdg-data
+      XDG_CACHE_HOME: /app/data/native_cache/xdg-cache
+    volumes:
+      - ./backend:/app
+      - ./backend/data:/app/data
+      - native_build_cache:/app/data/native_cache
+    networks:
+      - anilux_network
+    depends_on:
+      mysql:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_started

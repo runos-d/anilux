@@ -1,0 +1,649 @@
+<template>
+  <div class="settings-section">
+    <h2>Email уведомления</h2>
+
+    <div class="settings-group">
+      <h3><SakuraIcon name="mail" /> Основные настройки</h3>
+
+      <div class="setting-item">
+        <label class="setting-label">
+          <input type="checkbox" v-model="emailEnabled" />
+          <span>Включить email уведомления</span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <label>Основной email:</label>
+        <span class="email-display">{{ primaryEmail }}</span>
+      </div>
+
+      <div class="setting-item">
+        <label>Дополнительный email:</label>
+        <button class="add-email-btn">
+          <SakuraIcon name="plus" /> Добавить
+        </button>
+      </div>
+
+      <div class="setting-item">
+        <button class="verify-email-btn">
+          <SakuraIcon name="check" /> Подтвердить email
+        </button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <h3><SakuraIcon name="clock" /> Частота и время</h3>
+
+      <div class="setting-item">
+        <label>Частота уведомлений:</label>
+        <select v-model="emailFrequency" class="setting-select">
+          <option value="immediately">Немедленно</option>
+          <option value="hourly">Каждый час (сводка)</option>
+          <option value="daily">Ежедневно</option>
+          <option value="weekly">Еженедельно</option>
+          <option value="important">Только важные</option>
+        </select>
+      </div>
+
+      <div v-if="emailFrequency === 'daily'" class="setting-item">
+        <label>Время ежедневной сводки:</label>
+        <input v-model="dailyDigestTime" type="time" class="time-input" />
+      </div>
+
+      <div v-if="emailFrequency === 'weekly'" class="time-settings">
+        <div class="setting-item">
+          <label>День недельной сводки:</label>
+          <select v-model="weeklyDigestDay" class="setting-select">
+            <option value="monday">Понедельник</option>
+            <option value="tuesday">Вторник</option>
+            <option value="wednesday">Среда</option>
+            <option value="thursday">Четверг</option>
+            <option value="friday">Пятница</option>
+            <option value="saturday">Суббота</option>
+            <option value="sunday">Воскресенье</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label>Время:</label>
+          <input v-model="weeklyDigestTime" type="time" class="time-input" />
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <h3><SakuraIcon name="clipboard" /> Что уведомлять</h3>
+
+      <div class="checkbox-grid">
+        <label class="setting-label">
+          <input type="checkbox" v-model="notifyPrivateMessages" />
+          <span>Личные сообщения</span>
+        </label>
+
+        <label class="setting-label">
+          <input type="checkbox" v-model="notifyGroupMessages" />
+          <span>Групповые сообщения</span>
+        </label>
+
+        <label class="setting-label">
+          <input type="checkbox" v-model="notifyMentions" />
+          <span>Упоминания (@username)</span>
+        </label>
+
+        <label class="setting-label">
+          <input type="checkbox" v-model="notifyReplies" />
+          <span>Ответы на мои сообщения</span>
+        </label>
+
+        <label class="setting-label">
+          <input type="checkbox" v-model="notifyReactions" />
+          <span>Реакции</span>
+        </label>
+
+        <label class="setting-label">
+          <input type="checkbox" v-model="notifyGroupInvites" />
+          <span>Приглашения в группы</span>
+        </label>
+
+        <label class="setting-label">
+          <input type="checkbox" v-model="notifySystem" />
+          <span>Системные уведомления</span>
+        </label>
+
+        <label class="setting-label">
+          <input type="checkbox" v-model="notifyNews" />
+          <span>Новости и обновления</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <h3><SakuraIcon name="palette" /> Формат писем</h3>
+
+      <div class="setting-item">
+        <label class="setting-label">
+          <input type="radio" v-model="emailFormat" value="html" />
+          <span>HTML письма (рекомендуется)</span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <label class="setting-label">
+          <input type="radio" v-model="emailFormat" value="text" />
+          <span>Текстовый формат</span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <label class="setting-label">
+          <input type="checkbox" v-model="includePreviews" />
+          <span>Включать превью сообщений</span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <label class="setting-label">
+          <input type="checkbox" v-model="includeAttachments" />
+          <span>Включать медиавложения</span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <label class="setting-label">
+          <input type="checkbox" v-model="includeUnsubscribe" />
+          <span>Футер с отпиской</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <h3><SakuraIcon name="ban" /> Исключения</h3>
+
+      <div class="setting-item">
+        <label class="setting-label">
+          <input type="checkbox" v-model="noWeekends" />
+          <span>Не отправлять в выходные</span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <label class="setting-label">
+          <input type="checkbox" v-model="noNightHours" />
+          <span>Не отправлять с 22:00 до 08:00</span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <label>Минимальный интервал:</label>
+        <select v-model="minInterval" class="setting-select">
+          <option value="5">5 минут</option>
+          <option value="15">15 минут</option>
+          <option value="30">30 минут</option>
+          <option value="60">1 час</option>
+        </select>
+      </div>
+
+      <div class="setting-item">
+        <label>Максимум писем в день:</label>
+        <select v-model="maxEmailsPerDay" class="setting-select">
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="unlimited">Без ограничений</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="stats-section">
+      <h3><SakuraIcon name="chart" /> Статистика за месяц</h3>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-label">Отправлено писем:</span>
+          <span class="stat-value">42</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Прочитано:</span>
+          <span class="stat-value">38 (90%)</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">В спаме:</span>
+          <span class="stat-value">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Последнее письмо:</span>
+          <span class="stat-value">сегодня 10:30</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-actions">
+      <button @click="sendTestEmail" class="test-btn">
+        <SakuraIcon name="mail" /> Тестовое письмо
+      </button>
+      <button @click="viewHistory" class="history-btn">
+        <SakuraIcon name="import" /> История отправок
+      </button>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed } from "vue";
+import { useAuthStore } from "@/stores/auth";
+
+const authStore = useAuthStore();
+
+const emailEnabled = ref(true);
+const primaryEmail = computed(() => authStore.user?.email || "");
+const emailFrequency = ref("immediately");
+const dailyDigestTime = ref("09:00");
+const weeklyDigestDay = ref("monday");
+const weeklyDigestTime = ref("09:00");
+
+const notifyPrivateMessages = ref(true);
+const notifyGroupMessages = ref(true);
+const notifyMentions = ref(true);
+const notifyReplies = ref(true);
+const notifyReactions = ref(false);
+const notifyGroupInvites = ref(true);
+const notifySystem = ref(true);
+const notifyNews = ref(false);
+
+const emailFormat = ref("html");
+const includePreviews = ref(true);
+const includeAttachments = ref(false);
+const includeUnsubscribe = ref(true);
+
+const noWeekends = ref(true);
+const noNightHours = ref(true);
+const minInterval = ref("15");
+const maxEmailsPerDay = ref("20");
+
+const sendTestEmail = () => {
+  console.log("Sending test email...");
+};
+
+const viewHistory = () => {
+  console.log("Viewing email history...");
+};
+</script>
+
+<style scoped>
+.settings-group {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: var(--surface-4);
+  border-radius: 8px;
+}
+
+.settings-group h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.setting-item {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.setting-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  flex: 1;
+}
+
+.setting-label input[type="checkbox"],
+.setting-label input[type="radio"] {
+  margin: 0;
+}
+
+.setting-select {
+  padding: 8px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  background: var(--surface-1);
+  color: var(--text-primary);
+  min-width: 140px;
+}
+
+.email-display {
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.add-email-btn,
+.verify-email-btn {
+  padding: 8px 16px;
+  border: 1px solid var(--border-default);
+  background: var(--surface-3);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.time-settings {
+  display: flex;
+  gap: 15px;
+}
+
+.time-input {
+  padding: 8px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  background: var(--surface-1);
+  color: var(--text-primary);
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.stats-section {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: var(--surface-4);
+  border-radius: 8px;
+}
+
+.stats-section h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.stat-item:last-child {
+  border-bottom: none;
+}
+
+.stat-label {
+  font-weight: 500;
+}
+
+.stat-value {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.settings-actions {
+  margin-top: 30px;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.test-btn,
+.history-btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.test-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+}
+
+.history-btn {
+  background: var(--surface-4);
+  border: 1px solid var(--border-default);
+}
+
+/* ═══ АДАПТИВНЫЕ СТИЛИ (мобильные / планшеты) ═══════════════ */
+
+/* xs: 320px – 374px */
+@media (max-width: 374px) {
+  .settings-section h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+
+  .settings-group,
+  .stats-section {
+    margin-bottom: 20px;
+    padding: 14px;
+    border-radius: 6px;
+  }
+
+  .settings-group h3,
+  .stats-section h3 {
+    font-size: 14px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .setting-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .setting-item > label {
+    font-size: 13px;
+  }
+
+  .setting-label {
+    font-size: 13px;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .setting-label input[type="checkbox"],
+  .setting-label input[type="radio"] {
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .setting-select,
+  .time-input {
+    width: 100%;
+    min-width: 0;
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  .email-display {
+    font-size: 13px;
+    word-break: break-word;
+  }
+
+  .add-email-btn,
+  .verify-email-btn {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .time-settings {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .checkbox-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .stat-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 10px 0;
+  }
+
+  .stat-label,
+  .stat-value {
+    font-size: 13px;
+  }
+
+  .settings-actions {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .test-btn,
+  .history-btn {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+}
+
+/* sm: 375px – 767px */
+@media (min-width: 375px) and (max-width: 767px) {
+  .settings-section h2 {
+    font-size: 20px;
+    margin-bottom: 22px;
+  }
+
+  .settings-group,
+  .stats-section {
+    margin-bottom: 22px;
+    padding: 16px;
+  }
+
+  .settings-group h3,
+  .stats-section h3 {
+    font-size: 15px;
+  }
+
+  .setting-item {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .setting-item > label {
+    font-size: 14px;
+  }
+
+  .setting-select,
+  .time-input {
+    flex: 1 1 160px;
+    min-width: 0;
+  }
+
+  .add-email-btn,
+  .verify-email-btn {
+    flex: 1 1 auto;
+    padding: 9px 14px;
+    font-size: 13px;
+  }
+
+  .time-settings {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .checkbox-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+  }
+
+  .settings-actions {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .test-btn,
+  .history-btn {
+    flex: 1 1 100%;
+    padding: 12px 18px;
+  }
+}
+
+/* md: 768px – 1023px */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .settings-group,
+  .stats-section {
+    padding: 18px;
+  }
+
+  .checkbox-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .test-btn,
+  .history-btn {
+    padding: 12px 22px;
+  }
+}
+
+/* Ландшафтная ориентация на мобильных -уменьшаем отступы */
+@media (max-width: 767px) and (orientation: landscape) {
+  .settings-group,
+  .stats-section {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  .settings-section h2 {
+    margin-bottom: 16px;
+  }
+}
+
+/* Улучшение тач-взаимодействия */
+@media (hover: none) and (pointer: coarse) {
+  .add-email-btn:hover,
+  .verify-email-btn:hover {
+    background: var(--surface-3);
+  }
+
+  .add-email-btn:active,
+  .verify-email-btn:active {
+    background: var(--surface-4);
+    transform: scale(0.98);
+  }
+
+  .test-btn:active,
+  .history-btn:active {
+    transform: scale(0.98);
+  }
+}
+</style>

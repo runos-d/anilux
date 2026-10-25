@@ -1,0 +1,1015 @@
+﻿<template>
+  <div class="collection-page">
+    <div class="page-header">
+      <div class="header-left">
+        <h1 class="page-title">Моя коллекция</h1>
+        <p class="page-subtitle">
+          Все аниме, которые вы смотрели, смотрите или планируете
+        </p>
+      </div>
+      <div class="header-right">
+        <div class="search-box">
+          <svg
+            class="search-icon"
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            v-model="searchQuery"
+            class="search-input"
+            placeholder="Поиск по коллекции..."
+            @input="debouncedSearch"
+          />
+          <button
+            v-if="searchQuery"
+            class="search-clear"
+            @click="
+              searchQuery = '';
+              loadItems();
+            "
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div class="sort-wrap">
+          <select class="sort-select" v-model="ordering" @change="loadItems">
+            <option value="-updated_at">Недавно обновлённые</option>
+            <option value="-added_at">Недавно добавленные</option>
+            <option value="-rating">По оценке</option>
+            <option value="current_episode">По прогрессу</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-bar" v-if="stats">
+      <div
+        v-for="tab in tabs"
+        :key="tab.key"
+        class="stat-chip"
+        :class="{ active: activeTab === tab.key }"
+        @click="setTab(tab.key)"
+      >
+        <span class="stat-icon">
+          <SakuraIcon v-if="isIconName(tab.icon)" :name="tab.icon" :size="16" />
+          <span v-else>{{ tab.icon }}</span>
+        </span>
+        <span class="stat-label">{{ tab.label }}</span>
+        <span class="stat-num">{{ getStatCount(tab.key) }}</span>
+      </div>
+    </div>
+
+    <div class="stats-bar" v-else>
+      <div v-for="n in 7" :key="n" class="stat-chip skeleton-chip"></div>
+    </div>
+
+    <div v-if="activeTab === '' && stats && !loading" class="summary-block">
+      <div class="summary-numbers">
+        <div class="summary-item">
+          <span class="summary-val">{{ stats.total }}</span>
+          <span class="summary-key">всего аниме</span>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-item">
+          <span class="summary-val">{{
+            stats.episodes_watched.toLocaleString("ru")
+          }}</span>
+          <span class="summary-key">серий просмотрено</span>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-item">
+          <span class="summary-val">{{
+            stats.hours_watched?.toFixed(1) ??
+            Math.round((stats.episodes_watched * 24) / 60)
+          }}</span>
+          <span class="summary-key">часов просмотрено</span>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-item">
+          <span class="summary-val">{{
+            stats.hours_remaining?.toFixed(1) ?? "-"
+          }}</span>
+          <span class="summary-key">часов осталось</span>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-item">
+          <span class="summary-val">{{
+            stats.avg_rating?.toFixed(1) ?? "-"
+          }}</span>
+          <span class="summary-key">средняя оценка</span>
+        </div>
+      </div>
+      <div class="summary-bar">
+        <div
+          class="summary-bar-seg"
+          v-for="seg in statusSegments"
+          :key="seg.key"
+          :style="{ width: seg.pct + '%', background: seg.color }"
+          :title="seg.label + ': ' + seg.count"
+        ></div>
+      </div>
+      <div class="summary-legend">
+        <span v-for="seg in statusSegments" :key="seg.key" class="legend-item">
+          <span class="legend-dot" :style="{ background: seg.color }"></span>
+          {{ seg.label }}: {{ seg.count }}
+        </span>
+      </div>
+    </div>
+
+    <div v-if="loading" class="grid-skeleton">
+      <div v-for="n in 12" :key="n" class="card-skeleton">
+        <div class="skel-poster"></div>
+        <div class="skel-body">
+          <div class="skel-line w70"></div>
+          <div class="skel-line w45"></div>
+          <div class="skel-bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <div v-else-if="error" class="empty-state">
+      <div class="empty-icon"><SakuraIcon name="warning" />️</div>
+      <p class="empty-title">Не удалось загрузить коллекцию</p>
+      <button class="empty-btn" @click="loadItems">Повторить</button>
+    </div>
+
+    <div v-else-if="!loading && items.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <SakuraIcon
+          v-if="currentTab && isIconName(currentTab.icon)"
+          :name="currentTab.icon"
+          :size="48"
+        />
+        <span v-else>{{ currentTab?.icon }}</span>
+      </div>
+      <p class="empty-title">{{ emptyMessage }}</p>
+      <p class="empty-sub">
+        Добавляйте аниме в коллекцию прямо на их страницах
+      </p>
+      <button class="empty-btn accent" @click="router.push('/anime')">
+        Найти аниме
+      </button>
+    </div>
+
+    <div v-else class="cards-grid">
+      <template v-for="item in items" :key="collectionItemKey(item)">
+        <FranchiseCard
+          v-if="isFavoriteFranchiseItem(item)"
+          :franchise="item.franchise"
+          @click="openFranchise(item.franchise)"
+          @watch="openFranchise(item.franchise)"
+          @favorite-toggle="onStatusChanged"
+        />
+        <CollectionCard
+          v-else
+          :item="item"
+          @status-changed="onStatusChanged"
+          @deleted="onDeleted"
+          @rated="onRated"
+        />
+      </template>
+    </div>
+
+    <EditLibraryModal
+      v-if="editItem"
+      :item="editItem"
+      @close="editItem = null"
+      @saved="onSaved"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import {
+  libraryApi,
+  isFavoriteFranchiseItem,
+  type CollectionItem,
+  type FavoriteFranchiseCollectionItem,
+  type LibraryStatus,
+  type LibraryStats,
+  type CollectionTab,
+} from "@/api/library";
+import CollectionCard from "@/components/Cards/CollectionCard.vue";
+import FranchiseCard from "@/components/Cards/FranchiseCard.vue";
+import EditLibraryModal from "@/components/Modals/EditLibraryModal.vue";
+import SakuraIcon from "@/components/icons/SakuraIcon.vue";
+import { TIMING } from "@/constants";
+
+const isIconName = (icon: string | undefined): boolean => {
+  if (!icon) return false;
+  return /^[a-zA-Z][a-zA-Z0-9-]*$/.test(icon);
+};
+
+const router = useRouter();
+const route = useRoute();
+
+const items = ref<CollectionItem[]>([]);
+const stats = ref<LibraryStats | null>(null);
+const loading = ref(true);
+const error = ref(false);
+const searchQuery = ref("");
+const ordering = ref("-updated_at");
+const editItem = ref<Exclude<CollectionItem, FavoriteFranchiseCollectionItem> | null>(null);
+
+const collectionItemKey = (item: CollectionItem) =>
+  isFavoriteFranchiseItem(item) ? `franchise-${item.franchise_id}` : `anime-${item.id}`;
+
+const openFranchise = (franchise: FavoriteFranchiseCollectionItem["franchise"]) => {
+  router.push(`/franchise/${franchise.slug || franchise.id}`);
+};
+const activeTab = ref<CollectionTab | "">("");
+
+const tabs = [
+  { key: "" as const, label: "Все", icon: "book" },
+  { key: "started" as const, label: "В процессе", icon: "play" },
+  { key: "completed" as const, label: "Просмотрено", icon: "check" },
+  { key: "planned" as const, label: "Запланировано", icon: "calendar" },
+  { key: "on_hold" as const, label: "Отложено", icon: "pause" },
+  { key: "dropped" as const, label: "Брошено", icon: "x" },
+  { key: "favorite" as const, label: "Избранное", icon: "star" },
+];
+
+const currentTab = computed(() => tabs.find((t) => t.key === activeTab.value));
+
+const statusSegments = computed(() => {
+  if (!stats.value || !stats.value.total) return [];
+  const s = stats.value;
+  const seg = [
+    {
+      key: "started",
+      label: "В процессе",
+      count: s.started,
+      color: "var(--accent)",
+    },
+    {
+      key: "completed",
+      label: "Просмотрено",
+      count: s.completed,
+      color: "#22c55e",
+    },
+    {
+      key: "planned",
+      label: "Запланировано",
+      count: s.planned,
+      color: "#a78bfa",
+    },
+    { key: "on_hold", label: "Отложено", count: s.on_hold, color: "#f59e0b" },
+    { key: "dropped", label: "Брошено", count: s.dropped, color: "#ef4444" },
+  ];
+  return seg
+    .filter((x) => x.count > 0)
+    .map((x) => ({
+      ...x,
+      pct: Math.max(1, Math.round((x.count / s.total) * 100)),
+    }));
+});
+
+const getStatCount = (key: string): number => {
+  if (!stats.value) return 0;
+  if (key === "") return stats.value.total;
+  if (key === "favorite") return stats.value.favorites;
+  const statusMap: Record<string, string> = {
+    started: "started",
+    completed: "completed",
+    planned: "planned",
+    on_hold: "on_hold",
+    dropped: "dropped",
+  };
+  const field = statusMap[key];
+  if (
+    field &&
+    typeof (stats.value as LibraryStats)[field as keyof LibraryStats] ===
+      "number"
+  ) {
+    return (stats.value as LibraryStats)[field as keyof LibraryStats];
+  }
+  return 0;
+};
+
+const emptyMessage = computed(() => {
+  const msgs: Record<string, string> = {
+    "": "Ваша коллекция пока пуста",
+    started: "Нет аниме в процессе просмотра",
+    completed: "Нет завершённых аниме",
+    planned: "Нет запланированных аниме",
+    on_hold: "Нет отложенных аниме",
+    dropped: "Нет брошенных аниме",
+    favorite: "Нет избранных аниме",
+  };
+  return msgs[activeTab.value] ?? "Ничего не найдено";
+});
+
+let searchTimer: ReturnType<typeof setTimeout>;
+const debouncedSearch = () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => loadItems(), TIMING.DEBOUNCE_SEARCH);
+};
+
+const loadItems = async () => {
+  loading.value = true;
+  error.value = false;
+  try {
+    const params: Record<string, string | number | boolean> = {
+      ordering: ordering.value,
+    };
+    if (activeTab.value === "favorite") {
+      params.is_favorite = true;
+      params.group_franchises = true;
+    } else if (activeTab.value) {
+      params.status = activeTab.value;
+    }
+    if (searchQuery.value.trim()) {
+      params.search = searchQuery.value.trim();
+    }
+    const response = await libraryApi.getLibrary(params);
+    items.value = Array.isArray(response)
+      ? response
+      : (response as { results: CollectionItem[]; count: number }).results || [];
+  } catch (e) {
+    console.error(e);
+    error.value = true;
+  } finally {
+    loading.value = false;
+  }
+};
+
+const loadStats = async () => {
+  try {
+    stats.value = await libraryApi.getStatistics();
+  } catch (e) {
+    console.error("Ошибка статистики", e);
+  }
+};
+
+const setTab = (key: CollectionTab | "") => {
+  activeTab.value = key;
+  loadItems();
+  router.replace({ query: key ? { status: key } : {} });
+};
+
+const onStatusChanged = () => {
+  loadItems();
+  loadStats();
+};
+
+const onDeleted = () => {
+  loadItems();
+  loadStats();
+};
+
+const onRated = () => {
+  loadItems();
+};
+
+const onSaved = () => {
+  editItem.value = null;
+  loadItems();
+  loadStats();
+};
+
+onMounted(() => {
+  const statusParam = route.query.status as string;
+  if (statusParam && tabs.find((t) => t.key === statusParam)) {
+    activeTab.value = statusParam as LibraryStatus;
+  }
+  loadStats();
+  loadItems();
+});
+</script>
+
+<style scoped>
+.collection-page {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.page-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-3xl);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-1) 0;
+  letter-spacing: -0.025em;
+}
+
+.title-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.page-subtitle {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-tertiary);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.search-input {
+  height: 38px;
+  padding: 0 36px 0 36px;
+  background: var(--surface-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  width: 240px;
+  transition:
+    border-color var(--duration-base),
+    width var(--duration-base);
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--accent);
+  width: 280px;
+}
+
+.search-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.search-clear {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  border-radius: 3px;
+}
+
+.search-clear:hover {
+  color: var(--text-primary);
+}
+
+.sort-select {
+  height: 38px;
+  padding: 0 var(--space-3);
+  background: var(--surface-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  outline: none;
+}
+
+.stats-bar {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 var(--space-4);
+  background: var(--surface-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--duration-base) var(--ease-out);
+  user-select: none;
+}
+
+.stat-chip:hover {
+  background: var(--surface-4);
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}
+
+.stat-chip.active {
+  background: var(--accent-subtle);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.stat-icon {
+  font-size: 14px;
+  line-height: 1;
+  color: inherit;
+}
+.stat-label {
+  font-weight: 500;
+}
+.stat-num {
+  background: var(--surface-5);
+  border-radius: var(--radius-full);
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+}
+
+.stat-chip.active .stat-num {
+  background: var(--accent);
+  color: white;
+}
+
+.skeleton-chip {
+  width: 110px;
+  background: linear-gradient(
+    90deg,
+    var(--surface-3) 25%,
+    var(--surface-4) 50%,
+    var(--surface-3) 75%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.summary-block {
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.summary-numbers {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.summary-val {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  line-height: 1;
+}
+
+.summary-key {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.summary-divider {
+  width: 1px;
+  height: 40px;
+  background: var(--border-subtle);
+}
+
+.summary-bar {
+  display: flex;
+  height: 8px;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  gap: 2px;
+}
+
+.summary-bar-seg {
+  border-radius: var(--radius-full);
+  transition: flex var(--duration-slow);
+}
+
+.summary-legend {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.grid-skeleton,
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: var(--space-5);
+}
+
+.card-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.skel-poster {
+  width: 100%;
+  aspect-ratio: 2/3;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    90deg,
+    var(--surface-3) 25%,
+    var(--surface-4) 50%,
+    var(--surface-3) 75%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.skel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 2px;
+}
+
+.skel-line {
+  height: 12px;
+  border-radius: var(--radius-xs);
+  background: linear-gradient(
+    90deg,
+    var(--surface-3) 25%,
+    var(--surface-4) 50%,
+    var(--surface-3) 75%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.skel-bar {
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(
+    90deg,
+    var(--surface-3) 25%,
+    var(--surface-4) 50%,
+    var(--surface-3) 75%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.skel-line.w70 {
+  width: 70%;
+}
+.skel-line.w45 {
+  width: 45%;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: 80px var(--space-6);
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 56px;
+  line-height: 1;
+}
+.empty-title {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+.empty-sub {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+  margin: 0;
+}
+
+.empty-btn {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 var(--space-6);
+  background: var(--surface-4);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--duration-base);
+}
+
+.empty-btn.accent {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border-color: transparent;
+}
+
+.empty-btn:hover {
+  opacity: 0.85;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 1024px) {
+  .collection-page {
+    padding: var(--space-5) var(--space-4);
+    gap: var(--space-5);
+  }
+
+  .grid-skeleton,
+  .cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .summary-block {
+    padding: var(--space-4) var(--space-5);
+  }
+}
+
+@media (max-width: 767px) {
+  .collection-page {
+    padding: var(--space-4) var(--space-3);
+    gap: var(--space-4);
+  }
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .page-title {
+    font-size: var(--text-2xl);
+  }
+  .header-right {
+    width: 100%;
+  }
+  .search-input {
+    width: 100% !important;
+    flex: 1;
+  }
+  .search-box {
+    flex: 1;
+  }
+  .cards-grid,
+  .grid-skeleton {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: var(--space-3);
+  }
+
+  .summary-numbers {
+    gap: var(--space-4);
+  }
+
+  .summary-divider {
+    height: 32px;
+  }
+
+  .summary-val {
+    font-size: var(--text-xl);
+  }
+
+  .stat-chip {
+    height: 32px;
+    padding: 0 var(--space-3);
+    font-size: var(--text-xs);
+  }
+
+  .stat-num {
+    min-width: 18px;
+    height: 18px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .collection-page {
+    padding: var(--space-3) var(--space-2);
+    gap: var(--space-3);
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .page-subtitle {
+    font-size: var(--text-xs);
+  }
+
+  .header-right {
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .search-box {
+    min-width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .search-input {
+    height: 34px;
+    font-size: var(--text-xs);
+    padding: 0 32px 0 32px;
+  }
+
+  .search-icon {
+    left: 10px;
+    width: 13px;
+    height: 13px;
+  }
+
+  .sort-wrap {
+    flex: 1 1 100%;
+  }
+
+  .sort-select {
+    height: 34px;
+    font-size: var(--text-xs);
+    width: 100%;
+  }
+
+  .stats-bar {
+    gap: 5px;
+  }
+
+  .stat-chip {
+    height: 30px;
+    padding: 0 10px;
+    gap: 4px;
+    font-size: 11px;
+  }
+
+  .stat-icon {
+    font-size: 11px;
+  }
+
+  .stat-num {
+    min-width: 16px;
+    height: 16px;
+    font-size: 9px;
+    padding: 0 4px;
+  }
+
+  .skeleton-chip {
+    width: 80px;
+    height: 30px;
+  }
+
+  .summary-block {
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-lg);
+    gap: var(--space-3);
+  }
+
+  .summary-numbers {
+    gap: var(--space-3);
+  }
+
+  .summary-val {
+    font-size: 18px;
+  }
+
+  .summary-key {
+    font-size: 10px;
+  }
+
+  .summary-divider {
+    height: 26px;
+  }
+
+  .summary-legend {
+    gap: var(--space-2);
+  }
+
+  .legend-item {
+    font-size: 10px;
+  }
+
+  .cards-grid,
+  .grid-skeleton {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 0.625rem;
+  }
+
+  .empty-state {
+    padding: 48px var(--space-4);
+  }
+
+  .empty-icon {
+    font-size: 42px;
+  }
+
+  .empty-title {
+    font-size: var(--text-lg);
+  }
+
+  .empty-sub {
+    font-size: var(--text-xs);
+  }
+
+  .empty-btn {
+    height: 36px;
+    padding: 0 var(--space-4);
+    font-size: var(--text-xs);
+  }
+}
+
+@media (max-width: 360px) {
+  .cards-grid,
+  .grid-skeleton {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .stat-chip {
+    padding: 0 8px;
+    font-size: 10px;
+  }
+
+  .summary-numbers {
+    gap: var(--space-2);
+  }
+
+  .summary-val {
+    font-size: 16px;
+  }
+}
+</style>

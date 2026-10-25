@@ -1,0 +1,15 @@
+async host=>{
+  const account=__ACCOUNTS__.admin,ids=__IDS__,context=await host.context().browser().newContext({viewport:{width:390,height:844},serviceWorkers:'block',reducedMotion:'reduce'});
+  await context.addInitScript(account=>{localStorage.setItem('anilux_user_v1',JSON.stringify(account.user));localStorage.setItem('anilux_access_token_v1',account.tokens.access);localStorage.setItem('anilux_refresh_token_v1',account.tokens.refresh);},account);
+  const page=await context.newPage(),rows=[],failures=[],errors=[],requests=[];page.setDefaultTimeout(12000);page.on('pageerror',e=>errors.push({error:e.stack}));page.on('response',r=>{if(r.status()>=400&&r.url().includes('/api/'))requests.push({url:r.url(),status:r.status()});});
+  const capture=async(name,widths=[320,390,768,1280,1920])=>{for(const width of widths){await page.setViewportSize({width,height:844});await page.waitForTimeout(100);const state=await page.evaluate(()=>{const visible=el=>{const r=el.getBoundingClientRect();return r.width&&r.height&&getComputedStyle(el).visibility!=='hidden';};const symbols=[...document.querySelectorAll('.notification-toast-title,.notif-title,.post-title,button,h1,h2,h3')].filter(visible).filter(el=>/[\p{Extended_Pictographic}★☆✕✓✔↺⌃▧]/u.test(el.textContent||'')).map(el=>({class:el.className,text:el.textContent.trim().slice(0,120)}));return {width:innerWidth,scrollWidth:document.documentElement.scrollWidth,symbols};});rows.push({name,...state});await page.screenshot({path:`backend/data/local_release/ui-review/headings-${name}-${width}.png`,fullPage:true,animations:'disabled',timeout:15000});}};
+  try{
+    await page.goto('http://localhost:5186/admin',{waitUntil:'domcontentloaded'});await page.locator('.notification-toast-title').first().waitFor();await capture('notification-toasts');
+    await page.goto('http://localhost:5186/notifications',{waitUntil:'domcontentloaded'});await page.locator('.notif-title').first().waitFor();await capture('notification-list');
+    await page.setViewportSize({width:1280,height:844});await page.locator('.navbar-notifications > button').click();await page.locator('.notifications-dropdown').waitFor();await capture('notification-menu',[1280,1920]);
+    await page.route('**/api/social/posts/'+ids.post+'/',async route=>{const response=await route.fetch();const data=await response.json();await route.fulfill({response,json:{...data,post_type:'system',title:'🎉 Новый уровень!'}});});
+    await page.goto('http://localhost:5186/post/'+ids.post,{waitUntil:'domcontentloaded'});await page.locator('.post-title').waitFor();const heading=(await page.locator('.post-title').innerText()).trim();if(heading!=='Новый уровень!')throw Error('Legacy system heading not normalized: '+JSON.stringify(heading));if(!await page.locator('.post-title svg').count())throw Error('System title SVG missing');await capture('system-post-heading');
+    return {rows,failures,errors,requests};
+  }catch(e){failures.push({name:'system-headings',error:e.message});return {rows,failures,errors,requests};}
+  finally{await context.close();}
+}

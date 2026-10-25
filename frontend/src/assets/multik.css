@@ -1,0 +1,4500 @@
+/* ============================================================
+   ТЕМА «ПОЛНОЧНАЯ» -резиновый шланг (1930-е)
+   Только чёрное и белое. Толстый круглый контур, жёсткие тени,
+   пружинистое «сплющивание и растяжение», кинозерно и царапины.
+   ============================================================ */
+
+
+html[data-theme="polnochnaya"] {
+  color-scheme: light;
+
+  /* ---- Палитра ---- */
+  --mk-ink: #000;
+  --mk-paper: #fff;
+  --mk-cream: #fff;
+  --mk-yellow: #fff;
+  --mk-yellow-soft: #fff;
+  --mk-pink: #fff;
+  --mk-pink-soft: #fff;
+  --mk-mint: #fff;
+  --mk-mint-soft: #fff;
+  --mk-sky: #fff;
+  --mk-sky-soft: #fff;
+  --mk-lav: #fff;
+  --mk-lav-soft: #fff;
+  --mk-orange: #fff;
+  --mk-red: #fff;
+  --mk-focus: #000;
+
+  /* ---- Совместимость с остальным приложением (только чёрное и белое) ---- */
+  --accent: #000;
+  --accent-bright: #000;
+  --accent-hover: #000;
+  --accent-press: #000;
+  --accent-subtle: #fff;
+  --accent-glow: #000;
+  --accent-glow-sm: #000;
+  --accent-rgb: 0, 0, 0;
+  --surface-0: #fff;
+  --surface-1: #fff;
+  --surface-2: #fff;
+  --surface-3: #fff;
+  --surface-4: #fff;
+  --surface-5: #fff;
+  --surface-6: #fff;
+  --page-bg: #fff;
+  --border-subtle: #000;
+  --border-default: #000;
+  --border-strong: #000;
+  --text-primary: #000;
+  --text-secondary: #000;
+  --text-tertiary: #000;
+  --text-disabled: #000;
+  --text-on-accent: #fff;
+  --text-accent: #000;
+  --success: #000;
+  --warning: #000;
+  --danger: #000;
+  --info: #000;
+  --shadow-sm: 3px 3px 0 #000;
+  --shadow-md: 5px 5px 0 #000;
+  --shadow-lg: 7px 7px 0 #000;
+  --shadow-xl: 9px 9px 0 #000;
+  --shadow-modal: 10px 10px 0 #000;
+  --shadow-glow: 0 0 0 3px #000;
+  --shadow-glow-sm: 0 0 0 2px #000;
+  --shadow-petal: 4px 4px 0 #000;
+  --shadow-petal-sm: 2px 2px 0 #000;
+  --p-bg: #fff;
+  --p-dot: #000;
+  --p-card: #fff;
+  --p-soft: #fff;
+  --p-soft-2: #fff;
+  --p-line: #000;
+  --p-text: #000;
+  --p-muted: #000;
+  --p-accent: #000;
+  --p-accent-d: #000;
+  --p-gold: #fff;
+  --p-gold-soft: #fff;
+  --p-gold-d: #000;
+  --p-mint: #fff;
+  --p-mint-d: #000;
+  --p-sky: #fff;
+  --p-sky-d: #000;
+  --p-lav: #fff;
+  --p-lav-d: #000;
+  --p-edge: #000;
+  --p-drop: #000;
+  --p-shadow-soft: #000;
+  --p-tile: #000;
+  --p-danger: #000;
+  --p-danger-bg: #fff;
+  --p-overlay: transparent;
+
+  /* ---- Шрифты ---- */
+  --mk-font-head: "Unbounded", "Russo One", "Arial Black", sans-serif;
+  --mk-font-body: "Pangolin", "Comic Neue", "Comic Sans MS", "Chalkboard SE", cursive;
+
+  /* ---- Контуры и тени (жёсткие, с цветом чернил) ---- */
+  --mk-bw: 3px;
+  --mk-bw-s: 2px;
+  --mk-bw-l: 4px;
+  --mk-sh-s: 3px 3px 0 #000;
+  --mk-sh: 5px 5px 0 #000;
+  --mk-sh-l: 8px 8px 0 #000;
+  --mk-tile: 600px;
+
+  /* ---- Круглые, «надутые» радиусы ---- */
+  --mk-r-xs: 8px;
+  --mk-r-sm: 10px;
+  --mk-r-md: 16px;
+  --mk-r-lg: 22px;
+  --mk-r-xl: 30px;
+
+  /* ---- Пружинистый переход: на наведении элементы «подпрыгивают» ---- */
+  --mk-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --mk-tr: color 0.15s ease-out,
+           background-color 0.15s ease-out,
+           border-color 0.15s ease-out,
+           box-shadow 0.18s ease-out,
+           translate 0.25s var(--mk-bounce),
+           rotate 0.25s var(--mk-bounce),
+           scale 0.25s var(--mk-bounce),
+           transform 0.25s var(--mk-bounce);
+
+  /* ---- Фон страницы: пастельные каракули (цветочек, искра, звёздочка, зигзаг) ---- */
+  --mk-bg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='0 0 320 320'%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 262C60 196 104 322 146 252S206 214 236 276' stroke='%23000' stroke-width='16'/%3E%3Cpath d='M20 262C60 196 104 322 146 252S206 214 236 276' stroke='%23fff' stroke-width='9'/%3E%3C/g%3E%3Cg stroke='%23000' stroke-width='3' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M64 36Q68 62 94 66Q68 70 64 96Q60 70 34 66Q60 62 64 36Z' fill='%23fff'/%3E%3Cg transform='translate(196 36)'%3E%3Ccircle cx='20' cy='20' r='18' fill='%23fff'/%3E%3Ccircle cx='20' cy='20' r='11' fill='%23000'/%3E%3Cpath d='M20 20L29.5 14.5A11 11 0 0 1 31 20Z' fill='%23fff' stroke='none'/%3E%3C/g%3E%3Cg transform='translate(240 46)'%3E%3Ccircle cx='20' cy='20' r='18' fill='%23fff'/%3E%3Ccircle cx='20' cy='20' r='11' fill='%23000'/%3E%3Cpath d='M20 20L29.5 14.5A11 11 0 0 1 31 20Z' fill='%23fff' stroke='none'/%3E%3C/g%3E%3Ccircle cx='140' cy='112' r='7' fill='%23000'/%3E%3Ccircle cx='166' cy='132' r='5' fill='none'/%3E%3Ccircle cx='286' cy='168' r='9' fill='none'/%3E%3Cpath d='M64 170v20M54 180h20' fill='none'/%3E%3Cpath d='M270 236l6 12 13 2-10 9 3 13-12-6-12 6 3-13-10-9 13-2z' fill='%23fff'/%3E%3C/g%3E%3C/svg%3E");
+  --mk-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.5 -.55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --mk-scratch: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='520' viewBox='0 0 520 520'%3E%3Cg stroke='%23000' stroke-width='.9' fill='none' opacity='.6'%3E%3Cpath d='M62 0L58 520'/%3E%3Cpath d='M236 0L232 520'/%3E%3Cpath d='M402 0L398 520'/%3E%3C/g%3E%3Cg stroke='%23000' stroke-width='.6' fill='none' opacity='.4'%3E%3Cpath d='M0 118L520 122'/%3E%3Cpath d='M0 418L520 422'/%3E%3C/g%3E%3Cg fill='%23000'%3E%3Ccircle cx='28' cy='42' r='2.6'/%3E%3Ccircle cx='156' cy='263' r='3'/%3E%3Ccircle cx='287' cy='55' r='2.4'/%3E%3Ccircle cx='356' cy='338' r='2'/%3E%3Ccircle cx='101' cy='452' r='3'/%3E%3Ccircle cx='449' cy='188' r='2.2'/%3E%3Ccircle cx='203' cy='114' r='1.6'/%3E%3Ccircle cx='478' cy='471' r='2.7'/%3E%3Crect x='150' y='330' width='9' height='1.6' transform='rotate(35 154 331)'/%3E%3Crect x='410' y='70' width='11' height='1.5' transform='rotate(-25 415 71)'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ==== Анимации ==== */
+
+/* «Кипение» контура -фон чуть подрагивает, как в рисованном мультике */
+@keyframes mk-boil {
+  0%, 33%   { background-position: 0 0; }
+  34%, 66%  { background-position: -3px 2px; }
+  67%, 100% { background-position: 2px -3px; }
+}
+
+@keyframes mk-pop {
+  0%   { opacity: 0; scale: 0.92; }
+  60%  { opacity: 1; scale: 1.02; }
+  100% { opacity: 1; scale: 1; }
+}
+
+@keyframes mk-spin { to { transform: rotate(360deg); } }
+
+@keyframes mk-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(0.8); }
+}
+
+@keyframes mk-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes mk-wiggle {
+  0%, 100% { rotate: 0deg; }
+  25%      { rotate: -6deg; }
+  75%      { rotate: 6deg; }
+}
+
+/* ==== Основа ==== */
+
+html[data-theme="polnochnaya"] {
+  font-family: var(--mk-font-body);
+  background-color: var(--mk-cream);
+  background-image: var(--mk-bg);
+  background-size: var(--mk-tile) var(--mk-tile);
+  background-repeat: repeat;
+  background-position: 0 0;
+  scrollbar-color: #000 #fff;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  animation: mk-boil 1.1s step-end infinite;
+}
+
+html[data-theme="polnochnaya"] body {
+  position: relative;
+  margin: 0;
+  font-family: var(--mk-font-body);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--mk-ink);
+  background-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Кино-слои (зерно и царапины) заданы в конце файла, в разделе «Резиновый шланг» */
+html[data-theme="polnochnaya"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+}
+
+html[data-theme="polnochnaya"] :where(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--mk-font-head);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] :where(p, li, dd, dt, label, span) {
+  font-family: var(--mk-font-body);
+}
+
+html[data-theme="polnochnaya"] ::selection {
+  color: var(--mk-ink);
+  background-color: var(--mk-pink);
+  text-shadow: none;
+}
+
+html[data-theme="polnochnaya"]::selection {
+  color: var(--mk-ink);
+  background-color: var(--mk-pink);
+}
+
+/* === Скроллбар === */
+
+html[data-theme="polnochnaya"] ::-webkit-scrollbar,
+html[data-theme="polnochnaya"]::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+html[data-theme="polnochnaya"] ::-webkit-scrollbar-track,
+html[data-theme="polnochnaya"]::-webkit-scrollbar-track {
+  background-color: var(--mk-cream);
+  border-left: 3px solid var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] ::-webkit-scrollbar-thumb,
+html[data-theme="polnochnaya"]::-webkit-scrollbar-thumb {
+  background-color: var(--mk-pink);
+  border: 3px solid var(--mk-ink);
+  border-radius: 10px;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+html[data-theme="polnochnaya"] ::-webkit-scrollbar-corner,
+html[data-theme="polnochnaya"]::-webkit-scrollbar-corner {
+  background-color: var(--mk-cream);
+}
+
+@media (hover: hover) {
+  html[data-theme="polnochnaya"] ::-webkit-scrollbar-thumb:hover,
+  html[data-theme="polnochnaya"]::-webkit-scrollbar-thumb:hover {
+    background-color: var(--mk-yellow);
+  }
+}
+
+/* === Фокус === */
+
+html[data-theme="polnochnaya"] :where(button, a, input, select, textarea, summary, [tabindex], [role="button"]):focus-visible {
+  outline: 3px solid var(--mk-focus);
+  outline-offset: 3px;
+  clip-path: none;
+}
+
+html[data-theme="polnochnaya"] :focus-visible {
+  clip-path: none;
+}
+
+html[data-theme="polnochnaya"] :where(button, input, select, textarea):focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* === Общие страницы === */
+
+html[data-theme="polnochnaya"] :where(.anime-view, .anime-detail, .home-page, .people-page, .playlists-page, .collection-page, .add-anime-page) {
+  min-height: 100vh;
+  color: var(--mk-ink);
+  background-color: transparent;
+  background-image: none;
+  font-family: var(--mk-font-body);
+  box-sizing: border-box;
+}
+
+html[data-theme="polnochnaya"] .anime-view,
+html[data-theme="polnochnaya"] .anime-detail,
+html[data-theme="polnochnaya"] .home-page,
+html[data-theme="polnochnaya"] .people-page,
+html[data-theme="polnochnaya"] .playlists-page,
+html[data-theme="polnochnaya"] .collection-page,
+html[data-theme="polnochnaya"] .add-anime-page {
+  position: relative;
+}
+
+html[data-theme="polnochnaya"] *,
+html[data-theme="polnochnaya"] *::before,
+html[data-theme="polnochnaya"] *::after {
+  box-sizing: border-box;
+}
+
+html[data-theme="polnochnaya"] .w40 { width: 40%; }
+html[data-theme="polnochnaya"] .w55 { width: 55%; }
+html[data-theme="polnochnaya"] .w60 { width: 60%; }
+html[data-theme="polnochnaya"] .w80 { width: 80%; }
+
+html[data-theme="polnochnaya"] .collection-page .cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 28px 22px;
+  padding: 12px 8px 24px;
+}
+
+/* === БАЗА КНОПОК === */
+
+html[data-theme="polnochnaya"] :is(.btn, .btn-outline, .btn-primary, .btn-secondary, .btn-ghost, .btn-danger, .discuss-btn, .watch-button, .create-playlist-btn, .create-playlist-btn-cancel, .create-playlist-btn-submit, .am-btn, .am-create-btn, .rc-view-all, .retry-btn, .btn-retry, .catalog-retry, .dubs-reset-btn, .btn-add, .btn-add-all, .external-link, .back-link, .pagination-btn, .page-number, .qa-btn, .dubs-filter-btn, .kind-chip, .tab-btn, .av-tab, .screenshot-nav-btn, .screenshot-nav-btn-left, .screenshot-nav-btn-right, .rc-arrow, .rc-arrow-left, .rc-arrow-right, .hero-arrow, .carousel-arrow, .am-icon-choice, .play-btn) {
+  --mk-k-bg: var(--mk-paper);
+  --mk-k-fg: var(--mk-ink);
+  --mk-k-bc: var(--mk-ink);
+  --mk-k-bs: solid;
+  --mk-k-bg-h: #000;
+  --mk-k-fg-h: #fff;
+  --mk-k-bc-h: var(--mk-ink);
+  --mk-k-sh: 4px 4px 0 #000;
+  --mk-k-sh-h: 7px 7px 0 #000;
+  --mk-k-sh-a: 1px 1px 0 #000;
+}
+
+html[data-theme="polnochnaya"] :is(.btn, .btn-outline, .btn-primary, .btn-secondary, .btn-ghost, .btn-danger, .discuss-btn, .watch-button, .create-playlist-btn, .create-playlist-btn-cancel, .create-playlist-btn-submit, .am-btn, .am-create-btn, .rc-view-all, .retry-btn, .btn-retry, .catalog-retry, .dubs-reset-btn, .btn-add, .btn-add-all, .external-link, .back-link, .pagination-btn, .page-number, .qa-btn, .dubs-filter-btn, .kind-chip, .tab-btn, .av-tab, .screenshot-nav-btn, .screenshot-nav-btn-left, .screenshot-nav-btn-right, .rc-arrow, .rc-arrow-left, .rc-arrow-right, .hero-arrow, .carousel-arrow, .am-icon-choice, .play-btn) {
+  box-sizing: border-box;
+  font-family: var(--mk-font-body);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--mk-k-fg);
+  background-color: var(--mk-k-bg);
+  background-image: none;
+  border: var(--mk-bw) var(--mk-k-bs) var(--mk-k-bc);
+  border-radius: var(--mk-r-md);
+  box-shadow: var(--mk-k-sh);
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--mk-tr);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+html[data-theme="polnochnaya"] :is(.btn, .btn-outline, .btn-primary, .btn-secondary, .btn-ghost, .btn-danger, .discuss-btn, .watch-button, .create-playlist-btn, .create-playlist-btn-cancel, .create-playlist-btn-submit, .am-btn, .am-create-btn, .rc-view-all, .retry-btn, .btn-retry, .catalog-retry, .dubs-reset-btn, .btn-add, .btn-add-all, .external-link, .back-link, .pagination-btn, .page-number, .qa-btn, .dubs-filter-btn, .kind-chip, .tab-btn, .av-tab, .screenshot-nav-btn, .screenshot-nav-btn-left, .screenshot-nav-btn-right, .rc-arrow, .rc-arrow-left, .rc-arrow-right, .hero-arrow, .carousel-arrow, .am-icon-choice, .play-btn):hover:where(:not(:disabled):not(.disabled):not([aria-disabled="true"])) {
+  color: var(--mk-k-fg-h);
+  background-color: var(--mk-k-bg-h);
+  border-color: var(--mk-k-bc-h);
+  box-shadow: var(--mk-k-sh-h);
+  translate: -2px -3px;
+  rotate: -1.5deg;
+}
+
+html[data-theme="polnochnaya"] :is(.btn, .btn-outline, .btn-primary, .btn-secondary, .btn-ghost, .btn-danger, .discuss-btn, .watch-button, .create-playlist-btn, .create-playlist-btn-cancel, .create-playlist-btn-submit, .am-btn, .am-create-btn, .rc-view-all, .retry-btn, .btn-retry, .catalog-retry, .dubs-reset-btn, .btn-add, .btn-add-all, .external-link, .back-link, .pagination-btn, .page-number, .qa-btn, .dubs-filter-btn, .kind-chip, .tab-btn, .av-tab, .screenshot-nav-btn, .screenshot-nav-btn-left, .screenshot-nav-btn-right, .rc-arrow, .rc-arrow-left, .rc-arrow-right, .hero-arrow, .carousel-arrow, .am-icon-choice, .play-btn):active:where(:not(:disabled):not(.disabled):not([aria-disabled="true"])) {
+  color: var(--mk-k-fg-h);
+  background-color: var(--mk-k-bg-h);
+  border-color: var(--mk-k-bc-h);
+  box-shadow: var(--mk-k-sh-a);
+  translate: 3px 3px;
+  rotate: 0deg;
+  scale: 0.97;
+}
+
+html[data-theme="polnochnaya"] :is(.btn, .btn-outline, .btn-primary, .btn-secondary, .btn-ghost, .btn-danger, .discuss-btn, .watch-button, .create-playlist-btn, .create-playlist-btn-cancel, .create-playlist-btn-submit, .am-btn, .am-create-btn, .rc-view-all, .retry-btn, .btn-retry, .catalog-retry, .dubs-reset-btn, .btn-add, .btn-add-all, .external-link, .back-link, .pagination-btn, .page-number, .qa-btn, .dubs-filter-btn, .kind-chip, .tab-btn, .av-tab, .screenshot-nav-btn, .screenshot-nav-btn-left, .screenshot-nav-btn-right, .rc-arrow, .rc-arrow-left, .rc-arrow-right, .hero-arrow, .carousel-arrow, .am-icon-choice, .play-btn):focus-visible {
+  outline: 3px solid var(--mk-focus);
+  outline-offset: 4px;
+}
+
+html[data-theme="polnochnaya"] :is(.btn, .btn-outline, .btn-primary, .btn-secondary, .btn-ghost, .btn-danger, .discuss-btn, .watch-button, .create-playlist-btn, .create-playlist-btn-cancel, .create-playlist-btn-submit, .am-btn, .am-create-btn, .rc-view-all, .retry-btn, .btn-retry, .catalog-retry, .dubs-reset-btn, .btn-add, .btn-add-all, .external-link, .back-link, .pagination-btn, .page-number, .qa-btn, .dubs-filter-btn, .kind-chip, .tab-btn, .av-tab, .screenshot-nav-btn, .screenshot-nav-btn-left, .screenshot-nav-btn-right, .rc-arrow, .rc-arrow-left, .rc-arrow-right, .hero-arrow, .carousel-arrow, .am-icon-choice, .play-btn):is(:disabled, .disabled, [aria-disabled="true"]) {
+  color: #000;
+  background-color: var(--mk-cream);
+  border-style: dashed;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.7;
+  translate: none;
+  rotate: none;
+  scale: 1;
+}
+
+/* Главные: розовые, на наведении мятные */
+html[data-theme="polnochnaya"] .btn-primary,
+html[data-theme="polnochnaya"] .create-playlist-btn-submit,
+html[data-theme="polnochnaya"] .am-btn.primary,
+html[data-theme="polnochnaya"] .am-create-btn,
+html[data-theme="polnochnaya"] .retry-btn,
+html[data-theme="polnochnaya"] .btn-retry,
+html[data-theme="polnochnaya"] .catalog-retry,
+html[data-theme="polnochnaya"] .btn-add,
+html[data-theme="polnochnaya"] .btn-add-all {
+  --mk-k-bg: var(--mk-pink);
+  --mk-k-bg-h: var(--mk-mint);
+}
+
+/* Большая кнопка «Смотреть» -солнечно-жёлтая */
+html[data-theme="polnochnaya"] .watch-button {
+  --mk-k-bg: var(--mk-yellow);
+  --mk-k-bg-h: var(--mk-pink);
+  --mk-k-sh: 5px 5px 0 #000;
+  --mk-k-sh-h: 9px 9px 0 #000;
+}
+
+html[data-theme="polnochnaya"] .play-btn {
+  --mk-k-bg: var(--mk-yellow);
+  --mk-k-bg-h: var(--mk-pink);
+}
+
+/* Второстепенные -небесно-голубые */
+html[data-theme="polnochnaya"] .btn-secondary,
+html[data-theme="polnochnaya"] .create-playlist-btn-cancel,
+html[data-theme="polnochnaya"] .back-link,
+html[data-theme="polnochnaya"] .rc-view-all,
+html[data-theme="polnochnaya"] .am-btn,
+html[data-theme="polnochnaya"] .dubs-reset-btn {
+  --mk-k-bg: var(--mk-sky);
+  --mk-k-bg-h: var(--mk-lav);
+}
+
+html[data-theme="polnochnaya"] .btn-outline {
+  --mk-k-bg: var(--mk-paper);
+  --mk-k-sh: 0 0 0 0 #000;
+  --mk-k-sh-h: 5px 5px 0 #000;
+  --mk-k-sh-a: 0 0 0 0 #000;
+}
+
+html[data-theme="polnochnaya"] .btn-ghost {
+  --mk-k-bg: var(--mk-yellow-soft);
+  --mk-k-bg-h: var(--mk-pink-soft);
+  --mk-k-sh: 0 0 0 0 #000;
+  --mk-k-sh-h: 4px 4px 0 #000;
+  --mk-k-sh-a: 0 0 0 0 #000;
+}
+
+html[data-theme="polnochnaya"] .btn-danger,
+html[data-theme="polnochnaya"] .am-btn.danger {
+  --mk-k-bg: var(--mk-red);
+  --mk-k-bg-h: var(--mk-yellow);
+}
+
+html[data-theme="polnochnaya"] .external-link.mal {
+  --mk-k-bg: var(--mk-sky-soft);
+  --mk-k-bg-h: var(--mk-sky);
+}
+
+html[data-theme="polnochnaya"] .external-link.shikimori {
+  --mk-k-bg: var(--mk-lav-soft);
+  --mk-k-bg-h: var(--mk-lav);
+}
+
+/* Круглые стрелки */
+html[data-theme="polnochnaya"] .screenshot-nav-btn,
+html[data-theme="polnochnaya"] .screenshot-nav-btn-left,
+html[data-theme="polnochnaya"] .screenshot-nav-btn-right,
+html[data-theme="polnochnaya"] .rc-arrow,
+html[data-theme="polnochnaya"] .rc-arrow-left,
+html[data-theme="polnochnaya"] .rc-arrow-right,
+html[data-theme="polnochnaya"] .hero-arrow,
+html[data-theme="polnochnaya"] .carousel-arrow {
+  --mk-k-bg: var(--mk-yellow);
+  --mk-k-bg-h: var(--mk-pink);
+  --mk-k-sh: 3px 3px 0 #000;
+  --mk-k-sh-h: 5px 5px 0 #000;
+  --mk-k-sh-a: 1px 1px 0 #000;
+}
+
+/* Вкладки */
+html[data-theme="polnochnaya"] .av-tab,
+html[data-theme="polnochnaya"] .tab-btn {
+  --mk-k-bg: var(--mk-paper);
+  --mk-k-bg-h: var(--mk-yellow-soft);
+  --mk-k-sh: 0 0 0 0 #000;
+  --mk-k-sh-h: 0 -4px 0 0 #000;
+  --mk-k-sh-a: 0 0 0 0 #000;
+}
+
+html[data-theme="polnochnaya"] .av-tab.active,
+html[data-theme="polnochnaya"] .tab-btn.active {
+  --mk-k-bg: var(--mk-pink);
+  --mk-k-bg-h: var(--mk-pink);
+}
+
+/* Пагинация, чипы, фильтры */
+html[data-theme="polnochnaya"] .page-number,
+html[data-theme="polnochnaya"] .pagination-btn,
+html[data-theme="polnochnaya"] .qa-btn,
+html[data-theme="polnochnaya"] .kind-chip,
+html[data-theme="polnochnaya"] .dubs-filter-btn,
+html[data-theme="polnochnaya"] .am-icon-choice {
+  --mk-k-bg: var(--mk-paper);
+  --mk-k-sh: 3px 3px 0 #000;
+  --mk-k-sh-h: 5px 5px 0 #000;
+  --mk-k-sh-a: 1px 1px 0 #000;
+}
+
+html[data-theme="polnochnaya"] .page-number.active,
+html[data-theme="polnochnaya"] .kind-chip-active,
+html[data-theme="polnochnaya"] .dubs-filter-btn.active,
+html[data-theme="polnochnaya"] .am-icon-choice.active {
+  --mk-k-bg: var(--mk-pink);
+  --mk-k-bg-h: var(--mk-pink);
+}
+
+html[data-theme="polnochnaya"] .btn,
+html[data-theme="polnochnaya"] .btn-outline,
+html[data-theme="polnochnaya"] .btn-primary,
+html[data-theme="polnochnaya"] .btn-secondary,
+html[data-theme="polnochnaya"] .btn-ghost,
+html[data-theme="polnochnaya"] .btn-danger,
+html[data-theme="polnochnaya"] .discuss-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 46px;
+  padding: 0.55rem 1.35rem;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+html[data-theme="polnochnaya"] .watch-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 58px;
+  padding: 0.8rem 2.4rem;
+  font-family: var(--mk-font-head);
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.2;
+  border-radius: var(--mk-r-lg);
+}
+
+html[data-theme="polnochnaya"] .action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 0.4rem 0.4rem 0.8rem;
+}
+
+html[data-theme="polnochnaya"] .action-buttons button,
+html[data-theme="polnochnaya"] .action-buttons .btn {
+  min-height: 46px;
+}
+
+html[data-theme="polnochnaya"] .retry-btn,
+html[data-theme="polnochnaya"] .btn-retry,
+html[data-theme="polnochnaya"] .catalog-retry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 48px;
+  padding: 0 1.7rem;
+  font-size: 1.02rem;
+}
+
+html[data-theme="polnochnaya"] .btn-add,
+html[data-theme="polnochnaya"] .btn-add-all {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0 1.2rem;
+  font-size: 0.95rem;
+}
+
+html[data-theme="polnochnaya"] .dubs-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 1.3rem;
+  font-size: 0.95rem;
+}
+
+html[data-theme="polnochnaya"] .am-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 0 16px;
+  font-size: 14px;
+}
+
+html[data-theme="polnochnaya"] .am-btn.small {
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+html[data-theme="polnochnaya"] .am-create-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 16px;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+html[data-theme="polnochnaya"] .create-playlist-btn,
+html[data-theme="polnochnaya"] .create-playlist-btn-cancel,
+html[data-theme="polnochnaya"] .create-playlist-btn-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 1.5rem;
+  font-size: 1rem;
+}
+
+html[data-theme="polnochnaya"] .rc-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  min-height: 42px;
+  padding: 0 1.2rem;
+  font-size: var(--text-sm, 0.95rem);
+  white-space: nowrap;
+}
+
+html[data-theme="polnochnaya"] .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 44px;
+  padding: 0.45rem 1.15rem;
+  margin-bottom: 1.3rem;
+  font-size: 0.98rem;
+}
+
+html[data-theme="polnochnaya"] .external-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0.4rem 1.2rem;
+  font-size: 0.95rem;
+}
+
+html[data-theme="polnochnaya"] .pagination-btn,
+html[data-theme="polnochnaya"] .page-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 0.7rem;
+  font-family: var(--mk-font-head);
+  font-size: 0.85rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+html[data-theme="polnochnaya"] .qa-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  min-height: 38px;
+  padding: 0 0.55rem;
+}
+
+html[data-theme="polnochnaya"] .dubs-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 40px;
+  padding: 0.35rem 1rem;
+  font-size: 0.95rem;
+  border-radius: 999px;
+}
+
+html[data-theme="polnochnaya"] .kind-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 40px;
+  padding: 0.3rem 1.05rem;
+  font-size: 0.95rem;
+  border-radius: 999px;
+}
+
+html[data-theme="polnochnaya"] .am-icon-choice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  padding: 0;
+}
+
+html[data-theme="polnochnaya"] .play-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+html[data-theme="polnochnaya"] .screenshot-nav-btn,
+html[data-theme="polnochnaya"] .rc-arrow,
+html[data-theme="polnochnaya"] .hero-arrow,
+html[data-theme="polnochnaya"] .carousel-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+html[data-theme="polnochnaya"] .av-tab,
+html[data-theme="polnochnaya"] .tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  border-radius: var(--mk-r-md) var(--mk-r-md) 0 0;
+}
+
+html[data-theme="polnochnaya"] .page-number,
+html[data-theme="polnochnaya"] .pagination-btn,
+html[data-theme="polnochnaya"] .am-icon-choice,
+html[data-theme="polnochnaya"] .qa-btn {
+  border-radius: var(--mk-r-sm);
+}
+
+html[data-theme="polnochnaya"] .am-icon-choice.active,
+html[data-theme="polnochnaya"] .am-icon-choice:focus-visible {
+  z-index: 1;
+}
+
+/* === Поля ввода === */
+
+html[data-theme="polnochnaya"] .create-playlist-input,
+html[data-theme="polnochnaya"] .am-field input[type="text"],
+html[data-theme="polnochnaya"] .am-field input[type="number"],
+html[data-theme="polnochnaya"] .am-field textarea,
+html[data-theme="polnochnaya"] .am-field select,
+html[data-theme="polnochnaya"] .search-input,
+html[data-theme="polnochnaya"] .page-size-select {
+  box-sizing: border-box;
+  font-family: var(--mk-font-body);
+  font-size: 1.02rem;
+  font-weight: 400;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  background-image: none;
+  border: var(--mk-bw) solid var(--mk-ink);
+  border-radius: var(--mk-r-md);
+  box-shadow: 3px 3px 0 var(--mk-ink);
+  caret-color: var(--mk-pink);
+  transition: var(--mk-tr);
+  width: 100%;
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] .create-playlist-input,
+html[data-theme="polnochnaya"] .search-input,
+html[data-theme="polnochnaya"] .page-size-select,
+html[data-theme="polnochnaya"] .am-field input[type="text"],
+html[data-theme="polnochnaya"] .am-field input[type="number"],
+html[data-theme="polnochnaya"] .am-field select {
+  min-height: 48px;
+  padding: 0 16px;
+}
+
+html[data-theme="polnochnaya"] .page-size-select,
+html[data-theme="polnochnaya"] .am-field select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 44px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10' viewBox='0 0 16 10'%3E%3Cpath d='M2 2L8 8L14 2' stroke='%23000' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px 10px;
+  cursor: pointer;
+  width: auto;
+  min-width: 92px;
+}
+
+html[data-theme="polnochnaya"] .am-field select {
+  width: 100%;
+}
+
+html[data-theme="polnochnaya"] .create-playlist-input::placeholder,
+html[data-theme="polnochnaya"] .search-input::placeholder,
+html[data-theme="polnochnaya"] .am-field input::placeholder,
+html[data-theme="polnochnaya"] .am-field textarea::placeholder,
+html[data-theme="polnochnaya"] .am-search input::placeholder {
+  color: var(--mk-ink);
+  font-style: italic;
+  opacity: 0.5;
+}
+
+html[data-theme="polnochnaya"] .create-playlist-input:hover:not(:disabled),
+html[data-theme="polnochnaya"] .search-input:hover:not(:disabled),
+html[data-theme="polnochnaya"] .page-size-select:hover:not(:disabled),
+html[data-theme="polnochnaya"] .am-field input:hover:not(:disabled),
+html[data-theme="polnochnaya"] .am-field textarea:hover:not(:disabled),
+html[data-theme="polnochnaya"] .am-field select:hover:not(:disabled) {
+  background-color: var(--mk-yellow-soft);
+  box-shadow: 5px 5px 0 var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .create-playlist-input:focus,
+html[data-theme="polnochnaya"] .search-input:focus,
+html[data-theme="polnochnaya"] .page-size-select:focus,
+html[data-theme="polnochnaya"] .am-field input:focus,
+html[data-theme="polnochnaya"] .am-field textarea:focus,
+html[data-theme="polnochnaya"] .am-field select:focus {
+  background-color: var(--mk-paper);
+  box-shadow: 6px 6px 0 var(--mk-pink), 6px 6px 0 3px var(--mk-ink);
+  border-style: solid;
+}
+
+html[data-theme="polnochnaya"] .create-playlist-input:focus-visible,
+html[data-theme="polnochnaya"] .search-input:focus-visible,
+html[data-theme="polnochnaya"] .page-size-select:focus-visible,
+html[data-theme="polnochnaya"] .am-field input:focus-visible,
+html[data-theme="polnochnaya"] .am-field textarea:focus-visible,
+html[data-theme="polnochnaya"] .am-field select:focus-visible,
+html[data-theme="polnochnaya"] .am-search input:focus-visible {
+  outline: 3px dashed var(--mk-focus);
+  outline-offset: 4px;
+}
+
+html[data-theme="polnochnaya"] .create-playlist-input:disabled,
+html[data-theme="polnochnaya"] .search-input:disabled,
+html[data-theme="polnochnaya"] .page-size-select:disabled,
+html[data-theme="polnochnaya"] .am-field input:disabled,
+html[data-theme="polnochnaya"] .am-field textarea:disabled,
+html[data-theme="polnochnaya"] .am-field select:disabled {
+  background-color: var(--mk-cream);
+  border-style: dashed;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+html[data-theme="polnochnaya"] .create-playlist-input[aria-invalid="true"],
+html[data-theme="polnochnaya"] .am-field input[aria-invalid="true"],
+html[data-theme="polnochnaya"] .am-field textarea[aria-invalid="true"],
+html[data-theme="polnochnaya"] .search-input[aria-invalid="true"] {
+  background-color: #fff;
+  border-style: dashed;
+  border-width: 4px;
+}
+
+html[data-theme="polnochnaya"] .am-field textarea {
+  min-height: 104px;
+  padding: 12px 16px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+html[data-theme="polnochnaya"] .search-input {
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] .create-playlist-checkbox input,
+html[data-theme="polnochnaya"] .am-field input[type="checkbox"] {
+  accent-color: var(--mk-pink);
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+/* === Контейнер и вкладки === */
+
+html[data-theme="polnochnaya"] .av-container {
+  box-sizing: border-box;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: var(--space-6, 1.5rem) var(--space-5, 1.25rem) var(--space-16, 4rem);
+}
+
+html[data-theme="polnochnaya"] .av-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 16px 8px 0;
+  margin-bottom: var(--space-6, 1.6rem);
+  border-bottom: 5px solid var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .av-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  height: 48px;
+  padding: 0 1.3rem;
+  margin-bottom: -5px;
+  font-size: 1rem;
+  border-bottom: 0;
+}
+
+html[data-theme="polnochnaya"] .av-tab.active {
+  height: 58px;
+  padding: 0 1.6rem;
+  font-weight: 800;
+}
+
+html[data-theme="polnochnaya"] .av-tab-icon,
+html[data-theme="polnochnaya"] .sakura-icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 18px;
+  line-height: 1;
+  color: currentColor;
+}
+
+html[data-theme="polnochnaya"] .av-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 7px;
+  font-family: var(--mk-font-head);
+  font-size: 11px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--mk-ink);
+  background-color: var(--mk-yellow);
+  border: 2px solid var(--mk-ink);
+  border-radius: 50%;
+}
+
+html[data-theme="polnochnaya"] .av-tab.active .av-tab-badge {
+  background-color: var(--mk-paper);
+}
+
+html[data-theme="polnochnaya"] .av-fade-enter-active,
+html[data-theme="polnochnaya"] .av-fade-leave-active {
+  transition: opacity 0.15s ease-out;
+}
+
+html[data-theme="polnochnaya"] .av-fade-enter-from,
+html[data-theme="polnochnaya"] .av-fade-leave-to {
+  opacity: 0;
+}
+
+/* === Детальная страница === */
+
+html[data-theme="polnochnaya"] .anime-detail {
+  padding: 2rem 1rem 4rem;
+}
+
+html[data-theme="polnochnaya"] .anime-detail .container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+html[data-theme="polnochnaya"] .loading-state,
+html[data-theme="polnochnaya"] .anime-detail .error-state {
+  position: relative;
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: var(--mk-bw-l) solid var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+  box-shadow: var(--mk-sh-l);
+}
+
+/* Лоадер: цветное колечко + прыгающий жёлтый мячик */
+html[data-theme="polnochnaya"] .spinner-container {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 1.5rem;
+}
+
+html[data-theme="polnochnaya"] .spinner,
+html[data-theme="polnochnaya"] .spinner-ring {
+  position: absolute;
+  box-sizing: border-box;
+  border-radius: 50%;
+}
+
+html[data-theme="polnochnaya"] .spinner {
+  inset: 0;
+  background-color: transparent;
+  border: 8px solid var(--mk-ink);
+  border-top-color: var(--mk-pink);
+  border-right-color: var(--mk-yellow);
+  border-bottom-color: var(--mk-mint);
+  animation: mk-spin 1s linear infinite;
+}
+
+html[data-theme="polnochnaya"] .spinner-ring {
+  inset: 28%;
+  background-color: var(--mk-yellow);
+  border: 3px solid var(--mk-ink);
+  animation: mk-pulse 1s ease-in-out infinite;
+}
+
+html[data-theme="polnochnaya"] .loading-state p {
+  display: inline-block;
+  margin: 0;
+  padding: 0.2rem 1rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--mk-ink);
+  background-color: var(--mk-yellow-soft);
+  border: 3px solid var(--mk-ink);
+  border-radius: 999px;
+}
+
+html[data-theme="polnochnaya"] .anime-detail .error-icon {
+  margin-bottom: 1rem;
+  font-size: 4rem;
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .error-message {
+  display: inline-block;
+  margin: 0 0 1.5rem;
+  padding: 0.25rem 1rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--mk-ink);
+  background-color: var(--mk-red);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-sm);
+}
+
+html[data-theme="polnochnaya"] .anime-detail-card {
+  position: relative;
+  overflow: hidden;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: var(--mk-bw-l) solid var(--mk-ink);
+  border-radius: var(--mk-r-xl);
+  box-shadow: 10px 10px 0 var(--mk-ink);
+  animation: mk-pop 0.45s var(--mk-bounce) both;
+}
+
+/* Шапка: солнечные полосы */
+html[data-theme="polnochnaya"] .detail-header {
+  position: relative;
+  padding: 2rem 2rem 2.4rem;
+  color: var(--mk-ink);
+  background-color: var(--mk-yellow);
+  background-image: none;
+  border-bottom: 4px solid var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .anime-title {
+  margin: 0 0 0.45rem;
+  font-family: var(--mk-font-head);
+  font-size: 1.7rem;
+  font-weight: 900;
+  line-height: 1.15;
+  color: var(--mk-ink);
+  overflow-wrap: anywhere;
+}
+
+html[data-theme="polnochnaya"] .detail-header .anime-title {
+  font-size: 1.8rem;
+  color: var(--mk-ink);
+  text-shadow: 3px 3px 0 var(--mk-paper);
+}
+
+html[data-theme="polnochnaya"] .anime-title-en {
+  margin: 0;
+  font-size: 1.12rem;
+  font-style: italic;
+  line-height: 1.35;
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .detail-header .anime-title-en {
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .anime-main-info {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 2rem 2.4rem;
+  padding: 2.2rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='10' viewBox='0 0 20 10'%3E%3Cpath d='M0 0L10 10L20 0Z' fill='%23000'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: 0 0;
+  background-size: 20px 10px;
+}
+
+html[data-theme="polnochnaya"] .poster-section {
+  display: flex;
+  flex-direction: column;
+  align-self: start;
+  gap: 1.3rem;
+  width: 100%;
+  max-width: 300px;
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] .anime-poster-large {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  background-color: var(--mk-sky-soft);
+  border: var(--mk-bw-l) solid var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+  box-shadow: 8px 8px 0 var(--mk-pink), 8px 8px 0 4px var(--mk-ink);
+  rotate: -1.5deg;
+  transition: var(--mk-tr);
+}
+
+html[data-theme="polnochnaya"] .anime-poster-large:hover {
+  rotate: 1deg;
+  scale: 1.02;
+}
+
+html[data-theme="polnochnaya"] .poster-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.7);
+}
+
+html[data-theme="polnochnaya"] .poster-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  font-size: 4rem;
+  color: var(--mk-ink);
+  background-color: var(--mk-lav-soft);
+}
+
+html[data-theme="polnochnaya"] .rating-section {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1.1rem 1rem 1rem;
+  color: var(--mk-ink);
+  background-color: var(--mk-pink);
+  border: var(--mk-bw) solid var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+  box-shadow: 5px 5px 0 var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .rating-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.6rem 1rem;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-md);
+}
+
+html[data-theme="polnochnaya"] .rating-stars::before {
+  content: "\2605";
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--mk-orange);
+  -webkit-text-stroke: 1.5px var(--mk-ink);
+  display: inline-block;
+  animation: mk-wiggle 2.4s ease-in-out infinite;
+}
+
+html[data-theme="polnochnaya"] .rating-value {
+  font-family: var(--mk-font-head);
+  font-size: 1.7rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .stats-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  padding-bottom: 0.2rem;
+}
+
+html[data-theme="polnochnaya"] .stat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.36rem 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 3px solid var(--mk-ink);
+  border-radius: 999px;
+}
+
+html[data-theme="polnochnaya"] .rank-badge {
+  background-color: var(--mk-yellow);
+}
+
+html[data-theme="polnochnaya"] .popularity-badge {
+  background-color: var(--mk-mint);
+}
+
+html[data-theme="polnochnaya"] .anime-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] .detail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-bottom: 3px dotted var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .detail-row:last-of-type {
+  border-bottom: 0;
+}
+
+html[data-theme="polnochnaya"] .detail-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  min-width: 150px;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: underline wavy var(--mk-pink);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 6px;
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .detail-value {
+  min-width: 0;
+  font-size: 1.05rem;
+  line-height: 1.45;
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 3px solid var(--mk-ink);
+  border-radius: 999px;
+  box-shadow: 3px 3px 0 var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .status-ongoing {
+  background-color: var(--mk-mint);
+}
+
+html[data-theme="polnochnaya"] .status-released {
+  background-color: var(--mk-sky);
+}
+
+html[data-theme="polnochnaya"] .status-finished {
+  background-color: var(--mk-lav);
+}
+
+html[data-theme="polnochnaya"] .status-announced {
+  background-color: var(--mk-yellow);
+}
+
+html[data-theme="polnochnaya"] .genres-list,
+html[data-theme="polnochnaya"] .studios-list,
+html[data-theme="polnochnaya"] .external-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  padding: 0.2rem 0.3rem 0.4rem 0;
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] .genre-tag-large,
+html[data-theme="polnochnaya"] .studio-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 1rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--mk-ink);
+  background-color: var(--mk-pink-soft);
+  border: 3px solid var(--mk-ink);
+  border-radius: 999px;
+  box-shadow: 3px 3px 0 var(--mk-ink);
+  transition: var(--mk-tr);
+}
+
+html[data-theme="polnochnaya"] .studio-tag {
+  background-color: var(--mk-sky-soft);
+}
+
+html[data-theme="polnochnaya"] .genre-tag-large.clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+html[data-theme="polnochnaya"] .genre-tag-large.clickable:hover {
+  background-color: var(--mk-yellow);
+  box-shadow: 5px 5px 0 var(--mk-ink);
+  translate: -2px -3px;
+  rotate: -2deg;
+}
+
+html[data-theme="polnochnaya"] .genre-tag-large.clickable:active {
+  background-color: var(--mk-yellow);
+  box-shadow: 1px 1px 0 var(--mk-ink);
+  translate: 2px 2px;
+  scale: 0.96;
+}
+
+html[data-theme="polnochnaya"] .genre-tag-large.clickable:focus-visible {
+  outline: 3px solid var(--mk-focus);
+  outline-offset: 4px;
+}
+
+/* === Модалка === */
+
+html[data-theme="polnochnaya"] .create-playlist-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+html[data-theme="polnochnaya"] .create-playlist-modal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  width: min(100%, 460px);
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  padding: 1.9rem 1.7rem 1.6rem;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: var(--mk-bw-l) solid var(--mk-ink);
+  border-radius: var(--mk-r-xl);
+  box-shadow: 10px 10px 0 var(--mk-ink);
+  animation: mk-pop 0.35s var(--mk-bounce) both;
+}
+
+html[data-theme="polnochnaya"] .create-playlist-modal h3 {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 0.4rem 1.1rem;
+  font-family: var(--mk-font-head);
+  font-size: 1.05rem;
+  font-weight: 900;
+  line-height: 1.3;
+  color: var(--mk-ink);
+  background-color: var(--mk-sky);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-sm);
+  box-shadow: 3px 3px 0 var(--mk-ink);
+  rotate: -1.5deg;
+  overflow-wrap: anywhere;
+}
+
+html[data-theme="polnochnaya"] .create-playlist-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  min-height: 46px;
+  cursor: pointer;
+  font-size: 1.02rem;
+  font-weight: 400;
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .create-playlist-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 0.4rem 0.4rem 0.6rem;
+}
+
+html[data-theme="polnochnaya"] .create-playlist-btn.disabled,
+html[data-theme="polnochnaya"] .create-playlist-btn-submit:disabled {
+  border-style: dashed;
+}
+
+/* === Секции на странице аниме === */
+
+html[data-theme="polnochnaya"] .anime-description-section,
+html[data-theme="polnochnaya"] .anime-screenshots-section,
+html[data-theme="polnochnaya"] .franchise-section,
+html[data-theme="polnochnaya"] .dubs-section {
+  position: relative;
+  padding: 2.9rem 2rem 2.1rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='14' viewBox='0 0 48 14'%3E%3Cpath d='M0 7Q12 -1 24 7T48 7' fill='none' stroke='%23000' stroke-width='3.4' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: 0 0;
+  background-size: 48px 14px;
+  scroll-margin-top: 84px;
+}
+
+html[data-theme="polnochnaya"] .anime-description-section h3,
+html[data-theme="polnochnaya"] .anime-screenshots-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 0 1.3rem;
+  padding: 0.45rem 1.2rem 0.45rem 1rem;
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--mk-ink);
+  background-color: var(--mk-pink);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-sm);
+  box-shadow: 4px 4px 0 var(--mk-ink);
+  rotate: -1deg;
+}
+
+html[data-theme="polnochnaya"] .anime-screenshots-section h3 {
+  background-color: var(--mk-sky);
+  rotate: 1deg;
+}
+
+html[data-theme="polnochnaya"] .anime-description-section h3 svg,
+html[data-theme="polnochnaya"] .anime-screenshots-section h3 svg {
+  flex-shrink: 0;
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .anime-description-full {
+  max-width: 74ch;
+  margin: 0;
+  padding: 1.3rem 1.5rem;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+  box-shadow: 5px 5px 0 var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .screenshots-carousel {
+  position: relative;
+}
+
+html[data-theme="polnochnaya"] .screenshots-grid {
+  display: flex;
+  gap: 1.3rem;
+  overflow-x: auto;
+  padding: 14px 14px 28px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-color: #000 #fff;
+}
+
+html[data-theme="polnochnaya"] .screenshots-grid::-webkit-scrollbar {
+  height: 16px;
+}
+
+html[data-theme="polnochnaya"] .screenshots-grid::-webkit-scrollbar-track {
+  background-color: var(--mk-cream);
+  border: 0;
+}
+
+html[data-theme="polnochnaya"] .screenshots-grid::-webkit-scrollbar-thumb {
+  background-color: var(--mk-sky);
+  border: 3px solid var(--mk-ink);
+  border-radius: 10px;
+}
+
+html[data-theme="polnochnaya"] .screenshot-wrapper {
+  position: relative;
+  flex: 0 0 min(320px, 100%);
+  width: min(320px, 100%);
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  cursor: pointer;
+  scroll-snap-align: center;
+  background-color: var(--mk-sky-soft);
+  border: var(--mk-bw-l) solid var(--mk-ink);
+  border-radius: var(--mk-r-md);
+  box-shadow: 6px 6px 0 var(--mk-ink);
+  transition: var(--mk-tr);
+  -webkit-tap-highlight-color: transparent;
+}
+
+html[data-theme="polnochnaya"] .screenshot-wrapper:hover {
+  box-shadow: 10px 10px 0 var(--mk-ink);
+  translate: -3px -3px;
+  rotate: -1.5deg;
+}
+
+html[data-theme="polnochnaya"] .screenshot-wrapper:active {
+  box-shadow: 2px 2px 0 var(--mk-ink);
+  translate: 3px 3px;
+  scale: 0.98;
+}
+
+html[data-theme="polnochnaya"] .screenshot-wrapper:focus-visible {
+  outline: 3px solid var(--mk-focus);
+  outline-offset: 5px;
+}
+
+html[data-theme="polnochnaya"] .screenshot-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.7);
+}
+
+html[data-theme="polnochnaya"] .screenshot-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mk-ink);
+  background-color: rgba(255, 255, 255, 0.92);
+  border-bottom: 6px solid var(--mk-ink);
+  transform: translateY(-101%);
+  transition: transform 0.25s var(--mk-bounce);
+}
+
+html[data-theme="polnochnaya"] .screenshot-wrapper:focus-visible .screenshot-overlay,
+html[data-theme="polnochnaya"] .screenshot-wrapper:hover .screenshot-overlay {
+  transform: translateY(0);
+}
+
+html[data-theme="polnochnaya"] .screenshot-nav-btn {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+}
+
+html[data-theme="polnochnaya"] .screenshot-nav-btn-left {
+  left: -16px;
+}
+
+html[data-theme="polnochnaya"] .screenshot-nav-btn-right {
+  right: -16px;
+}
+
+html[data-theme="polnochnaya"] .franchise-section .carousel-section {
+  margin-bottom: 0;
+}
+
+html[data-theme="polnochnaya"] .franchise-section .carousel-arrow {
+  opacity: 1;
+}
+
+html[data-theme="polnochnaya"] .franchise-slide {
+  position: relative;
+  flex: 0 0 200px;
+  width: 200px;
+  height: 380px;
+  border-radius: var(--mk-r-md);
+  transition: var(--mk-tr);
+}
+
+html[data-theme="polnochnaya"] .franchise-slide .anime-card {
+  width: 100%;
+  height: 100%;
+}
+
+html[data-theme="polnochnaya"] .franchise-slide .anime-poster {
+  aspect-ratio: 2 / 3;
+  flex: 0 0 auto;
+}
+
+html[data-theme="polnochnaya"] .franchise-slide .anime-info {
+  flex: 1 1 auto;
+}
+
+html[data-theme="polnochnaya"] .franchise-slide .anime-genres {
+  display: none;
+}
+
+html[data-theme="polnochnaya"] .franchise-slide.is-current {
+  outline: 4px solid var(--mk-pink);
+  outline-offset: 5px;
+  border-radius: var(--mk-r-lg);
+}
+
+html[data-theme="polnochnaya"] .franchise-current-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--mk-ink);
+  background-color: var(--mk-yellow);
+  border: 2px solid var(--mk-ink);
+  border-radius: 999px;
+  box-shadow: 2px 2px 0 var(--mk-ink);
+  rotate: 4deg;
+  pointer-events: none;
+}
+
+/* === Озвучки === */
+
+html[data-theme="polnochnaya"] .dubs-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+html[data-theme="polnochnaya"] .dubs-title {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: fit-content;
+  margin: 0;
+  padding: 0.45rem 1.2rem 0.45rem 1rem;
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--mk-ink);
+  background-color: var(--mk-mint);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-sm);
+  box-shadow: 4px 4px 0 var(--mk-ink);
+  rotate: -1deg;
+}
+
+html[data-theme="polnochnaya"] .dubs-title svg {
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .dubs-count,
+html[data-theme="polnochnaya"] .filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mk-font-head);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  border-radius: 50%;
+}
+
+html[data-theme="polnochnaya"] .dubs-count {
+  min-width: 26px;
+  height: 26px;
+  padding: 0 7px;
+  font-size: 0.74rem;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 2px solid var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .filter-count {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  font-size: 0.7rem;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 2px solid var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .dubs-filter-btn:not(.active) .filter-count {
+  background-color: var(--mk-yellow);
+}
+
+html[data-theme="polnochnaya"] .dubs-filter-btn .filter-count {
+  margin-left: 0.1rem;
+}
+
+html[data-theme="polnochnaya"] .dubs-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.3rem 0.4rem 0.5rem;
+}
+
+html[data-theme="polnochnaya"] .dubs-list,
+html[data-theme="polnochnaya"] .dubs-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 0.2rem 0.4rem 0.6rem 0.2rem;
+}
+
+html[data-theme="polnochnaya"] .dub-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1.1rem;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+  box-shadow: 4px 4px 0 var(--mk-ink);
+  cursor: pointer;
+  transition: var(--mk-tr);
+  -webkit-tap-highlight-color: transparent;
+}
+
+html[data-theme="polnochnaya"] .dub-item:hover {
+  background-color: var(--mk-yellow-soft);
+  box-shadow: 8px 8px 0 var(--mk-ink);
+  translate: -2px -3px;
+  rotate: -0.6deg;
+}
+
+html[data-theme="polnochnaya"] .dub-item:hover .dub-avatar {
+  background-color: var(--mk-yellow);
+}
+
+html[data-theme="polnochnaya"] .dub-item:hover .dub-action {
+  background-color: var(--mk-pink);
+  rotate: 12deg;
+}
+
+html[data-theme="polnochnaya"] .dub-item:active {
+  box-shadow: 1px 1px 0 var(--mk-ink);
+  translate: 3px 3px;
+  rotate: 0deg;
+  scale: 0.99;
+}
+
+html[data-theme="polnochnaya"] .dub-item:focus-visible {
+  outline: 3px solid var(--mk-focus);
+  outline-offset: 5px;
+}
+
+html[data-theme="polnochnaya"] .dub-item:has(:focus-visible) {
+  background-color: var(--mk-yellow-soft);
+  box-shadow: 7px 7px 0 var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .dub-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 46px;
+  height: 54px;
+  overflow: hidden;
+  font-family: var(--mk-font-head);
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--mk-ink);
+  background-color: var(--mk-pink);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-sm);
+  transition: var(--mk-tr);
+}
+
+html[data-theme="polnochnaya"] .dub-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.7);
+}
+
+html[data-theme="polnochnaya"] .dub-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] .dub-name {
+  overflow: hidden;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: inherit;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+html[data-theme="polnochnaya"] .dub-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+html[data-theme="polnochnaya"] .dub-tag {
+  padding: 0.12rem 0.65rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 2px solid var(--mk-ink);
+  border-radius: 999px;
+  transition: var(--mk-tr);
+}
+
+html[data-theme="polnochnaya"] .dub-tag.tag-voice { background-color: var(--mk-mint); }
+html[data-theme="polnochnaya"] .dub-tag.tag-subtitles { background-color: var(--mk-sky); }
+html[data-theme="polnochnaya"] .dub-tag.tag-raw { background-color: var(--mk-lav); }
+html[data-theme="polnochnaya"] .dub-tag.tag-quality { background-color: var(--mk-yellow); }
+
+html[data-theme="polnochnaya"] .dub-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  color: var(--mk-ink);
+  background-color: var(--mk-yellow);
+  border: 3px solid var(--mk-ink);
+  border-radius: 50%;
+  transition: var(--mk-tr);
+}
+
+html[data-theme="polnochnaya"] .dub-skeleton {
+  height: 70px;
+  background: linear-gradient(90deg, #ddd 0%, #f5f5f5 50%, #ddd 100%);
+  background-size: 200% 100%;
+  border: 3px dashed var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+  animation: mk-shimmer 2.2s linear infinite;
+}
+
+html[data-theme="polnochnaya"] .dubs-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 3px dashed var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+}
+
+html[data-theme="polnochnaya"] .dubs-empty svg {
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .dubs-empty p {
+  margin: 0;
+  padding: 0.25rem 0.9rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--mk-ink);
+  background-color: var(--mk-yellow);
+  border: 2px solid var(--mk-ink);
+  border-radius: var(--mk-r-sm);
+}
+
+/* === Главная === */
+
+html[data-theme="polnochnaya"] .home-page {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: var(--space-6, 1.5rem) var(--space-8, 2rem);
+}
+
+html[data-theme="polnochnaya"] .home-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10, 3rem);
+}
+
+/* Каждая подборка получает свой цвет заголовка и иконки */
+html[data-theme="polnochnaya"] .home-content > .rc { --rc-c: var(--mk-yellow); }
+html[data-theme="polnochnaya"] .home-content > .rc:nth-child(4n + 2) { --rc-c: var(--mk-pink); }
+html[data-theme="polnochnaya"] .home-content > .rc:nth-child(4n + 3) { --rc-c: var(--mk-mint); }
+html[data-theme="polnochnaya"] .home-content > .rc:nth-child(4n + 4) { --rc-c: var(--mk-sky); }
+
+html[data-theme="polnochnaya"] .home-content .rc {
+  background-color: transparent;
+  background-image: none;
+  border: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html[data-theme="polnochnaya"] .error-state {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4, 1rem);
+  max-width: 480px;
+  margin: 80px auto;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: var(--mk-bw-l) solid var(--mk-ink);
+  border-radius: var(--mk-r-xl);
+  box-shadow: 9px 9px 0 var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .error-icon {
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .error-icon svg {
+  stroke-width: 2.4;
+}
+
+html[data-theme="polnochnaya"] .error-title {
+  display: inline-block;
+  margin: 0;
+  padding: 0.35rem 1.1rem;
+  font-family: var(--mk-font-head);
+  font-size: var(--text-lg, 1.1rem);
+  font-weight: 900;
+  color: var(--mk-ink);
+  background-color: var(--mk-red);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-sm);
+  box-shadow: 3px 3px 0 var(--mk-ink);
+  rotate: -1.5deg;
+}
+
+html[data-theme="polnochnaya"] .error-sub {
+  margin: 0;
+  max-width: 360px;
+  font-size: var(--text-sm, 1.02rem);
+  line-height: 1.5;
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .home-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10, 3rem);
+}
+
+html[data-theme="polnochnaya"] .hero-skeleton {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 620px;
+  overflow: hidden;
+  background-color: var(--mk-paper);
+  border: var(--mk-bw-l) solid var(--mk-ink);
+  border-radius: var(--mk-r-xl);
+  box-shadow: 9px 9px 0 var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .hero-skeleton-bg {
+  position: absolute;
+  inset: 0;
+  background-color: var(--mk-yellow-soft);
+}
+
+html[data-theme="polnochnaya"] .hero-skeleton-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+  padding: var(--space-8, 2rem);
+}
+
+html[data-theme="polnochnaya"] .skeleton-header {
+  margin-bottom: 1rem;
+}
+
+html[data-theme="polnochnaya"] .skeleton-track {
+  display: flex;
+  gap: 18px;
+  overflow: hidden;
+  padding: 6px 8px 10px 4px;
+}
+
+html[data-theme="polnochnaya"] .skeleton-card {
+  flex: 0 0 180px;
+  overflow: hidden;
+  background-color: var(--mk-paper);
+  border: 3px dashed var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+  box-shadow: 4px 4px 0 var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .skeleton-poster {
+  aspect-ratio: 2 / 3;
+  background: linear-gradient(90deg, #ddd 0%, #f5f5f5 50%, #ddd 100%);
+  background-size: 200% 100%;
+  border-bottom: 3px dashed var(--mk-ink);
+  animation: mk-shimmer 2.2s linear infinite;
+}
+
+html[data-theme="polnochnaya"] .skeleton-info {
+  padding: 12px 13px 14px;
+}
+
+html[data-theme="polnochnaya"] .skeleton-title-bar,
+html[data-theme="polnochnaya"] .skeleton-line {
+  background: linear-gradient(90deg, #ddd 0%, #f5f5f5 50%, #ddd 100%);
+  background-size: 200% 100%;
+  border-radius: 999px;
+  animation: mk-shimmer 2.2s linear infinite;
+}
+
+html[data-theme="polnochnaya"] .skeleton-title-bar {
+  width: 240px;
+  max-width: 100%;
+  height: 30px;
+  margin-bottom: 14px;
+}
+
+html[data-theme="polnochnaya"] .skeleton-line {
+  height: 14px;
+  margin-top: 10px;
+}
+
+html[data-theme="polnochnaya"] .rc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4, 1rem);
+  margin-bottom: var(--space-4, 1.2rem);
+  padding-bottom: 0.3rem;
+}
+
+html[data-theme="polnochnaya"] .rc-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] .rc-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  font-size: 21px;
+  line-height: 1;
+  color: var(--mk-ink);
+  background-color: var(--rc-c, var(--mk-yellow));
+  border: 3px solid var(--mk-ink);
+  border-radius: 50%;
+  box-shadow: 3px 3px 0 var(--mk-ink);
+  transition: var(--mk-tr);
+}
+
+html[data-theme="polnochnaya"] .rc-header:hover .rc-icon {
+  animation: mk-wiggle 0.5s ease-in-out;
+}
+
+html[data-theme="polnochnaya"] .rc-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+html[data-theme="polnochnaya"] .rc-texts {
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] .rc-title {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 0.3rem 1.2rem;
+  font-size: var(--text-xl, 1.3rem);
+  font-weight: 900;
+  color: var(--mk-ink);
+  background-color: var(--rc-c, var(--mk-yellow));
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-sm);
+  box-shadow: 4px 4px 0 var(--mk-ink);
+  rotate: -1deg;
+  overflow-wrap: anywhere;
+}
+
+html[data-theme="polnochnaya"] .rc-desc {
+  display: inline-block;
+  margin: 12px 0 0;
+  padding: 0.15rem 0.8rem;
+  font-size: var(--text-sm, 0.98rem);
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 2px solid var(--mk-ink);
+  border-radius: 999px;
+}
+
+html[data-theme="polnochnaya"] .rc-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3, 0.8rem);
+  padding: 2.5rem var(--space-6, 1.5rem);
+  text-align: center;
+  font-size: var(--text-sm, 1rem);
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 3px dashed var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+}
+
+html[data-theme="polnochnaya"] .rc-empty svg {
+  flex-shrink: 0;
+  color: var(--mk-ink);
+  stroke-width: 2.2;
+}
+
+html[data-theme="polnochnaya"] .rc-empty-title {
+  display: inline-block;
+  padding: 0.2rem 0.9rem;
+  font-weight: 700;
+  color: var(--mk-ink);
+  background-color: var(--mk-yellow);
+  border: 2px solid var(--mk-ink);
+  border-radius: var(--mk-r-sm);
+}
+
+html[data-theme="polnochnaya"] .rc-empty-sub {
+  font-size: 0.95rem;
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .rc-carousel-wrap {
+  position: relative;
+}
+
+html[data-theme="polnochnaya"] .rc-track {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  gap: var(--space-4, 1.3rem);
+  padding: 14px 12px 28px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html[data-theme="polnochnaya"] .rc-track::-webkit-scrollbar {
+  display: none;
+}
+
+html[data-theme="polnochnaya"] .rc-card-wrap {
+  flex: 0 0 220px;
+  width: 220px;
+  scroll-snap-align: start;
+  transition: var(--mk-tr);
+}
+
+html[data-theme="polnochnaya"] .rc-arrow {
+  position: absolute;
+  top: 46%;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%);
+  transition: var(--mk-tr), opacity 0.2s ease-out;
+}
+
+html[data-theme="polnochnaya"] .rc-carousel-wrap:hover .rc-arrow,
+html[data-theme="polnochnaya"] .rc-carousel-wrap:focus-within .rc-arrow {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+html[data-theme="polnochnaya"] .rc-arrow-left {
+  left: -18px;
+}
+
+html[data-theme="polnochnaya"] .rc-arrow-right {
+  right: -18px;
+}
+
+html[data-theme="polnochnaya"] .rc-skel {
+  display: flex;
+  flex: 0 0 220px;
+  flex-direction: column;
+  gap: 10px;
+  width: 220px;
+}
+
+html[data-theme="polnochnaya"] .rc-skel-poster {
+  aspect-ratio: 2 / 3;
+  background: linear-gradient(90deg, #ddd 0%, #f5f5f5 50%, #ddd 100%);
+  background-size: 200% 100%;
+  border: 3px dashed var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+  box-shadow: 4px 4px 0 var(--mk-ink);
+  animation: mk-shimmer 2.2s linear infinite;
+}
+
+html[data-theme="polnochnaya"] .rc-skel-line {
+  width: 85%;
+  height: 13px;
+  background: linear-gradient(90deg, #ddd 0%, #f5f5f5 50%, #ddd 100%);
+  background-size: 200% 100%;
+  border-radius: 999px;
+  animation: mk-shimmer 2.2s linear infinite;
+}
+
+html[data-theme="polnochnaya"] .rc-skel-line.short {
+  width: 60%;
+}
+
+/* === Hero === */
+
+html[data-theme="polnochnaya"] .home-hero {
+  position: relative;
+  overflow: hidden;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: var(--mk-bw-l) solid var(--mk-ink);
+  border-radius: var(--mk-r-xl);
+  box-shadow: 10px 10px 0 var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .hero-bg-wrap {
+  background-color: var(--mk-sky-soft);
+  border-radius: var(--mk-r-xl);
+  overflow: hidden;
+}
+
+html[data-theme="polnochnaya"] .hero-bg-slide {
+  filter: grayscale(1) contrast(1.7);
+  opacity: 1;
+  transition: opacity 0.2s ease-out;
+}
+
+html[data-theme="polnochnaya"] .hero-bg-slide.active {
+  opacity: 1;
+}
+
+html[data-theme="polnochnaya"] .hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--mk-ink);
+  background-color: var(--mk-pink);
+  border: 3px solid var(--mk-ink);
+  border-radius: 999px;
+  box-shadow: 3px 3px 0 var(--mk-ink);
+  rotate: -2deg;
+}
+
+html[data-theme="polnochnaya"] .hero-title {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 0 1rem;
+  padding: 0.35rem 1.2rem;
+  font-size: clamp(1.3rem, 3.4vw, 2.6rem);
+  font-weight: 900;
+  line-height: 1.2;
+  color: var(--mk-ink);
+  background-color: var(--mk-yellow);
+  border: 4px solid var(--mk-ink);
+  border-radius: var(--mk-r-md);
+  box-shadow: 6px 6px 0 var(--mk-ink);
+  text-shadow: none;
+  rotate: -1deg;
+  overflow-wrap: anywhere;
+}
+
+html[data-theme="polnochnaya"] .hero-meta,
+html[data-theme="polnochnaya"] .hero-desc {
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.5rem 1rem;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+  box-shadow: 4px 4px 0 var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .hero-desc {
+  line-height: 1.6;
+  max-width: 64ch;
+}
+
+html[data-theme="polnochnaya"] .hero-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+html[data-theme="polnochnaya"] .hero-genres .genre-tag {
+  padding: 0.2rem 0.8rem;
+  color: var(--mk-ink);
+  background-color: var(--mk-mint);
+  border: 2px solid var(--mk-ink);
+  border-radius: 999px;
+}
+
+html[data-theme="polnochnaya"] .hero-genres .genre-more {
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 2px dashed var(--mk-ink);
+  border-radius: 999px;
+}
+
+html[data-theme="polnochnaya"] .hero-poster .anime-card {
+  background-color: transparent;
+  border: 0;
+  box-shadow: none;
+  transform: none;
+  translate: none;
+  rotate: none;
+}
+
+/* === Карточки: наклейки, которые на наведении поднимаются и качаются === */
+
+html[data-theme="polnochnaya"] .anime-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+  box-shadow: 5px 5px 0 var(--mk-ink);
+  transition: var(--mk-tr);
+  -webkit-tap-highlight-color: transparent;
+}
+
+html[data-theme="polnochnaya"] .anime-card:hover {
+  background-color: var(--mk-yellow-soft);
+  box-shadow: 9px 9px 0 var(--mk-ink);
+  translate: -3px -4px;
+  rotate: -1.2deg;
+}
+
+html[data-theme="polnochnaya"] .anime-card:active {
+  background-color: var(--mk-yellow-soft);
+  box-shadow: 1px 1px 0 var(--mk-ink);
+  translate: 3px 3px;
+  rotate: 0deg;
+  scale: 0.98;
+}
+
+html[data-theme="polnochnaya"] .anime-card:focus-within {
+  outline: 3px dashed var(--mk-focus);
+  outline-offset: 5px;
+}
+
+html[data-theme="polnochnaya"] .anime-card .anime-poster {
+  background-color: var(--mk-sky-soft);
+  border-bottom: 3px solid var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .anime-card .play-btn {
+  width: 48px;
+  height: 48px;
+}
+
+html[data-theme="polnochnaya"] .anime-card .score-badge,
+html[data-theme="polnochnaya"] .score-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 3px 10px;
+  font-family: var(--mk-font-head);
+  font-size: 0.8rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--mk-ink);
+  background-color: var(--mk-yellow);
+  border: 2px solid var(--mk-ink);
+  border-radius: 999px;
+  box-shadow: 2px 2px 0 var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .anime-card .genre-tag,
+html[data-theme="polnochnaya"] .genre-tag {
+  color: var(--mk-ink);
+  background-color: var(--mk-pink-soft);
+  border: 2px solid var(--mk-ink);
+  border-radius: 999px;
+}
+
+html[data-theme="polnochnaya"] .anime-card .anime-title {
+  margin: 0;
+  font-family: var(--mk-font-body);
+  font-size: 14.5px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: inherit;
+  text-shadow: none;
+}
+
+html[data-theme="polnochnaya"] .anime-card .anime-info {
+  padding: 11px 13px 13px;
+}
+
+html[data-theme="polnochnaya"] .anime-card .meta-item,
+html[data-theme="polnochnaya"] .anime-card .progress-text,
+html[data-theme="polnochnaya"] .meta-item,
+html[data-theme="polnochnaya"] .progress-text {
+  font-size: 13px;
+  font-weight: 400;
+  color: inherit;
+}
+
+html[data-theme="polnochnaya"] .anime-card img {
+  filter: grayscale(1) contrast(1.7);
+}
+
+html[data-theme="polnochnaya"] .anime-poster-card {
+  position: relative;
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .anime-poster-card .poster-wrap {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--mk-sky-soft);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+  box-shadow: 5px 5px 0 var(--mk-ink);
+  transition: var(--mk-tr);
+}
+
+html[data-theme="polnochnaya"] .anime-poster-card:hover .poster-wrap {
+  box-shadow: 9px 9px 0 var(--mk-ink);
+  translate: -3px -4px;
+  rotate: -1.2deg;
+}
+
+html[data-theme="polnochnaya"] .anime-poster-card:active .poster-wrap {
+  box-shadow: 1px 1px 0 var(--mk-ink);
+  translate: 3px 3px;
+  rotate: 0deg;
+  scale: 0.98;
+}
+
+html[data-theme="polnochnaya"] .anime-poster-card:focus-within .poster-wrap {
+  outline: 3px dashed var(--mk-focus);
+  outline-offset: 5px;
+}
+
+html[data-theme="polnochnaya"] .anime-poster-card .card-title,
+html[data-theme="polnochnaya"] .col-card .card-title {
+  display: inline-block;
+  margin: 14px 0 0;
+  padding: 0.1rem 0.7rem;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 2px solid var(--mk-ink);
+  border-radius: 999px;
+  text-decoration: none;
+  transition: var(--mk-tr);
+}
+
+html[data-theme="polnochnaya"] .anime-poster-card:hover .card-title {
+  background-color: var(--mk-yellow);
+}
+
+html[data-theme="polnochnaya"] .items-count-badge,
+html[data-theme="polnochnaya"] .duration-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 3px 10px;
+  font-family: var(--mk-font-head);
+  font-size: 0.76rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--mk-ink);
+  background-color: var(--mk-sky);
+  border: 2px solid var(--mk-ink);
+  border-radius: 999px;
+  box-shadow: 2px 2px 0 var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .items-count-badge {
+  background-color: var(--mk-mint);
+}
+
+html[data-theme="polnochnaya"] .items-count-badge svg,
+html[data-theme="polnochnaya"] .duration-badge svg {
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .badge-rank:not(.rank-top),
+html[data-theme="polnochnaya"] .badge-franchise {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  font-family: var(--mk-font-head);
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 2px solid var(--mk-ink);
+  border-radius: 999px;
+}
+
+html[data-theme="polnochnaya"] .badge-franchise {
+  background-color: var(--mk-lav);
+}
+
+html[data-theme="polnochnaya"] .badge-rank.rank-top {
+  color: var(--mk-ink);
+  background-color: var(--mk-yellow);
+  border: 2px solid var(--mk-ink);
+  border-radius: 999px;
+  box-shadow: 2px 2px 0 var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .col-card {
+  position: relative;
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .col-card .card-poster {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--mk-sky-soft);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+  box-shadow: 5px 5px 0 var(--mk-ink);
+  transition: var(--mk-tr);
+}
+
+html[data-theme="polnochnaya"] .col-card:hover .card-poster {
+  box-shadow: 9px 9px 0 var(--mk-ink);
+  translate: -3px -4px;
+  rotate: -1.2deg;
+}
+
+html[data-theme="polnochnaya"] .col-card:active .card-poster {
+  box-shadow: 1px 1px 0 var(--mk-ink);
+  translate: 3px 3px;
+  rotate: 0deg;
+  scale: 0.98;
+}
+
+html[data-theme="polnochnaya"] .col-card .card-title:hover {
+  background-color: var(--mk-yellow);
+}
+
+html[data-theme="polnochnaya"] .col-card .card-title:focus-visible {
+  outline: 3px solid var(--mk-focus);
+  outline-offset: 4px;
+}
+
+html[data-theme="polnochnaya"] .col-card .qa-btn {
+  min-width: 40px;
+  min-height: 40px;
+}
+
+/* Плейлист: стопка из цветных карточек */
+html[data-theme="polnochnaya"] .playlist-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin: 12px 0 0 12px;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+  box-shadow: -6px -6px 0 0 var(--mk-pink), -6px -6px 0 3px var(--mk-ink), -12px -12px 0 0 var(--mk-sky), -12px -12px 0 3px var(--mk-ink), 5px 5px 0 0 var(--mk-ink);
+  transition: var(--mk-tr);
+}
+
+html[data-theme="polnochnaya"] .playlist-card:hover {
+  background-color: var(--mk-yellow-soft);
+  box-shadow: -9px -9px 0 0 var(--mk-pink), -9px -9px 0 3px var(--mk-ink), -18px -18px 0 0 var(--mk-sky), -18px -18px 0 3px var(--mk-ink), 5px 5px 0 0 var(--mk-ink);
+  translate: -2px -2px;
+}
+
+html[data-theme="polnochnaya"] .playlist-card:active {
+  background-color: var(--mk-yellow-soft);
+  translate: 2px 2px;
+  scale: 0.98;
+}
+
+html[data-theme="polnochnaya"] .playlist-card:focus-visible,
+html[data-theme="polnochnaya"] .playlist-card:focus-within {
+  outline: 3px dashed var(--mk-focus);
+  outline-offset: 16px;
+}
+
+html[data-theme="polnochnaya"] .playlist-title {
+  font-family: var(--mk-font-body);
+  font-size: 14.5px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: inherit;
+}
+
+html[data-theme="polnochnaya"] .playlist-cover {
+  aspect-ratio: 3 / 2;
+  background-color: var(--mk-lav-soft);
+  border-bottom: 3px solid var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .result-card {
+  position: relative;
+  overflow: hidden;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+  box-shadow: 5px 5px 0 var(--mk-ink);
+  transition: var(--mk-tr);
+}
+
+html[data-theme="polnochnaya"] .result-card:hover {
+  background-color: var(--mk-yellow-soft);
+  box-shadow: 9px 9px 0 var(--mk-ink);
+  translate: -3px -4px;
+  rotate: -1deg;
+}
+
+html[data-theme="polnochnaya"] .result-card:active {
+  background-color: var(--mk-yellow-soft);
+  box-shadow: 1px 1px 0 var(--mk-ink);
+  translate: 3px 3px;
+  scale: 0.98;
+}
+
+html[data-theme="polnochnaya"] .result-card:focus-within {
+  outline: 3px dashed var(--mk-focus);
+  outline-offset: 5px;
+}
+
+html[data-theme="polnochnaya"] .result-card .poster-wrap {
+  overflow: hidden;
+  background-color: var(--mk-sky-soft);
+  border-bottom: 3px solid var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .result-card .card-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: inherit;
+}
+
+html[data-theme="polnochnaya"] .result-card .chip,
+html[data-theme="polnochnaya"] .chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--mk-ink);
+  background-color: var(--mk-mint-soft);
+  border: 2px solid var(--mk-ink);
+  border-radius: 999px;
+}
+
+/* === Прочее === */
+
+html[data-theme="polnochnaya"] .add-anime-page {
+  padding-bottom: 3rem;
+}
+
+html[data-theme="polnochnaya"] .people-page .skeleton-grid,
+html[data-theme="polnochnaya"] .people-grid {
+  padding: 1.3rem;
+  background-color: var(--mk-paper);
+  border: var(--mk-bw-l) solid var(--mk-ink);
+  border-radius: var(--mk-r-xl);
+  box-shadow: 8px 8px 0 var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .people-page .skeleton-card {
+  background-color: var(--mk-paper);
+  border: 3px dashed var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+  box-shadow: 3px 3px 0 var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .person-card {
+  position: relative;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+  box-shadow: 4px 4px 0 var(--mk-ink);
+  transition: var(--mk-tr);
+  -webkit-tap-highlight-color: transparent;
+}
+
+html[data-theme="polnochnaya"] .person-card:hover {
+  background-color: var(--mk-pink-soft);
+  box-shadow: 8px 8px 0 var(--mk-ink);
+  translate: -2px -4px;
+  rotate: -1.2deg;
+}
+
+html[data-theme="polnochnaya"] .person-card:active {
+  background-color: var(--mk-pink-soft);
+  box-shadow: 1px 1px 0 var(--mk-ink);
+  translate: 3px 3px;
+  scale: 0.98;
+}
+
+html[data-theme="polnochnaya"] .person-card:focus-visible {
+  outline: 3px solid var(--mk-focus);
+  outline-offset: 5px;
+}
+
+html[data-theme="polnochnaya"] .person-name {
+  font-weight: 700;
+  color: inherit;
+}
+
+html[data-theme="polnochnaya"] .person-nickname {
+  font-style: italic;
+  color: inherit;
+}
+
+html[data-theme="polnochnaya"] .person-card img {
+  filter: grayscale(1) contrast(1.7);
+  border-radius: var(--mk-r-md);
+  border: 2px solid var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .people-page .tabs {
+  display: inline-flex;
+  gap: 10px;
+  padding: 12px 10px 0;
+  border-bottom: 5px solid var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .people-page .tab-btn {
+  min-height: 44px;
+  padding: 0 1.2rem;
+  margin-bottom: -5px;
+  border-bottom: 0;
+}
+
+html[data-theme="polnochnaya"] .people-page .tab-btn.active {
+  min-height: 54px;
+}
+
+html[data-theme="polnochnaya"] .people-page .skeleton-avatar {
+  background-color: var(--mk-pink-soft);
+  border-radius: 50%;
+}
+
+html[data-theme="polnochnaya"] .people-page .skeleton-name,
+html[data-theme="polnochnaya"] .people-page .skeleton-role {
+  background: linear-gradient(90deg, #ddd 0%, #f5f5f5 50%, #ddd 100%);
+  background-size: 200% 100%;
+  border-radius: 999px;
+  animation: mk-shimmer 2.2s linear infinite;
+}
+
+html[data-theme="polnochnaya"] .pagination-btn:disabled,
+html[data-theme="polnochnaya"] .pagination-btn.disabled {
+  border-style: dashed;
+}
+
+html[data-theme="polnochnaya"] .page-number.active {
+  min-height: 48px;
+}
+
+/* === Достижения === */
+
+html[data-theme="polnochnaya"] .achievements-manager {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 24px;
+  min-height: 560px;
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .am-sidebar,
+html[data-theme="polnochnaya"] .am-main {
+  position: relative;
+  background-color: var(--mk-paper);
+  border: var(--mk-bw-l) solid var(--mk-ink);
+  box-shadow: 8px 8px 0 var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .am-sidebar {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--mk-r-xl);
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] .am-main {
+  display: flex;
+  padding: 26px;
+  border-radius: var(--mk-r-xl);
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] .am-sidebar-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px;
+  color: var(--mk-ink);
+  background-color: var(--mk-lav);
+  border-bottom: 4px solid var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .am-search {
+  flex: 1 1 140px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 0 14px;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 3px solid var(--mk-ink);
+  border-radius: 999px;
+  box-shadow: 3px 3px 0 var(--mk-ink);
+  transition: var(--mk-tr);
+}
+
+html[data-theme="polnochnaya"] .am-search:focus-within {
+  box-shadow: 5px 5px 0 var(--mk-pink), 5px 5px 0 3px var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .am-search input {
+  flex: 1;
+  min-width: 0;
+  min-height: 42px;
+  padding: 0;
+  font-family: var(--mk-font-body);
+  font-size: 14.5px;
+  color: var(--mk-ink);
+  background-color: transparent;
+  border: 0;
+  caret-color: var(--mk-pink);
+}
+
+html[data-theme="polnochnaya"] .am-list {
+  flex: 1;
+  padding: 14px 14px 18px;
+  overflow-y: auto;
+  scrollbar-color: #000 #fff;
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] .am-list::-webkit-scrollbar,
+html[data-theme="polnochnaya"] .am-icon-grid::-webkit-scrollbar {
+  width: 14px;
+}
+
+html[data-theme="polnochnaya"] .am-list::-webkit-scrollbar-thumb,
+html[data-theme="polnochnaya"] .am-icon-grid::-webkit-scrollbar-thumb {
+  background-color: var(--mk-pink);
+  border: 3px solid var(--mk-ink);
+  border-radius: 10px;
+}
+
+html[data-theme="polnochnaya"] .am-list::-webkit-scrollbar-track,
+html[data-theme="polnochnaya"] .am-icon-grid::-webkit-scrollbar-track {
+  background-color: var(--mk-cream);
+}
+
+html[data-theme="polnochnaya"] .am-list-loading,
+html[data-theme="polnochnaya"] .am-empty-list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px 12px;
+  font-weight: 700;
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .am-empty-list {
+  flex-direction: column;
+  margin: 8px;
+  padding: 2rem 14px;
+  text-align: center;
+  background-color: var(--mk-paper);
+  border: 3px dashed var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+}
+
+html[data-theme="polnochnaya"] .am-list-loading {
+  background-color: var(--mk-yellow-soft);
+  border-radius: var(--mk-r-md);
+}
+
+html[data-theme="polnochnaya"] .am-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 9px 12px;
+  margin-bottom: 14px;
+  color: var(--mk-ink);
+  text-align: left;
+  background-color: var(--mk-paper);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+  box-shadow: 3px 3px 0 var(--mk-ink);
+  cursor: pointer;
+  transition: var(--mk-tr);
+}
+
+html[data-theme="polnochnaya"] .am-item:hover {
+  background-color: var(--mk-yellow-soft);
+  box-shadow: 6px 6px 0 var(--mk-ink);
+  translate: -2px -3px;
+  rotate: -0.8deg;
+}
+
+html[data-theme="polnochnaya"] .am-item:hover .am-item-icon {
+  background-color: var(--mk-yellow);
+}
+
+html[data-theme="polnochnaya"] .am-item:active {
+  box-shadow: 1px 1px 0 var(--mk-ink);
+  translate: 2px 2px;
+  rotate: 0deg;
+  scale: 0.98;
+}
+
+html[data-theme="polnochnaya"] .am-item:focus-visible {
+  outline: 3px solid var(--mk-focus);
+  outline-offset: 5px;
+}
+
+html[data-theme="polnochnaya"] .am-item.active {
+  background-color: var(--mk-pink-soft);
+  box-shadow: 5px 5px 0 var(--mk-pink), 5px 5px 0 3px var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .am-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 50px;
+  color: var(--mk-ink);
+  background-color: var(--mk-mint);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-sm);
+  transition: var(--mk-tr);
+}
+
+html[data-theme="polnochnaya"] .am-item.active .am-item-icon {
+  background-color: var(--mk-yellow);
+}
+
+html[data-theme="polnochnaya"] .am-item-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+html[data-theme="polnochnaya"] .am-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] .am-item-name {
+  overflow: hidden;
+  font-size: 14.5px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html[data-theme="polnochnaya"] .am-inactive {
+  display: inline-block;
+  padding: 2px 10px;
+  margin-left: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--mk-ink);
+  background-color: var(--mk-lav);
+  border: 2px solid var(--mk-ink);
+  border-radius: 999px;
+  vertical-align: 1px;
+}
+
+html[data-theme="polnochnaya"] .am-item-meta {
+  overflow: hidden;
+  font-size: 12.5px;
+  color: inherit;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html[data-theme="polnochnaya"] .am-sidebar-footer {
+  padding: 12px 16px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--mk-ink);
+  background-color: var(--mk-yellow);
+  border-top: 4px solid var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .am-main-empty {
+  margin: auto;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  font-weight: 700;
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .am-main-empty svg {
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .am-main-empty p {
+  display: inline-block;
+  margin: 12px 0 0;
+  padding: 0.25rem 1rem;
+  color: var(--mk-ink);
+  background-color: var(--mk-yellow);
+  border: 2px solid var(--mk-ink);
+  border-radius: var(--mk-r-sm);
+}
+
+html[data-theme="polnochnaya"] .am-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: 100%;
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] .am-editor-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-bottom: 18px;
+  border-bottom: 3px dotted var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .am-editor-head h3 {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 0.35rem 1.1rem;
+  font-family: var(--mk-font-head);
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1.3;
+  color: var(--mk-ink);
+  background-color: var(--mk-pink);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-sm);
+  box-shadow: 3px 3px 0 var(--mk-ink);
+  rotate: -1deg;
+  overflow-wrap: anywhere;
+}
+
+html[data-theme="polnochnaya"] .am-head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 4px 6px 8px 4px;
+}
+
+html[data-theme="polnochnaya"] .am-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+html[data-theme="polnochnaya"] .am-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+html[data-theme="polnochnaya"] .am-value {
+  max-width: 130px;
+}
+
+html[data-theme="polnochnaya"] .am-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] .am-field label {
+  width: fit-content;
+  font-size: 14.5px;
+  font-weight: 700;
+  text-decoration: underline wavy var(--mk-pink);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 5px;
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .am-field:has(:focus-visible) label,
+html[data-theme="polnochnaya"] .am-field:focus-within label {
+  text-decoration-style: solid;
+}
+
+html[data-theme="polnochnaya"] .am-icon-area {
+  gap: 14px;
+}
+
+html[data-theme="polnochnaya"] .am-icon-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 88px;
+  color: var(--mk-ink);
+  background-color: var(--mk-mint);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+  box-shadow: 5px 5px 0 var(--mk-ink);
+  rotate: -3deg;
+}
+
+html[data-theme="polnochnaya"] .am-icon-preview svg {
+  width: 24px;
+  height: 24px;
+}
+
+html[data-theme="polnochnaya"] .am-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+  gap: 10px;
+  max-height: 170px;
+  padding: 12px;
+  overflow-y: auto;
+  background-color: var(--mk-paper);
+  border: 3px dashed var(--mk-ink);
+  border-radius: var(--mk-r-lg);
+  scrollbar-color: #000 #fff;
+}
+
+html[data-theme="polnochnaya"] .am-icon-grid:focus-within {
+  border-style: solid;
+}
+
+html[data-theme="polnochnaya"] .am-icon-choice {
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .am-icon-choice.active {
+  color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .am-error {
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--mk-ink);
+  background-color: var(--mk-red);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-md);
+}
+
+/* === Заголовки страниц === */
+
+html[data-theme="polnochnaya"] .people-page h1,
+html[data-theme="polnochnaya"] .playlists-page h1,
+html[data-theme="polnochnaya"] .collection-page h1,
+html[data-theme="polnochnaya"] .add-anime-page h1 {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 0 1.3rem;
+  padding: 0.35rem 1.3rem;
+  font-size: clamp(1.2rem, 2.8vw, 1.9rem);
+  font-weight: 900;
+  color: var(--mk-ink);
+  background-color: var(--mk-orange);
+  border: 4px solid var(--mk-ink);
+  border-radius: var(--mk-r-md);
+  box-shadow: 6px 6px 0 var(--mk-ink);
+  rotate: -1deg;
+}
+
+html[data-theme="polnochnaya"] .people-page h2,
+html[data-theme="polnochnaya"] .playlists-page h2,
+html[data-theme="polnochnaya"] .collection-page h2,
+html[data-theme="polnochnaya"] .add-anime-page h2 {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 0 1rem;
+  padding: 0.25rem 1rem;
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  font-weight: 900;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border: 3px solid var(--mk-ink);
+  border-radius: var(--mk-r-sm);
+  box-shadow: 3px 3px 0 var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .people-page p,
+html[data-theme="polnochnaya"] .playlists-page p,
+html[data-theme="polnochnaya"] .collection-page p,
+html[data-theme="polnochnaya"] .add-anime-page p {
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.2rem 0.9rem;
+  line-height: 1.5;
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  border-radius: var(--mk-r-md);
+}
+
+/* === SVG внутри кнопок === */
+
+html[data-theme="polnochnaya"] :is(.btn, .btn-outline, .btn-primary, .btn-secondary, .btn-ghost, .btn-danger, .discuss-btn, .watch-button, .create-playlist-btn, .create-playlist-btn-cancel, .create-playlist-btn-submit, .am-btn, .am-create-btn, .rc-view-all, .retry-btn, .btn-retry, .catalog-retry, .dubs-reset-btn, .btn-add, .btn-add-all, .external-link, .back-link, .pagination-btn, .page-number, .qa-btn, .dubs-filter-btn, .kind-chip, .tab-btn, .av-tab, .screenshot-nav-btn, .screenshot-nav-btn-left, .screenshot-nav-btn-right, .rc-arrow, .rc-arrow-left, .rc-arrow-right, .hero-arrow, .carousel-arrow, .am-icon-choice, .play-btn) svg {
+  width: 1.15em;
+  height: 1.15em;
+  flex-shrink: 0;
+}
+
+html[data-theme="polnochnaya"] .rc-arrow svg,
+html[data-theme="polnochnaya"] .hero-arrow svg,
+html[data-theme="polnochnaya"] .screenshot-nav-btn svg,
+html[data-theme="polnochnaya"] .carousel-arrow svg,
+html[data-theme="polnochnaya"] .play-btn svg {
+  width: 1.35em;
+  height: 1.35em;
+}
+
+html[data-theme="polnochnaya"] .status-badge svg,
+html[data-theme="polnochnaya"] .genre-tag-large svg,
+html[data-theme="polnochnaya"] .studio-tag svg {
+  width: 1em;
+  height: 1em;
+}
+
+html[data-theme="polnochnaya"] .stat-badge svg,
+html[data-theme="polnochnaya"] .detail-label svg,
+html[data-theme="polnochnaya"] .rating-badge svg,
+html[data-theme="polnochnaya"] .rank-badge svg,
+html[data-theme="polnochnaya"] .popularity-badge svg {
+  flex-shrink: 0;
+  color: currentColor;
+}
+
+html[data-theme="polnochnaya"] .action-buttons .btn svg,
+html[data-theme="polnochnaya"] .action-buttons button svg {
+  width: 1.15em;
+  height: 1.15em;
+}
+
+/* === Ссылки в контенте === */
+
+html[data-theme="polnochnaya"] .anime-card a,
+html[data-theme="polnochnaya"] .anime-poster-card a,
+html[data-theme="polnochnaya"] .col-card a,
+html[data-theme="polnochnaya"] .playlist-card a,
+html[data-theme="polnochnaya"] .result-card a,
+html[data-theme="polnochnaya"] .person-card a {
+  color: inherit;
+  text-decoration: none;
+}
+
+html[data-theme="polnochnaya"] .anime-card a:focus-visible,
+html[data-theme="polnochnaya"] .anime-poster-card a:focus-visible,
+html[data-theme="polnochnaya"] .col-card a:focus-visible,
+html[data-theme="polnochnaya"] .playlist-card a:focus-visible,
+html[data-theme="polnochnaya"] .result-card a:focus-visible,
+html[data-theme="polnochnaya"] .person-card a:focus-visible {
+  outline: 3px solid var(--mk-focus);
+  outline-offset: 4px;
+}
+
+html[data-theme="polnochnaya"] .playlist-cover img,
+html[data-theme="polnochnaya"] .poster-wrap img,
+html[data-theme="polnochnaya"] .card-poster img,
+html[data-theme="polnochnaya"] .anime-poster img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.7);
+}
+
+html[data-theme="polnochnaya"] .detail-value a,
+html[data-theme="polnochnaya"] .anime-description-full a,
+html[data-theme="polnochnaya"] .am-main-empty a,
+html[data-theme="polnochnaya"] .rc-empty a,
+html[data-theme="polnochnaya"] .dubs-empty a {
+  color: var(--mk-ink);
+  text-decoration: underline wavy var(--mk-pink);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 4px;
+  transition: var(--mk-tr);
+}
+
+html[data-theme="polnochnaya"] .detail-value a:hover,
+html[data-theme="polnochnaya"] .anime-description-full a:hover,
+html[data-theme="polnochnaya"] .am-main-empty a:hover,
+html[data-theme="polnochnaya"] .rc-empty a:hover,
+html[data-theme="polnochnaya"] .dubs-empty a:hover {
+  color: var(--mk-ink);
+  background-color: var(--mk-yellow);
+  text-decoration-color: var(--mk-ink);
+}
+
+html[data-theme="polnochnaya"] .detail-value a:focus-visible,
+html[data-theme="polnochnaya"] .anime-description-full a:focus-visible,
+html[data-theme="polnochnaya"] .am-main-empty a:focus-visible,
+html[data-theme="polnochnaya"] .rc-empty a:focus-visible,
+html[data-theme="polnochnaya"] .dubs-empty a:focus-visible {
+  outline: 3px solid var(--mk-focus);
+  outline-offset: 3px;
+}
+
+html[data-theme="polnochnaya"] .anime-description-full p {
+  margin: 0 0 1em;
+}
+
+html[data-theme="polnochnaya"] .anime-description-full p:last-child {
+  margin-bottom: 0;
+}
+
+html[data-theme="polnochnaya"] .anime-description-full strong,
+html[data-theme="polnochnaya"] .detail-value strong {
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--mk-yellow);
+  text-decoration-thickness: 4px;
+  text-underline-offset: 3px;
+}
+
+html[data-theme="polnochnaya"] .anime-description-full em {
+  font-style: italic;
+}
+
+html[data-theme="polnochnaya"] .detail-value ul,
+html[data-theme="polnochnaya"] .detail-value ol {
+  margin: 0;
+  padding-left: 1.3rem;
+}
+
+html[data-theme="polnochnaya"] .detail-value li {
+  margin: 0.2rem 0;
+}
+
+html[data-theme="polnochnaya"] .rc {
+  position: relative;
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] .create-playlist-checkbox:has(input:checked) {
+  font-weight: 700;
+  text-decoration: underline wavy var(--mk-pink);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 5px;
+}
+
+html[data-theme="polnochnaya"] .create-playlist-checkbox:has(input:focus-visible) {
+  outline: 3px solid var(--mk-focus);
+  outline-offset: 4px;
+}
+
+html[data-theme="polnochnaya"] .anime-card:has(.play-btn:focus-visible) {
+  background-color: var(--mk-yellow-soft);
+}
+
+html[data-theme="polnochnaya"] .am-search:has(input:focus-visible) {
+  outline: 3px dashed var(--mk-focus);
+  outline-offset: 4px;
+}
+
+html[data-theme="polnochnaya"] .detail-header .back-link {
+  margin-bottom: 1.5rem;
+}
+
+html[data-theme="polnochnaya"] .anime-details .external-links,
+html[data-theme="polnochnaya"] .anime-details .genres-list,
+html[data-theme="polnochnaya"] .anime-details .studios-list {
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] [hidden] {
+  display: none;
+}
+
+html[data-theme="polnochnaya"] .page-size-select option,
+html[data-theme="polnochnaya"] .am-field select option {
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+}
+
+html[data-theme="polnochnaya"] .am-field select optgroup {
+  color: var(--mk-ink);
+  background-color: var(--mk-paper);
+  font-weight: 700;
+}
+
+/* ============================================================
+   РЕЗИНОВЫЙ ШЛАНГ -слой чёрно-белых состояний и движения.
+   Всё надутое, как шланг: толстый чёрный контур, круглые формы,
+   пружинистое «сплющивание и растяжение» на наведении.
+   ============================================================ */
+
+@keyframes mk-hose {
+  0%   { scale: 1 1; }
+  25%  { scale: 1.07 0.92; }
+  50%  { scale: 0.96 1.05; }
+  75%  { scale: 1.02 0.98; }
+  100% { scale: 1 1; }
+}
+
+@keyframes mk-bob {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 -4px; }
+}
+
+@keyframes mk-grain {
+  0%   { background-position: 0 0; }
+  20%  { background-position: -41px 23px; }
+  40%  { background-position: 27px -57px; }
+  60%  { background-position: -73px -19px; }
+  80%  { background-position: 52px 64px; }
+  100% { background-position: 0 0; }
+}
+
+@keyframes mk-scratch {
+  0%, 24.99%   { background-position: 0 0, center; }
+  25%, 49.99%  { background-position: -37px 11px, center; }
+  50%, 74.99%  { background-position: 61px -23px, center; }
+  75%, 100%    { background-position: -19px 47px, center; }
+}
+
+/* ---- Кино: зерно и царапины с пылинками (кадровая смена) ---- */
+
+html[data-theme="polnochnaya"] body::before {
+  background-image: var(--mk-grain);
+  background-size: 200px 200px;
+  opacity: 0.2;
+  mix-blend-mode: multiply;
+  -webkit-mask-image: none;
+  mask-image: none;
+  animation: mk-grain 0.5s steps(1) infinite;
+}
+
+html[data-theme="polnochnaya"] body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background-image: var(--mk-scratch), radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.16) 100%);
+  background-size: 520px 520px, 100% 100%;
+  background-repeat: repeat, no-repeat;
+  opacity: 0.55;
+  mix-blend-mode: multiply;
+  animation: mk-scratch 0.72s step-end infinite;
+}
+
+/* ---- Скроллбар: чёрный «шланг» ---- */
+
+html[data-theme="polnochnaya"] ::-webkit-scrollbar-thumb,
+html[data-theme="polnochnaya"]::-webkit-scrollbar-thumb,
+html[data-theme="polnochnaya"] .screenshots-grid::-webkit-scrollbar-thumb,
+html[data-theme="polnochnaya"] .am-list::-webkit-scrollbar-thumb,
+html[data-theme="polnochnaya"] .am-icon-grid::-webkit-scrollbar-thumb {
+  background-color: #000;
+  border: 3px solid #fff;
+  border-radius: 10px;
+}
+
+html[data-theme="polnochnaya"] .detail-header,
+html[data-theme="polnochnaya"] .rating-section,
+html[data-theme="polnochnaya"] .am-sidebar-head,
+html[data-theme="polnochnaya"] .am-sidebar-footer,
+html[data-theme="polnochnaya"] .av-tab.active,
+html[data-theme="polnochnaya"] .tab-btn.active {
+  --mk-focus: #fff;
+}
+
+/* ---- Кнопки: белая -чёрная при наведении ---- */
+
+html[data-theme="polnochnaya"] .btn-primary,
+html[data-theme="polnochnaya"] .create-playlist-btn-submit,
+html[data-theme="polnochnaya"] .am-btn.primary,
+html[data-theme="polnochnaya"] .am-create-btn,
+html[data-theme="polnochnaya"] .retry-btn,
+html[data-theme="polnochnaya"] .btn-retry,
+html[data-theme="polnochnaya"] .catalog-retry,
+html[data-theme="polnochnaya"] .btn-add,
+html[data-theme="polnochnaya"] .btn-add-all,
+html[data-theme="polnochnaya"] .watch-button,
+html[data-theme="polnochnaya"] .play-btn {
+  --mk-k-bg: #000;
+  --mk-k-fg: #fff;
+  --mk-k-bc: #000;
+  --mk-k-bs: solid;
+  --mk-k-bg-h: #fff;
+  --mk-k-fg-h: #000;
+  --mk-k-bc-h: #000;
+}
+
+html[data-theme="polnochnaya"] .btn-secondary,
+html[data-theme="polnochnaya"] .create-playlist-btn-cancel,
+html[data-theme="polnochnaya"] .back-link,
+html[data-theme="polnochnaya"] .rc-view-all,
+html[data-theme="polnochnaya"] .am-btn,
+html[data-theme="polnochnaya"] .dubs-reset-btn {
+  --mk-k-bg: #fff;
+  --mk-k-fg: #000;
+  --mk-k-bs: dashed;
+  --mk-k-bg-h: #000;
+  --mk-k-fg-h: #fff;
+}
+
+html[data-theme="polnochnaya"] .btn-outline {
+  --mk-k-bg: #fff;
+  --mk-k-bg-h: #000;
+  --mk-k-fg-h: #fff;
+}
+
+html[data-theme="polnochnaya"] .btn-ghost {
+  --mk-k-bg: #fff;
+  --mk-k-bs: dotted;
+  --mk-k-bg-h: #000;
+  --mk-k-fg-h: #fff;
+}
+
+html[data-theme="polnochnaya"] .btn-danger,
+html[data-theme="polnochnaya"] .am-btn.danger {
+  --mk-k-bg: #000;
+  --mk-k-fg: #fff;
+  --mk-k-bs: dashed;
+  --mk-k-bg-h: #fff;
+  --mk-k-fg-h: #000;
+}
+
+html[data-theme="polnochnaya"] .external-link.mal {
+  --mk-k-bg: #fff;
+  --mk-k-bs: dotted;
+  --mk-k-bg-h: #000;
+  --mk-k-fg-h: #fff;
+}
+
+html[data-theme="polnochnaya"] .external-link.shikimori {
+  --mk-k-bg: #fff;
+  --mk-k-bs: dashed;
+  --mk-k-bg-h: #000;
+  --mk-k-fg-h: #fff;
+}
+
+html[data-theme="polnochnaya"] .screenshot-nav-btn,
+html[data-theme="polnochnaya"] .screenshot-nav-btn-left,
+html[data-theme="polnochnaya"] .screenshot-nav-btn-right,
+html[data-theme="polnochnaya"] .rc-arrow,
+html[data-theme="polnochnaya"] .rc-arrow-left,
+html[data-theme="polnochnaya"] .rc-arrow-right,
+html[data-theme="polnochnaya"] .hero-arrow,
+html[data-theme="polnochnaya"] .carousel-arrow {
+  --mk-k-bg: #fff;
+  --mk-k-bg-h: #000;
+  --mk-k-fg-h: #fff;
+}
+
+html[data-theme="polnochnaya"] .av-tab,
+html[data-theme="polnochnaya"] .tab-btn {
+  --mk-k-bg: #fff;
+  --mk-k-bg-h: #000;
+  --mk-k-fg-h: #fff;
+}
+
+html[data-theme="polnochnaya"] .page-number,
+html[data-theme="polnochnaya"] .pagination-btn,
+html[data-theme="polnochnaya"] .qa-btn,
+html[data-theme="polnochnaya"] .kind-chip,
+html[data-theme="polnochnaya"] .dubs-filter-btn,
+html[data-theme="polnochnaya"] .am-icon-choice {
+  --mk-k-bg: #fff;
+  --mk-k-bg-h: #000;
+  --mk-k-fg-h: #fff;
+}
+
+html[data-theme="polnochnaya"] .av-tab.active,
+html[data-theme="polnochnaya"] .tab-btn.active,
+html[data-theme="polnochnaya"] .page-number.active,
+html[data-theme="polnochnaya"] .kind-chip-active,
+html[data-theme="polnochnaya"] .dubs-filter-btn.active,
+html[data-theme="polnochnaya"] .am-icon-choice.active {
+  --mk-k-bg: #000;
+  --mk-k-fg: #fff;
+  --mk-k-bg-h: #000;
+  --mk-k-fg-h: #fff;
+}
+
+html[data-theme="polnochnaya"] .am-icon-choice,
+html[data-theme="polnochnaya"] .am-icon-choice.active {
+  color: var(--mk-k-fg);
+}
+
+html[data-theme="polnochnaya"] .am-sidebar-head .am-create-btn {
+  --mk-k-bg: #fff;
+  --mk-k-fg: #000;
+  --mk-k-bc: #fff;
+  --mk-k-bg-h: #000;
+  --mk-k-fg-h: #fff;
+  --mk-k-bc-h: #fff;
+  --mk-k-sh: 4px 4px 0 #fff;
+  --mk-k-sh-h: 6px 6px 0 #fff;
+  --mk-k-sh-a: 1px 1px 0 #fff;
+}
+
+/* Резиновое «сплющивание и растяжение» при наведении */
+html[data-theme="polnochnaya"] :is(.btn, .btn-outline, .btn-primary, .btn-secondary, .btn-ghost, .btn-danger, .discuss-btn, .watch-button, .create-playlist-btn, .create-playlist-btn-cancel, .create-playlist-btn-submit, .am-btn, .am-create-btn, .rc-view-all, .retry-btn, .btn-retry, .catalog-retry, .dubs-reset-btn, .btn-add, .btn-add-all, .external-link, .back-link, .pagination-btn, .page-number, .qa-btn, .dubs-filter-btn, .kind-chip, .tab-btn, .av-tab, .screenshot-nav-btn, .screenshot-nav-btn-left, .screenshot-nav-btn-right, .rc-arrow, .rc-arrow-left, .rc-arrow-right, .hero-arrow, .carousel-arrow, .am-icon-choice, .play-btn):hover:where(:not(:disabled):not(.disabled):not([aria-disabled="true"])),
+html[data-theme="polnochnaya"] .anime-card:hover,
+html[data-theme="polnochnaya"] .result-card:hover,
+html[data-theme="polnochnaya"] .person-card:hover,
+html[data-theme="polnochnaya"] .dub-item:hover,
+html[data-theme="polnochnaya"] .am-item:hover,
+html[data-theme="polnochnaya"] .anime-poster-card:hover .poster-wrap,
+html[data-theme="polnochnaya"] .col-card:hover .card-poster,
+html[data-theme="polnochnaya"] .genre-tag-large.clickable:hover,
+html[data-theme="polnochnaya"] .screenshot-wrapper:hover {
+  animation: mk-hose 0.45s ease-out;
+}
+
+/* ---- Карточки: на наведении заливаются чернилами ---- */
+
+html[data-theme="polnochnaya"] .anime-card:hover,
+html[data-theme="polnochnaya"] .anime-card:active,
+html[data-theme="polnochnaya"] .anime-card:has(.play-btn:focus-visible),
+html[data-theme="polnochnaya"] .result-card:hover,
+html[data-theme="polnochnaya"] .result-card:active,
+html[data-theme="polnochnaya"] .person-card:hover,
+html[data-theme="polnochnaya"] .person-card:active,
+html[data-theme="polnochnaya"] .playlist-card:hover,
+html[data-theme="polnochnaya"] .playlist-card:active,
+html[data-theme="polnochnaya"] .dub-item:hover,
+html[data-theme="polnochnaya"] .dub-item:active,
+html[data-theme="polnochnaya"] .dub-item:has(:focus-visible),
+html[data-theme="polnochnaya"] .am-item:hover,
+html[data-theme="polnochnaya"] .am-item:active,
+html[data-theme="polnochnaya"] .am-item.active {
+  color: #fff;
+  background-color: #000;
+}
+
+html[data-theme="polnochnaya"] .anime-poster-card:hover .card-title,
+html[data-theme="polnochnaya"] .col-card .card-title:hover {
+  color: #fff;
+  background-color: #000;
+}
+
+html[data-theme="polnochnaya"] .am-item.active {
+  box-shadow: 3px 3px 0 #000;
+  outline: 3px dashed #000;
+  outline-offset: 4px;
+}
+
+html[data-theme="polnochnaya"] .dub-item:hover .dub-avatar,
+html[data-theme="polnochnaya"] .dub-item:hover .dub-action,
+html[data-theme="polnochnaya"] .dub-item:hover .dub-tag.tag-voice,
+html[data-theme="polnochnaya"] .am-item:hover .am-item-icon,
+html[data-theme="polnochnaya"] .am-item.active .am-item-icon,
+html[data-theme="polnochnaya"] .am-item.active .am-inactive {
+  color: #000;
+  background-color: #fff;
+  border-color: #fff;
+}
+
+html[data-theme="polnochnaya"] .detail-value a:hover,
+html[data-theme="polnochnaya"] .anime-description-full a:hover,
+html[data-theme="polnochnaya"] .am-main-empty a:hover,
+html[data-theme="polnochnaya"] .rc-empty a:hover,
+html[data-theme="polnochnaya"] .dubs-empty a:hover {
+  color: #fff;
+  background-color: #000;
+  text-decoration-color: #fff;
+}
+
+/* ---- Чёрные «титры» ---- */
+
+html[data-theme="polnochnaya"] .rc-title,
+html[data-theme="polnochnaya"] .hero-title,
+html[data-theme="polnochnaya"] .create-playlist-modal h3,
+html[data-theme="polnochnaya"] .am-editor-head h3,
+html[data-theme="polnochnaya"] .dubs-title,
+html[data-theme="polnochnaya"] .error-title,
+html[data-theme="polnochnaya"] .error-message,
+html[data-theme="polnochnaya"] .am-error,
+html[data-theme="polnochnaya"] .anime-description-section h3,
+html[data-theme="polnochnaya"] .anime-screenshots-section h3,
+html[data-theme="polnochnaya"] .people-page h1,
+html[data-theme="polnochnaya"] .playlists-page h1,
+html[data-theme="polnochnaya"] .collection-page h1,
+html[data-theme="polnochnaya"] .add-anime-page h1,
+html[data-theme="polnochnaya"] .hero-badge,
+html[data-theme="polnochnaya"] .am-main-empty p,
+html[data-theme="polnochnaya"] .rc-empty-title,
+html[data-theme="polnochnaya"] .dubs-empty p,
+html[data-theme="polnochnaya"] .rc-icon {
+  color: #fff;
+  background-color: #000;
+  border-color: #000;
+}
+
+html[data-theme="polnochnaya"] .hero-title,
+html[data-theme="polnochnaya"] .hero-badge {
+  border-color: #fff;
+}
+
+html[data-theme="polnochnaya"] .anime-description-section h3 svg,
+html[data-theme="polnochnaya"] .anime-screenshots-section h3 svg,
+html[data-theme="polnochnaya"] .dubs-title svg,
+html[data-theme="polnochnaya"] .rc-icon svg {
+  color: #fff;
+}
+
+html[data-theme="polnochnaya"] .rc-icon {
+  animation: mk-bob 0.8s ease-in-out infinite;
+}
+
+html[data-theme="polnochnaya"] .rc-header:hover .rc-icon {
+  animation: mk-wiggle 0.5s ease-in-out;
+}
+
+/* Двойная рамка, как на титульных карточках старых мультфильмов */
+html[data-theme="polnochnaya"] .anime-detail-card,
+html[data-theme="polnochnaya"] .error-state,
+html[data-theme="polnochnaya"] .loading-state,
+html[data-theme="polnochnaya"] .create-playlist-modal {
+  outline: 3px solid #000;
+  outline-offset: 6px;
+}
+
+/* ---- Шапка и рейтинг ---- */
+
+html[data-theme="polnochnaya"] .detail-header {
+  color: #fff;
+  background-color: #000;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.22) 1.6px, transparent 2px);
+  background-size: 14px 14px;
+  border-bottom: 4px solid #000;
+}
+
+html[data-theme="polnochnaya"] .detail-header .anime-title,
+html[data-theme="polnochnaya"] .detail-header .anime-title-en {
+  color: #fff;
+  text-shadow: none;
+}
+
+html[data-theme="polnochnaya"] .rating-section {
+  color: #fff;
+  background-color: #000;
+  outline: 3px solid #000;
+  outline-offset: 4px;
+}
+
+html[data-theme="polnochnaya"] .rating-stars::before {
+  color: #000;
+  -webkit-text-stroke: 0;
+}
+
+html[data-theme="polnochnaya"] .stat-badge {
+  border-color: #fff;
+}
+
+html[data-theme="polnochnaya"] .rank-badge {
+  border-style: dashed;
+  border-color: #000;
+  background-color: #fff;
+}
+
+html[data-theme="polnochnaya"] .popularity-badge {
+  border-style: dotted;
+  border-color: #000;
+  background-color: #fff;
+}
+
+html[data-theme="polnochnaya"] .status-ongoing { color: #fff; background-color: #000; }
+html[data-theme="polnochnaya"] .status-released { color: #000; background-color: #fff; }
+html[data-theme="polnochnaya"] .status-finished { background-color: #fff; border-style: dashed; }
+html[data-theme="polnochnaya"] .status-announced {
+  background-color: #fff;
+  border-style: dotted;
+  text-decoration: underline wavy #000;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+
+html[data-theme="polnochnaya"] .studio-tag { border-style: dashed; }
+
+html[data-theme="polnochnaya"] .detail-label,
+html[data-theme="polnochnaya"] .am-field label,
+html[data-theme="polnochnaya"] .create-playlist-checkbox:has(input:checked) {
+  text-decoration-color: #000;
+}
+
+html[data-theme="polnochnaya"] .detail-value a,
+html[data-theme="polnochnaya"] .anime-description-full a,
+html[data-theme="polnochnaya"] .am-main-empty a,
+html[data-theme="polnochnaya"] .rc-empty a,
+html[data-theme="polnochnaya"] .dubs-empty a,
+html[data-theme="polnochnaya"] .anime-description-full strong,
+html[data-theme="polnochnaya"] .detail-value strong {
+  text-decoration-color: #000;
+}
+
+html[data-theme="polnochnaya"] .hero-genres .genre-more { border-style: dashed; }
+
+/* ---- Бейджи ---- */
+
+html[data-theme="polnochnaya"] .anime-card .score-badge,
+html[data-theme="polnochnaya"] .score-badge,
+html[data-theme="polnochnaya"] .items-count-badge,
+html[data-theme="polnochnaya"] .duration-badge,
+html[data-theme="polnochnaya"] .badge-rank.rank-top,
+html[data-theme="polnochnaya"] .franchise-current-badge,
+html[data-theme="polnochnaya"] .av-tab-badge {
+  color: #fff;
+  background-color: #000;
+  border-color: #fff;
+}
+
+html[data-theme="polnochnaya"] .av-tab.active .av-tab-badge {
+  color: #000;
+  background-color: #fff;
+  border-color: #000;
+}
+
+html[data-theme="polnochnaya"] .items-count-badge svg,
+html[data-theme="polnochnaya"] .duration-badge svg {
+  color: #fff;
+}
+
+html[data-theme="polnochnaya"] .badge-franchise { border-style: dashed; background-color: #fff; }
+
+html[data-theme="polnochnaya"] .dub-avatar,
+html[data-theme="polnochnaya"] .dub-action {
+  color: #fff;
+  background-color: #000;
+}
+
+html[data-theme="polnochnaya"] .dubs-filter-btn:not(.active) .filter-count {
+  color: #fff;
+  background-color: #000;
+}
+
+html[data-theme="polnochnaya"] .dub-tag.tag-voice { color: #fff; background-color: #000; }
+html[data-theme="polnochnaya"] .dub-tag.tag-subtitles { border-style: dashed; background-color: #fff; }
+html[data-theme="polnochnaya"] .dub-tag.tag-raw { border-style: dotted; background-color: #fff; }
+html[data-theme="polnochnaya"] .dub-tag.tag-quality { border-style: double; border-width: 4px; background-color: #fff; }
+
+html[data-theme="polnochnaya"] .am-item-icon,
+html[data-theme="polnochnaya"] .am-icon-preview,
+html[data-theme="polnochnaya"] .am-inactive,
+html[data-theme="polnochnaya"] .am-sidebar-head,
+html[data-theme="polnochnaya"] .am-sidebar-footer {
+  color: #fff;
+  background-color: #000;
+}
+
+html[data-theme="polnochnaya"] .am-inactive { border-color: #000; }
+
+html[data-theme="polnochnaya"] .am-sidebar-footer { border-top-color: #000; }
+
+/* ---- Лоадер: пунктирное колечко и «глаз» с вырезом ---- */
+
+html[data-theme="polnochnaya"] .spinner {
+  border: 8px dashed #000;
+}
+
+html[data-theme="polnochnaya"] .spinner-ring {
+  inset: 24%;
+  background-color: transparent;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='18' fill='%23fff' stroke='%23000' stroke-width='3'/%3E%3Ccircle cx='20' cy='20' r='11' fill='%23000'/%3E%3Cpath d='M20 20L29.5 14.5A11 11 0 0 1 31 20Z' fill='%23fff'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  border: 0;
+}
+
+html[data-theme="polnochnaya"] .loading-state p {
+  background-color: #fff;
+}
+
+html[data-theme="polnochnaya"] .franchise-slide.is-current {
+  outline: 4px dashed #000;
+}
+
+html[data-theme="polnochnaya"] .screenshot-overlay {
+  background-color: rgba(255, 255, 255, 0.92);
+}
+
+html[data-theme="polnochnaya"] .hero-skeleton-bg {
+  background-color: #f4f4f4;
+}
+
+/* === Адаптив === */
+
+@media (min-width: 1600px) {
+  html[data-theme="polnochnaya"] { --mk-tile: 680px; }
+  html[data-theme="polnochnaya"] .av-container,
+  html[data-theme="polnochnaya"] .home-page { max-width: 1680px; }
+  html[data-theme="polnochnaya"] .anime-detail .container { max-width: 1360px; }
+  html[data-theme="polnochnaya"] .anime-main-info { grid-template-columns: 340px minmax(0, 1fr); gap: 2.4rem 2.8rem; }
+  html[data-theme="polnochnaya"] .poster-section { max-width: 340px; }
+  html[data-theme="polnochnaya"] .rc-card-wrap,
+  html[data-theme="polnochnaya"] .rc-skel { flex: 0 0 240px; width: 240px; }
+  html[data-theme="polnochnaya"] .skeleton-card { flex: 0 0 200px; }
+  html[data-theme="polnochnaya"] .screenshot-wrapper { flex: 0 0 min(380px, 100%); width: min(380px, 100%); }
+  html[data-theme="polnochnaya"] .franchise-slide { flex: 0 0 220px; width: 220px; height: 410px; }
+  html[data-theme="polnochnaya"] .collection-page .cards-grid { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 28px 24px; }
+  html[data-theme="polnochnaya"] .hero-skeleton { min-height: 680px; }
+  html[data-theme="polnochnaya"] .achievements-manager { grid-template-columns: 360px minmax(0, 1fr); min-height: 620px; }
+}
+
+@media (max-width: 1100px) {
+  html[data-theme="polnochnaya"] { --mk-tile: 560px; }
+  html[data-theme="polnochnaya"] .av-container { padding: 1.25rem 1rem 3rem; }
+  html[data-theme="polnochnaya"] .home-page { padding: 1.25rem; }
+  html[data-theme="polnochnaya"] .home-content,
+  html[data-theme="polnochnaya"] .home-skeleton { gap: 2.25rem; }
+  html[data-theme="polnochnaya"] .anime-main-info { grid-template-columns: 260px minmax(0, 1fr); gap: 1.6rem 1.8rem; padding: 1.6rem; }
+  html[data-theme="polnochnaya"] .poster-section { max-width: 260px; }
+  html[data-theme="polnochnaya"] .detail-header { padding: 1.6rem; }
+  html[data-theme="polnochnaya"] .detail-label { min-width: 130px; }
+  html[data-theme="polnochnaya"] .anime-description-section,
+  html[data-theme="polnochnaya"] .anime-screenshots-section,
+  html[data-theme="polnochnaya"] .franchise-section,
+  html[data-theme="polnochnaya"] .dubs-section { padding: 2.4rem 1.6rem 1.8rem; }
+  html[data-theme="polnochnaya"] .rc-card-wrap,
+  html[data-theme="polnochnaya"] .rc-skel { flex: 0 0 200px; width: 200px; }
+  html[data-theme="polnochnaya"] .skeleton-card { flex: 0 0 160px; }
+  html[data-theme="polnochnaya"] .hero-skeleton { min-height: 560px; }
+  html[data-theme="polnochnaya"] .screenshot-wrapper { flex: 0 0 min(290px, 100%); width: min(290px, 100%); }
+  html[data-theme="polnochnaya"] .franchise-slide { flex: 0 0 180px; width: 180px; height: 350px; }
+  html[data-theme="polnochnaya"] .collection-page .cards-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 22px 16px; }
+  html[data-theme="polnochnaya"] .achievements-manager { grid-template-columns: 290px minmax(0, 1fr); gap: 16px; }
+  html[data-theme="polnochnaya"] .am-main { padding: 20px; }
+  html[data-theme="polnochnaya"] .rc-arrow-left { left: -10px; }
+  html[data-theme="polnochnaya"] .rc-arrow-right { right: -10px; }
+  html[data-theme="polnochnaya"] .create-playlist-modal { width: min(100%, 420px); }
+  html[data-theme="polnochnaya"] .people-page .skeleton-grid,
+  html[data-theme="polnochnaya"] .people-grid { padding: 0.95rem; }
+}
+
+@media (max-width: 900px) {
+  html[data-theme="polnochnaya"] { --mk-tile: 520px; }
+  html[data-theme="polnochnaya"] .anime-main-info { grid-template-columns: 1fr; gap: 1.25rem; padding: 1.25rem; }
+  html[data-theme="polnochnaya"] .poster-section { order: -1; max-width: 240px; margin: 0 auto; }
+  html[data-theme="polnochnaya"] .anime-detail { padding: 1.4rem 0.8rem 3rem; }
+  html[data-theme="polnochnaya"] .detail-header { padding: 1.3rem; }
+  html[data-theme="polnochnaya"] .detail-header .anime-title { font-size: 1.35rem; }
+  html[data-theme="polnochnaya"] .anime-title-en { font-size: 1rem; }
+  html[data-theme="polnochnaya"] .rating-section { padding: 0.9rem 0.8rem 0.8rem; }
+  html[data-theme="polnochnaya"] .achievements-manager { grid-template-columns: 260px minmax(0, 1fr); gap: 12px; min-height: 480px; }
+  html[data-theme="polnochnaya"] .am-main { padding: 16px; }
+  html[data-theme="polnochnaya"] .am-editor-head h3 { font-size: 15px; }
+  html[data-theme="polnochnaya"] .hero-title { font-size: clamp(1.15rem, 3.8vw, 1.9rem); }
+  html[data-theme="polnochnaya"] .rc-title { font-size: 1.15rem; }
+  html[data-theme="polnochnaya"] .rc-card-wrap,
+  html[data-theme="polnochnaya"] .rc-skel { flex: 0 0 185px; width: 185px; }
+  html[data-theme="polnochnaya"] .screenshot-nav-btn-left { left: -8px; }
+  html[data-theme="polnochnaya"] .screenshot-nav-btn-right { right: -8px; }
+  html[data-theme="polnochnaya"] .dub-item { padding: 0.7rem 0.85rem; }
+  html[data-theme="polnochnaya"] .collection-page .cards-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 20px 14px; }
+  html[data-theme="polnochnaya"] .error-state { margin: 56px auto; }
+  html[data-theme="polnochnaya"] .people-page .tabs { max-width: 100%; }
+  html[data-theme="polnochnaya"] .av-tab { padding: 0 1rem; }
+}
+
+@media (max-width: 767px) {
+  html[data-theme="polnochnaya"] { --mk-tile: 480px; }
+  html[data-theme="polnochnaya"] .av-container { padding: 1rem 0.75rem 2.5rem; }
+  html[data-theme="polnochnaya"] .av-tabs { flex-wrap: nowrap; overflow-x: auto; padding-top: 12px; scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch; }
+  html[data-theme="polnochnaya"] .av-tabs::-webkit-scrollbar { display: none; }
+  html[data-theme="polnochnaya"] .av-tab { flex-shrink: 0; white-space: nowrap; }
+  html[data-theme="polnochnaya"] .home-page { padding: 1rem 0.75rem; }
+  html[data-theme="polnochnaya"] .home-content,
+  html[data-theme="polnochnaya"] .home-skeleton { gap: 1.75rem; }
+  html[data-theme="polnochnaya"] .hero-skeleton { min-height: 520px; }
+  html[data-theme="polnochnaya"] .hero-skeleton-content { padding: 1.25rem; }
+  html[data-theme="polnochnaya"] .skeleton-card { flex-basis: 140px; }
+  html[data-theme="polnochnaya"] .error-state { margin: 40px auto; padding: 2rem 1.2rem; }
+  html[data-theme="polnochnaya"] .rc-card-wrap,
+  html[data-theme="polnochnaya"] .rc-skel { flex: 0 0 155px; width: 155px; }
+  html[data-theme="polnochnaya"] .rc-icon { width: 38px; height: 38px; font-size: 17px; }
+  html[data-theme="polnochnaya"] .rc-header { gap: 0.75rem; margin-bottom: 0.8rem; }
+  html[data-theme="polnochnaya"] .rc-view-all { min-height: 38px; padding: 0 0.9rem; }
+  html[data-theme="polnochnaya"] .rc-arrow { display: none; }
+  html[data-theme="polnochnaya"] .rc-track { padding: 10px 6px 22px; }
+  html[data-theme="polnochnaya"] .franchise-slide { flex: 0 0 140px; width: 140px; height: 300px; }
+  html[data-theme="polnochnaya"] .franchise-current-badge { top: 6px; right: 6px; padding: 3px 9px 3px 7px; font-size: 9px; }
+  html[data-theme="polnochnaya"] .screenshot-wrapper { flex: 0 0 min(260px, 86%); width: min(260px, 86%); border-width: 4px; }
+  html[data-theme="polnochnaya"] .dubs-filters { flex-wrap: nowrap; overflow-x: auto; max-width: 100%; scrollbar-width: none; }
+  html[data-theme="polnochnaya"] .dubs-filters::-webkit-scrollbar { display: none; }
+  html[data-theme="polnochnaya"] .dubs-filter-btn { flex-shrink: 0; }
+  html[data-theme="polnochnaya"] .achievements-manager { grid-template-columns: 240px minmax(0, 1fr); min-height: 440px; }
+  html[data-theme="polnochnaya"] .hero-title { margin-bottom: 0.7rem; }
+  html[data-theme="polnochnaya"] .hero-desc { max-width: 100%; }
+  html[data-theme="polnochnaya"] .people-page .skeleton-grid,
+  html[data-theme="polnochnaya"] .people-grid { padding: 0.8rem; }
+  html[data-theme="polnochnaya"] .collection-page .cards-grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 18px 12px; }
+  html[data-theme="polnochnaya"] .create-playlist-modal { padding: 1.7rem 1.3rem 1.3rem; }
+  html[data-theme="polnochnaya"] .poster-section { max-width: 220px; }
+  html[data-theme="polnochnaya"] .rating-badge { padding: 0.5rem 0.9rem; }
+}
+
+@media (max-width: 640px) {
+  html[data-theme="polnochnaya"] { --mk-tile: 440px; }
+  html[data-theme="polnochnaya"] .anime-detail { padding: 0.6rem 0.5rem 2rem; }
+  html[data-theme="polnochnaya"] .detail-header { padding: 1rem 1rem 1.1rem; }
+  html[data-theme="polnochnaya"] .anime-description-section,
+  html[data-theme="polnochnaya"] .anime-screenshots-section,
+  html[data-theme="polnochnaya"] .franchise-section,
+  html[data-theme="polnochnaya"] .dubs-section { padding: 2rem 1rem 1.25rem; }
+  html[data-theme="polnochnaya"] .anime-main-info { padding: 1rem; gap: 1.1rem; }
+  html[data-theme="polnochnaya"] .anime-title { font-size: 1.5rem; }
+  html[data-theme="polnochnaya"] .detail-header .anime-title { font-size: 1.15rem; margin-bottom: 0.55rem; }
+  html[data-theme="polnochnaya"] .anime-title-en { font-size: 0.95rem; }
+  html[data-theme="polnochnaya"] .back-link { min-height: 40px; margin-bottom: 1rem; padding: 0.4rem 0.9rem; font-size: 0.86rem; }
+  html[data-theme="polnochnaya"] .detail-row { flex-direction: column; gap: 0.35rem; padding: 0.7rem 0; }
+  html[data-theme="polnochnaya"] .detail-label { min-width: auto; font-size: 0.84rem; }
+  html[data-theme="polnochnaya"] .detail-value { font-size: 0.96rem; }
+  html[data-theme="polnochnaya"] .rating-value { font-size: 1.5rem; }
+  html[data-theme="polnochnaya"] .rating-stars::before { font-size: 1.3rem; }
+  html[data-theme="polnochnaya"] .action-buttons .btn,
+  html[data-theme="polnochnaya"] .action-buttons button { flex: 1 1 140px; }
+  html[data-theme="polnochnaya"] .watch-button { width: 100%; }
+  html[data-theme="polnochnaya"] .screenshot-nav-btn { width: 38px; height: 38px; }
+  html[data-theme="polnochnaya"] .screenshot-nav-btn-left { left: 0; }
+  html[data-theme="polnochnaya"] .screenshot-nav-btn-right { right: 0; }
+  html[data-theme="polnochnaya"] .dubs-header { flex-direction: column; align-items: flex-start; }
+  html[data-theme="polnochnaya"] .dub-item { gap: 0.75rem; padding: 0.65rem 0.75rem; }
+  html[data-theme="polnochnaya"] .dub-avatar { width: 40px; height: 48px; }
+  html[data-theme="polnochnaya"] .dub-action { width: 34px; height: 34px; }
+  html[data-theme="polnochnaya"] .dub-name { font-size: 0.93rem; }
+  html[data-theme="polnochnaya"] .anime-description-section h3,
+  html[data-theme="polnochnaya"] .anime-screenshots-section h3,
+  html[data-theme="polnochnaya"] .dubs-title { font-size: 1.05rem; padding: 0.35rem 0.85rem 0.35rem 0.7rem; }
+  html[data-theme="polnochnaya"] .anime-description-full { font-size: 1rem; line-height: 1.7; }
+  html[data-theme="polnochnaya"] .error-title { font-size: 1rem; }
+  html[data-theme="polnochnaya"] .hero-badge { font-size: 0.74rem; padding: 0.3rem 0.85rem 0.3rem 0.7rem; }
+  html[data-theme="polnochnaya"] .hero-meta,
+  html[data-theme="polnochnaya"] .hero-desc { padding: 0.4rem 0.7rem; }
+  html[data-theme="polnochnaya"] .rc-title { font-size: 1.05rem; }
+  html[data-theme="polnochnaya"] .rc-desc { font-size: 0.85rem; }
+  html[data-theme="polnochnaya"] .anime-card .anime-info { padding: 8px 10px 10px; }
+  html[data-theme="polnochnaya"] .anime-card .play-btn { width: 42px; height: 42px; }
+  html[data-theme="polnochnaya"] .people-page .tab-btn { padding: 0 0.85rem; min-height: 38px; }
+  html[data-theme="polnochnaya"] .people-page .tab-btn.active { min-height: 44px; }
+  html[data-theme="polnochnaya"] .pagination-btn,
+  html[data-theme="polnochnaya"] .page-number { min-width: 38px; min-height: 40px; font-size: 0.86rem; }
+  html[data-theme="polnochnaya"] .create-playlist-actions .create-playlist-btn { flex: 1 1 130px; }
+  html[data-theme="polnochnaya"] .stat-badge { padding: 0.34rem 0.65rem; font-size: 0.78rem; }
+  html[data-theme="polnochnaya"] .status-badge { font-size: 0.82rem; }
+  html[data-theme="polnochnaya"] .genre-tag-large,
+  html[data-theme="polnochnaya"] .studio-tag { padding: 0.36rem 0.75rem; font-size: 0.82rem; }
+  html[data-theme="polnochnaya"] .external-link { min-height: 40px; padding: 0.35rem 0.95rem; }
+  html[data-theme="polnochnaya"] .playlist-card { margin-top: 8px; }
+  html[data-theme="polnochnaya"] .items-count-badge,
+  html[data-theme="polnochnaya"] .duration-badge { padding: 2px 7px; font-size: 0.7rem; }
+}
+
+@media (max-width: 600px) {
+  html[data-theme="polnochnaya"] .achievements-manager { grid-template-columns: 1fr; gap: 14px; min-height: auto; }
+  html[data-theme="polnochnaya"] .am-sidebar { max-height: 360px; }
+  html[data-theme="polnochnaya"] .am-main { min-height: 300px; padding: 14px; }
+  html[data-theme="polnochnaya"] .am-sidebar-head { flex-wrap: wrap; }
+  html[data-theme="polnochnaya"] .am-search { flex: 1 1 100%; }
+  html[data-theme="polnochnaya"] .am-create-btn { flex: 1 1 100%; justify-content: center; min-height: 44px; }
+  html[data-theme="polnochnaya"] .am-editor-head { flex-direction: column; align-items: flex-start; }
+  html[data-theme="polnochnaya"] .am-head-actions { width: 100%; }
+  html[data-theme="polnochnaya"] .am-btn.small { flex: 1 1 auto; min-height: 40px; }
+  html[data-theme="polnochnaya"] .am-row { grid-template-columns: 1fr; }
+  html[data-theme="polnochnaya"] .am-value { max-width: 100%; }
+  html[data-theme="polnochnaya"] .am-field input[type="text"],
+  html[data-theme="polnochnaya"] .am-field input[type="number"],
+  html[data-theme="polnochnaya"] .am-field textarea,
+  html[data-theme="polnochnaya"] .am-field select { padding: 11px 12px; font-size: 16px; }
+  html[data-theme="polnochnaya"] .am-search input { font-size: 16px; }
+  html[data-theme="polnochnaya"] .am-icon-grid { max-height: 160px; }
+  html[data-theme="polnochnaya"] .am-item { padding: 8px; }
+  html[data-theme="polnochnaya"] .am-editor { gap: 16px; }
+  html[data-theme="polnochnaya"] .am-form { gap: 16px; }
+  html[data-theme="polnochnaya"] .create-playlist-input { font-size: 16px; }
+  html[data-theme="polnochnaya"] .search-input { font-size: 16px; }
+  html[data-theme="polnochnaya"] .people-page .tabs { display: flex; width: 100%; overflow-x: auto; scrollbar-width: none; }
+  html[data-theme="polnochnaya"] .people-page .tabs::-webkit-scrollbar { display: none; }
+  html[data-theme="polnochnaya"] .people-page .tab-btn { flex: 1 0 auto; justify-content: center; }
+}
+
+@media (max-width: 460px) {
+  html[data-theme="polnochnaya"] { --mk-tile: 400px; }
+  html[data-theme="polnochnaya"] .av-tab { height: 40px; padding: 0 0.85rem; font-size: 0.84rem; }
+  html[data-theme="polnochnaya"] .av-tab.active { height: 46px; padding: 0 1rem; }
+  html[data-theme="polnochnaya"] .av-tab-badge { min-width: 20px; height: 20px; font-size: 10px; }
+  html[data-theme="polnochnaya"] .btn,
+  html[data-theme="polnochnaya"] .btn-outline,
+  html[data-theme="polnochnaya"] .btn-primary,
+  html[data-theme="polnochnaya"] .btn-secondary,
+  html[data-theme="polnochnaya"] .btn-ghost,
+  html[data-theme="polnochnaya"] .btn-danger,
+  html[data-theme="polnochnaya"] .discuss-btn { min-height: 44px; padding: 0.55rem 1rem; font-size: 0.88rem; }
+  html[data-theme="polnochnaya"] .watch-button { min-height: 52px; padding: 0.7rem 1.4rem; font-size: 1rem; }
+  html[data-theme="polnochnaya"] .rc-card-wrap,
+  html[data-theme="polnochnaya"] .rc-skel { flex: 0 0 140px; width: 140px; }
+  html[data-theme="polnochnaya"] .rc-view-all { min-height: 36px; padding: 0 0.75rem; font-size: 0.82rem; }
+  html[data-theme="polnochnaya"] .rc-empty { flex-direction: column; align-items: flex-start; padding: 1.1rem; }
+  html[data-theme="polnochnaya"] .hero-skeleton { min-height: 460px; }
+  html[data-theme="polnochnaya"] .skeleton-card { flex-basis: 128px; }
+  html[data-theme="polnochnaya"] .skeleton-title-bar { width: 160px; height: 24px; }
+  html[data-theme="polnochnaya"] .hero-title { font-size: clamp(1.05rem, 5vw, 1.4rem); }
+  html[data-theme="polnochnaya"] .hero-desc { font-size: 0.9rem; line-height: 1.55; }
+  html[data-theme="polnochnaya"] .collection-page .cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 10px; padding: 8px 2px 16px; }
+  html[data-theme="polnochnaya"] .stats-badges { gap: 0.4rem; }
+  html[data-theme="polnochnaya"] .franchise-slide { flex: 0 0 128px; width: 128px; height: 280px; }
+  html[data-theme="polnochnaya"] .screenshot-wrapper { flex: 0 0 82%; width: 82%; border-width: 3px; }
+  html[data-theme="polnochnaya"] .dub-name { font-size: 0.9rem; }
+  html[data-theme="polnochnaya"] .dub-tag { font-size: 0.7rem; padding: 0.12rem 0.45rem; }
+  html[data-theme="polnochnaya"] .error-state { margin: 28px 0.5rem; }
+  html[data-theme="polnochnaya"] .error-sub { font-size: 0.88rem; }
+  html[data-theme="polnochnaya"] .pagination-btn,
+  html[data-theme="polnochnaya"] .page-number { min-width: 36px; min-height: 40px; padding: 0 0.5rem; }
+  html[data-theme="polnochnaya"] .create-playlist-modal { gap: 0.9rem; }
+  html[data-theme="polnochnaya"] .create-playlist-modal h3 { font-size: 0.95rem; }
+  html[data-theme="polnochnaya"] .create-playlist-btn { min-height: 46px; padding: 0 1rem; }
+  html[data-theme="polnochnaya"] .am-sidebar { max-height: 320px; }
+  html[data-theme="polnochnaya"] .am-item-name { font-size: 12.5px; }
+  html[data-theme="polnochnaya"] .rating-section { padding: 0.8rem 0.7rem 0.7rem; }
+  html[data-theme="polnochnaya"] .poster-section { max-width: 210px; }
+  html[data-theme="polnochnaya"] .rc-header { flex-wrap: wrap; }
+  html[data-theme="polnochnaya"] .rc-icon { width: 36px; height: 36px; font-size: 16px; }
+  html[data-theme="polnochnaya"] .rc-title { font-size: 1rem; }
+  html[data-theme="polnochnaya"] .anime-card .anime-title,
+  html[data-theme="polnochnaya"] .anime-poster-card .card-title,
+  html[data-theme="polnochnaya"] .col-card .card-title,
+  html[data-theme="polnochnaya"] .result-card .card-title,
+  html[data-theme="polnochnaya"] .playlist-title { font-size: 12.5px; }
+  html[data-theme="polnochnaya"] .kind-chip { min-height: 36px; padding: 0.25rem 0.8rem; font-size: 0.82rem; }
+  html[data-theme="polnochnaya"] .btn-add,
+  html[data-theme="polnochnaya"] .btn-add-all { min-height: 44px; }
+  html[data-theme="polnochnaya"] .dubs-filter-btn { min-height: 36px; padding: 0.3rem 0.8rem; font-size: 0.82rem; }
+  html[data-theme="polnochnaya"] .back-link { padding: 0.4rem 0.8rem; font-size: 0.84rem; }
+}
+
+@media (max-width: 380px) {
+  html[data-theme="polnochnaya"] { --mk-tile: 360px; }
+  html[data-theme="polnochnaya"] .av-container { padding: 0.75rem 0.5rem 2rem; }
+  html[data-theme="polnochnaya"] .home-page { padding: 0.75rem 0.5rem; }
+  html[data-theme="polnochnaya"] .anime-detail { padding: 0.4rem 0.35rem 1.5rem; }
+  html[data-theme="polnochnaya"] .am-item-icon { width: 36px; height: 42px; }
+  html[data-theme="polnochnaya"] .am-icon-preview { width: 60px; height: 72px; }
+  html[data-theme="polnochnaya"] .am-icon-grid { grid-template-columns: repeat(auto-fill, minmax(34px, 1fr)); }
+  html[data-theme="polnochnaya"] .am-icon-choice { height: 34px; }
+  html[data-theme="polnochnaya"] .rc-card-wrap,
+  html[data-theme="polnochnaya"] .rc-skel { flex: 0 0 132px; width: 132px; }
+  html[data-theme="polnochnaya"] .rc-icon { width: 34px; height: 34px; font-size: 15px; }
+  html[data-theme="polnochnaya"] .rc-title { font-size: 0.95rem; }
+  html[data-theme="polnochnaya"] .detail-header .anime-title { font-size: 1rem; }
+  html[data-theme="polnochnaya"] .poster-section { max-width: 200px; }
+  html[data-theme="polnochnaya"] .anime-description-section h3,
+  html[data-theme="polnochnaya"] .anime-screenshots-section h3,
+  html[data-theme="polnochnaya"] .dubs-title { font-size: 0.98rem; }
+  html[data-theme="polnochnaya"] .action-buttons .btn,
+  html[data-theme="polnochnaya"] .action-buttons button { flex: 1 1 100%; }
+  html[data-theme="polnochnaya"] .collection-page .cards-grid { gap: 14px 8px; }
+  html[data-theme="polnochnaya"] .skeleton-card { flex-basis: 118px; }
+  html[data-theme="polnochnaya"] .franchise-slide { flex: 0 0 120px; width: 120px; height: 268px; }
+  html[data-theme="polnochnaya"] .create-playlist-modal { padding: 1.5rem 1rem 1rem; }
+  html[data-theme="polnochnaya"] .create-playlist-modal-overlay { padding: 0.5rem; }
+  html[data-theme="polnochnaya"] .hero-badge { font-size: 0.7rem; }
+  html[data-theme="polnochnaya"] .hero-title { font-size: 1rem; }
+  html[data-theme="polnochnaya"] .error-state { margin: 20px 0.35rem; padding: 1.75rem 1rem; }
+  html[data-theme="polnochnaya"] .stat-badge { font-size: 0.74rem; padding: 0.3rem 0.55rem; }
+  html[data-theme="polnochnaya"] .genre-tag-large,
+  html[data-theme="polnochnaya"] .studio-tag { font-size: 0.78rem; padding: 0.32rem 0.65rem; }
+  html[data-theme="polnochnaya"] .dub-avatar { width: 36px; height: 44px; }
+  html[data-theme="polnochnaya"] .dub-item { gap: 0.6rem; padding: 0.6rem 0.65rem; }
+  html[data-theme="polnochnaya"] .pagination-btn,
+  html[data-theme="polnochnaya"] .page-number { min-width: 34px; padding: 0 0.4rem; }
+  html[data-theme="polnochnaya"] .rc-view-all { padding: 0 0.6rem; font-size: 0.78rem; }
+  html[data-theme="polnochnaya"] .screenshot-wrapper { flex: 0 0 86%; width: 86%; }
+  html[data-theme="polnochnaya"] .av-tab { padding: 0 0.7rem; font-size: 0.8rem; }
+  html[data-theme="polnochnaya"] .rating-value { font-size: 1.35rem; }
+  html[data-theme="polnochnaya"] .watch-button { padding: 0.65rem 1rem; font-size: 0.96rem; }
+  html[data-theme="polnochnaya"] .people-page .skeleton-grid,
+  html[data-theme="polnochnaya"] .people-grid { padding: 0.6rem; }
+  html[data-theme="polnochnaya"] .am-main { padding: 12px; }
+  html[data-theme="polnochnaya"] .am-editor-head h3 { font-size: 13px; }
+}
+
+@media (min-width: 1920px) {
+  html[data-theme="polnochnaya"] { --mk-tile: 760px; }
+  html[data-theme="polnochnaya"] .av-container,
+  html[data-theme="polnochnaya"] .home-page { max-width: 1880px; }
+  html[data-theme="polnochnaya"] .anime-detail .container { max-width: 1480px; }
+  html[data-theme="polnochnaya"] .anime-main-info { grid-template-columns: 380px minmax(0, 1fr); gap: 2.8rem 3.2rem; padding: 2.6rem; }
+  html[data-theme="polnochnaya"] .poster-section { max-width: 380px; }
+  html[data-theme="polnochnaya"] .detail-header { padding: 2.4rem 2.4rem 2.8rem; }
+  html[data-theme="polnochnaya"] .detail-header .anime-title { font-size: 2.1rem; }
+  html[data-theme="polnochnaya"] .rc-card-wrap,
+  html[data-theme="polnochnaya"] .rc-skel { flex: 0 0 260px; width: 260px; }
+  html[data-theme="polnochnaya"] .rc-title { font-size: 1.5rem; }
+  html[data-theme="polnochnaya"] .skeleton-card { flex: 0 0 220px; }
+  html[data-theme="polnochnaya"] .screenshot-wrapper { flex: 0 0 min(420px, 100%); width: min(420px, 100%); }
+  html[data-theme="polnochnaya"] .franchise-slide { flex: 0 0 240px; width: 240px; height: 440px; }
+  html[data-theme="polnochnaya"] .collection-page .cards-grid { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 32px 26px; }
+  html[data-theme="polnochnaya"] .hero-skeleton { min-height: 760px; }
+  html[data-theme="polnochnaya"] .hero-title { font-size: clamp(2rem, 2.6vw, 3.2rem); }
+  html[data-theme="polnochnaya"] .achievements-manager { grid-template-columns: 400px minmax(0, 1fr); min-height: 680px; }
+  html[data-theme="polnochnaya"] .anime-card .anime-title,
+  html[data-theme="polnochnaya"] .anime-poster-card .card-title,
+  html[data-theme="polnochnaya"] .col-card .card-title,
+  html[data-theme="polnochnaya"] .result-card .card-title,
+  html[data-theme="polnochnaya"] .playlist-title { font-size: 15.5px; }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  html[data-theme="polnochnaya"] .create-playlist-modal-overlay { align-items: flex-start; overflow-y: auto; }
+  html[data-theme="polnochnaya"] .create-playlist-modal { max-height: none; margin: 0.25rem auto; padding: 1.2rem 1.4rem 1.1rem; gap: 0.75rem; }
+  html[data-theme="polnochnaya"] .hero-skeleton { min-height: 380px; }
+  html[data-theme="polnochnaya"] .error-state { margin: 16px auto; padding: 1.4rem; }
+  html[data-theme="polnochnaya"] .loading-state,
+  html[data-theme="polnochnaya"] .anime-detail .error-state,
+  html[data-theme="polnochnaya"] .dubs-empty,
+  html[data-theme="polnochnaya"] .rc-empty { padding-top: 1.5rem; }
+  html[data-theme="polnochnaya"] .av-tab { height: 40px; }
+  html[data-theme="polnochnaya"] .av-tab.active { height: 46px; }
+  html[data-theme="polnochnaya"] .am-sidebar { max-height: 300px; }
+  html[data-theme="polnochnaya"] .am-main { min-height: 260px; }
+  html[data-theme="polnochnaya"] .rc-track { padding-bottom: 20px; }
+  html[data-theme="polnochnaya"] .screenshot-wrapper { flex: 0 0 min(240px, 60%); width: min(240px, 60%); }
+  html[data-theme="polnochnaya"] .poster-section { max-width: 180px; }
+}
+
+@media (pointer: coarse) {
+  html[data-theme="polnochnaya"] .genre-tag-large.clickable,
+  html[data-theme="polnochnaya"] .studio-tag { min-height: 42px; }
+  html[data-theme="polnochnaya"] .dub-item { min-height: 70px; }
+  html[data-theme="polnochnaya"] .am-item { min-height: 62px; }
+  html[data-theme="polnochnaya"] .page-number,
+  html[data-theme="polnochnaya"] .pagination-btn { min-width: 46px; min-height: 46px; }
+  html[data-theme="polnochnaya"] .create-playlist-checkbox input,
+  html[data-theme="polnochnaya"] .am-field input[type="checkbox"] { width: 26px; height: 26px; }
+  html[data-theme="polnochnaya"] .am-icon-choice { height: 46px; }
+  html[data-theme="polnochnaya"] .qa-btn { min-width: 46px; min-height: 46px; }
+  html[data-theme="polnochnaya"] .screenshot-nav-btn,
+  html[data-theme="polnochnaya"] .rc-arrow,
+  html[data-theme="polnochnaya"] .hero-arrow,
+  html[data-theme="polnochnaya"] .carousel-arrow { width: 48px; height: 48px; }
+  html[data-theme="polnochnaya"] .dubs-filter-btn,
+  html[data-theme="polnochnaya"] .kind-chip { min-height: 46px; }
+  html[data-theme="polnochnaya"] .tab-btn,
+  html[data-theme="polnochnaya"] .av-tab { min-height: 46px; }
+  html[data-theme="polnochnaya"] .create-playlist-input,
+  html[data-theme="polnochnaya"] .search-input,
+  html[data-theme="polnochnaya"] .page-size-select,
+  html[data-theme="polnochnaya"] .am-field input[type="text"],
+  html[data-theme="polnochnaya"] .am-field input[type="number"],
+  html[data-theme="polnochnaya"] .am-field select { min-height: 50px; }
+  html[data-theme="polnochnaya"] .am-search input { min-height: 46px; }
+  html[data-theme="polnochnaya"] .back-link,
+  html[data-theme="polnochnaya"] .external-link,
+  html[data-theme="polnochnaya"] .rc-view-all { min-height: 46px; }
+  html[data-theme="polnochnaya"] .dub-action { width: 42px; height: 42px; }
+  html[data-theme="polnochnaya"] .btn-add,
+  html[data-theme="polnochnaya"] .btn-add-all,
+  html[data-theme="polnochnaya"] .dubs-reset-btn,
+  html[data-theme="polnochnaya"] .am-btn,
+  html[data-theme="polnochnaya"] .am-btn.small { min-height: 46px; }
+}
+
+/* === Доступность === */
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="polnochnaya"],
+  html[data-theme="polnochnaya"] body::before,
+  html[data-theme="polnochnaya"] body::after,
+  html[data-theme="polnochnaya"] .anime-detail-card,
+  html[data-theme="polnochnaya"] .create-playlist-modal,
+  html[data-theme="polnochnaya"] .rating-stars::before,
+  html[data-theme="polnochnaya"] .rc-header:hover .rc-icon,
+  html[data-theme="polnochnaya"] .spinner,
+  html[data-theme="polnochnaya"] .spinner-ring,
+  html[data-theme="polnochnaya"] .dub-skeleton,
+  html[data-theme="polnochnaya"] .skeleton-poster,
+  html[data-theme="polnochnaya"] .skeleton-title-bar,
+  html[data-theme="polnochnaya"] .skeleton-line,
+  html[data-theme="polnochnaya"] .rc-skel-poster,
+  html[data-theme="polnochnaya"] .rc-skel-line,
+  html[data-theme="polnochnaya"] .people-page .skeleton-name,
+  html[data-theme="polnochnaya"] .people-page .skeleton-role {
+    animation: none;
+  }
+  html[data-theme="polnochnaya"] * {
+    transition-duration: 0.001s !important;
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  html[data-theme="polnochnaya"] body::before,
+  html[data-theme="polnochnaya"] body::after { opacity: 0.12; }
+  html[data-theme="polnochnaya"] .anime-card,
+  html[data-theme="polnochnaya"] .anime-poster-card .poster-wrap,
+  html[data-theme="polnochnaya"] .col-card .card-poster,
+  html[data-theme="polnochnaya"] .result-card,
+  html[data-theme="polnochnaya"] .playlist-card,
+  html[data-theme="polnochnaya"] .person-card,
+  html[data-theme="polnochnaya"] .skeleton-card { border-width: 4px; }
+  html[data-theme="polnochnaya"] .anime-detail-card,
+  html[data-theme="polnochnaya"] .rating-section,
+  html[data-theme="polnochnaya"] .create-playlist-modal,
+  html[data-theme="polnochnaya"] .error-state,
+  html[data-theme="polnochnaya"] .loading-state,
+  html[data-theme="polnochnaya"] .am-sidebar,
+  html[data-theme="polnochnaya"] .am-main,
+  html[data-theme="polnochnaya"] .home-hero,
+  html[data-theme="polnochnaya"] .hero-skeleton,
+  html[data-theme="polnochnaya"] .people-grid { border-width: 5px; }
+  html[data-theme="polnochnaya"] :focus-visible { outline-width: 4px; }
+}
+
+@media (forced-colors: active) {
+  html[data-theme="polnochnaya"] body::before,
+  html[data-theme="polnochnaya"] body::after { display: none; }
+  html[data-theme="polnochnaya"] :is(.btn, .btn-outline, .btn-primary, .btn-secondary, .btn-ghost, .btn-danger, .discuss-btn, .watch-button, .create-playlist-btn, .create-playlist-btn-cancel, .create-playlist-btn-submit, .am-btn, .am-create-btn, .rc-view-all, .retry-btn, .btn-retry, .catalog-retry, .dubs-reset-btn, .btn-add, .btn-add-all, .external-link, .back-link, .pagination-btn, .page-number, .qa-btn, .dubs-filter-btn, .kind-chip, .tab-btn, .av-tab, .screenshot-nav-btn, .screenshot-nav-btn-left, .screenshot-nav-btn-right, .rc-arrow, .rc-arrow-left, .rc-arrow-right, .hero-arrow, .carousel-arrow, .am-icon-choice, .play-btn) {
+    border: 3px solid ButtonText;
+    box-shadow: none;
+    background-image: none;
+  }
+  html[data-theme="polnochnaya"] .anime-card,
+  html[data-theme="polnochnaya"] .anime-poster-card .poster-wrap,
+  html[data-theme="polnochnaya"] .col-card .card-poster,
+  html[data-theme="polnochnaya"] .result-card,
+  html[data-theme="polnochnaya"] .playlist-card,
+  html[data-theme="polnochnaya"] .person-card,
+  html[data-theme="polnochnaya"] .skeleton-card,
+  html[data-theme="polnochnaya"] .anime-detail-card,
+  html[data-theme="polnochnaya"] .rating-section,
+  html[data-theme="polnochnaya"] .create-playlist-modal,
+  html[data-theme="polnochnaya"] .error-state,
+  html[data-theme="polnochnaya"] .loading-state,
+  html[data-theme="polnochnaya"] .am-sidebar,
+  html[data-theme="polnochnaya"] .am-main,
+  html[data-theme="polnochnaya"] .home-hero,
+  html[data-theme="polnochnaya"] .hero-skeleton,
+  html[data-theme="polnochnaya"] .people-grid {
+    border: 3px solid CanvasText;
+    box-shadow: none;
+  }
+  html[data-theme="polnochnaya"] :focus-visible {
+    outline: 3px solid Highlight;
+    outline-offset: 3px;
+  }
+}
+
+@media print {
+  html[data-theme="polnochnaya"] {
+    background-color: #fff;
+    background-image: none;
+    animation: none;
+  }
+  html[data-theme="polnochnaya"] body {
+    color: #000;
+    background-color: #fff;
+  }
+  html[data-theme="polnochnaya"] body::before,
+  html[data-theme="polnochnaya"] body::after { display: none; }
+  html[data-theme="polnochnaya"] .rc-arrow,
+  html[data-theme="polnochnaya"] .screenshot-nav-btn,
+  html[data-theme="polnochnaya"] .hero-arrow,
+  html[data-theme="polnochnaya"] .carousel-arrow,
+  html[data-theme="polnochnaya"] .action-buttons,
+  html[data-theme="polnochnaya"] .watch-button,
+  html[data-theme="polnochnaya"] .create-playlist-modal-overlay,
+  html[data-theme="polnochnaya"] .av-tabs,
+  html[data-theme="polnochnaya"] .play-btn,
+  html[data-theme="polnochnaya"] .qa-btn,
+  html[data-theme="polnochnaya"] .am-create-btn { display: none; }
+  html[data-theme="polnochnaya"] .anime-card,
+  html[data-theme="polnochnaya"] .anime-poster-card .poster-wrap,
+  html[data-theme="polnochnaya"] .col-card .card-poster,
+  html[data-theme="polnochnaya"] .result-card,
+  html[data-theme="polnochnaya"] .playlist-card,
+  html[data-theme="polnochnaya"] .person-card,
+  html[data-theme="polnochnaya"] .skeleton-card,
+  html[data-theme="polnochnaya"] .anime-detail-card,
+  html[data-theme="polnochnaya"] .rating-section,
+  html[data-theme="polnochnaya"] .create-playlist-modal,
+  html[data-theme="polnochnaya"] .error-state,
+  html[data-theme="polnochnaya"] .loading-state,
+  html[data-theme="polnochnaya"] .am-sidebar,
+  html[data-theme="polnochnaya"] .am-main,
+  html[data-theme="polnochnaya"] .home-hero,
+  html[data-theme="polnochnaya"] .hero-skeleton,
+  html[data-theme="polnochnaya"] .people-grid {
+    box-shadow: none;
+    border: 2px solid #000;
+    background-image: none;
+    break-inside: avoid;
+  }
+  html[data-theme="polnochnaya"] .anime-description-section,
+  html[data-theme="polnochnaya"] .anime-screenshots-section,
+  html[data-theme="polnochnaya"] .franchise-section,
+  html[data-theme="polnochnaya"] .dubs-section {
+    background-image: none;
+    border-top: 3px solid #000;
+  }
+  html[data-theme="polnochnaya"] .anime-main-info { background-image: none; }
+  html[data-theme="polnochnaya"] .detail-header {
+    color: #000;
+    background-color: #fff;
+    background-image: none;
+    border-bottom: 3px solid #000;
+  }
+  html[data-theme="polnochnaya"] .detail-header .anime-title,
+  html[data-theme="polnochnaya"] .detail-header .anime-title-en { color: #000; text-shadow: none; }
+  html[data-theme="polnochnaya"] .rc-title,
+  html[data-theme="polnochnaya"] .hero-title,
+  html[data-theme="polnochnaya"] .create-playlist-modal h3,
+  html[data-theme="polnochnaya"] .am-editor-head h3,
+  html[data-theme="polnochnaya"] .dubs-title,
+  html[data-theme="polnochnaya"] .error-title {
+    color: #000;
+    background-color: #fff;
+    box-shadow: none;
+    rotate: none;
+    border: 2px solid #000;
+  }
+  html[data-theme="polnochnaya"] .rating-section {
+    color: #000;
+    background-color: #fff;
+  }
+  html[data-theme="polnochnaya"] .screenshots-grid,
+  html[data-theme="polnochnaya"] .rc-track {
+    flex-wrap: wrap;
+    overflow: visible;
+    background-image: none;
+  }
+  html[data-theme="polnochnaya"] .screenshot-wrapper {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+  html[data-theme="polnochnaya"] .screenshot-overlay { display: none; }
+  html[data-theme="polnochnaya"] a {
+    color: #000;
+    text-decoration: underline;
+  }
+}

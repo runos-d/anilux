@@ -1,0 +1,3992 @@
+html[data-theme="polnochnaya"] {
+  color-scheme: dark;
+
+  --accent: #f07a5f;
+  --accent-bright: #f79a84;
+  --accent-hover: #f58b72;
+  --accent-press: #d94a32;
+  --accent-subtle: rgba(240, 122, 95, 0.18);
+  --accent-glow: rgba(240, 122, 95, 0.4);
+  --accent-glow-sm: rgba(240, 122, 95, 0.2);
+  --accent-rgb: 240, 122, 95;
+
+  --surface-0: #0b1730;
+  --surface-1: #0f1e3d;
+  --surface-2: #12244a;
+  --surface-3: #1a3160;
+  --surface-4: #25427a;
+  --surface-5: #3b5f9f;
+  --surface-6: #4a74b8;
+  --page-bg: #12244a;
+
+  --border-subtle: rgba(207, 224, 255, 0.12);
+  --border-default: rgba(207, 224, 255, 0.26);
+  --border-strong: #f07a5f;
+
+  --text-primary: #f6eedb;
+  --text-secondary: #c9d3ec;
+  --text-tertiary: #8fa0c8;
+  --text-disabled: #5f729e;
+  --text-on-accent: #1a1822;
+  --text-accent: #f79a84;
+
+  --success: #8fc283;
+  --warning: #e5c05e;
+  --danger: #ef6f84;
+  --info: #7da2dc;
+
+  --shadow-sm: 0 2px 6px rgba(2, 6, 18, 0.4);
+  --shadow-md: 0 8px 20px -6px rgba(2, 6, 18, 0.55);
+  --shadow-lg: 0 16px 34px -10px rgba(2, 6, 18, 0.6);
+  --shadow-xl: 0 26px 54px -14px rgba(2, 6, 18, 0.7);
+  --shadow-modal: 0 40px 90px -20px rgba(2, 6, 18, 0.8);
+  --shadow-glow: 0 0 0 3px rgba(240, 122, 95, 0.45);
+  --shadow-glow-sm: 0 0 0 2px rgba(240, 122, 95, 0.35);
+  --shadow-petal: 0 8px 20px -6px rgba(2, 6, 18, 0.55);
+  --shadow-petal-sm: 0 4px 10px -4px rgba(2, 6, 18, 0.5);
+
+  --sea-0: #0b1730;
+  --sea-1: #12244a;
+  --sea-2: #1a3160;
+  --sea-3: #25427a;
+  --sea-line: #3b5f9f;
+  --foam: #cfe0ff;
+  --cream: #f6eedb;
+  --cream-2: #c9d3ec;
+  --cream-3: #8fa0c8;
+  --paper: #f2e9d4;
+  --paper-2: #e8dcc0;
+  --paper-3: #dccfae;
+  --paper-edge: #b9a67b;
+  --ink: #1a1822;
+  --ink-2: #3a3744;
+  --ink-3: #64606e;
+  --shu: #d94a32;
+  --shu-d: #b53520;
+  --shu-l: #f07a5f;
+  --shu-bg: #f7d6cb;
+  --gold: #d4a73f;
+  --gold-d: #8f6d14;
+  --gold-bg: #f4e6b8;
+  --moss: #5f8f55;
+  --moss-bg: #dbe7c3;
+  --sakura: #ec9fb2;
+  --sakura-d: #b04a68;
+  --sakura-bg: #f6d9df;
+  --ai: #4a74b8;
+  --ai-bg: #cfe0f5;
+  --fuji: #6f58a8;
+  --fuji-bg: #e2daf3;
+  --danger-ink: #b8243a;
+  --danger-bg: #f5cfd4;
+  --overlay: rgba(6, 12, 30, 0.8);
+  --lift: 0 2px 0 rgba(26, 24, 34, 0.25), 0 18px 30px -12px rgba(2, 6, 18, 0.65);
+  --lift-hover: 0 3px 0 rgba(26, 24, 34, 0.3), 0 30px 44px -14px rgba(2, 6, 18, 0.8);
+  --font-display: "Shippori Mincho B1", "Prata", "Noto Serif Display", "Georgia", serif;
+  --font-body: "Golos Text", "Manrope", "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --glide: cubic-bezier(0.16, 1, 0.3, 1);
+  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .28 0 0 0 0 .15 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  --p-bg: #12244a;
+  --p-dot: transparent;
+  --p-card: #f2e9d4;
+  --p-soft: #e8dcc0;
+  --p-soft-2: #dccfae;
+  --p-line: #b9a67b;
+  --p-text: #1a1822;
+  --p-muted: #64606e;
+  --p-accent: #d94a32;
+  --p-accent-d: #b53520;
+  --p-gold: #f4e6b8;
+  --p-gold-soft: #f4e6b8;
+  --p-gold-d: #8f6d14;
+  --p-mint: #dbe7c3;
+  --p-mint-d: #5f8f55;
+  --p-sky: #cfe0f5;
+  --p-sky-d: #4a74b8;
+  --p-lav: #e2daf3;
+  --p-lav-d: #6f58a8;
+  --p-edge: #1a1822;
+  --p-drop: rgba(2, 6, 18, 0.4);
+  --p-shadow-soft: rgba(217, 74, 50, 0.25);
+  --p-tile: #e8dcc0;
+  --p-danger: #b8243a;
+  --p-danger-bg: #f5cfd4;
+  --p-overlay: rgba(6, 12, 30, 0.8);
+
+  font-family: var(--font-body);
+  background-color: var(--sea-1);
+  scroll-behavior: smooth;
+  scrollbar-color: var(--shu-l) var(--sea-0);
+  scrollbar-width: thin;
+}
+
+html[data-theme="polnochnaya"] body {
+  --text-primary: #f6eedb;
+  --text-secondary: #c9d3ec;
+  --text-tertiary: #8fa0c8;
+  --text-disabled: #5f729e;
+  --text-on-accent: #1a1822;
+  --text-accent: #f79a84;
+  --success: #8fc283;
+  --warning: #e5c05e;
+  --danger: #ef6f84;
+  --info: #7da2dc;
+
+  position: relative;
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--cream);
+  background-color: var(--sea-1);
+  background-image: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+html[data-theme="polnochnaya"]::before {
+  content: "";
+  position: fixed;
+  top: -24px;
+  left: 0;
+  z-index: -1;
+  width: 13px;
+  height: 10px;
+  margin-left: 0;
+  pointer-events: none;
+  background: var(--sakura);
+  border-radius: 100% 0 100% 0;
+  opacity: 0.9;
+  box-shadow: 2.6vw 64.9vh 0 0 var(--sakura), 2.6vw -55.1vh 0 0 var(--sakura), 10.2vw 54.0vh 0 0 #f6c4d0, 10.2vw -66.0vh 0 0 #f6c4d0, 13.9vw 68.1vh 0 0 var(--sakura), 13.9vw -51.9vh 0 0 var(--sakura), 18.1vw 59.4vh 0 0 #f9d8e0, 18.1vw -60.6vh 0 0 #f9d8e0, 25.6vw 92.0vh 0 0 var(--sakura), 25.6vw -28.0vh 0 0 var(--sakura), 28.8vw 35.2vh 0 0 #f6c4d0, 28.8vw -84.8vh 0 0 #f6c4d0, 34.3vw 93.9vh 0 0 var(--sakura), 34.3vw -26.1vh 0 0 var(--sakura), 42.5vw 4.9vh 0 0 #f9d8e0, 42.5vw -115.1vh 0 0 #f9d8e0, 49.3vw 111.9vh 0 0 var(--sakura), 49.3vw -8.1vh 0 0 var(--sakura), 53.5vw 71.4vh 0 0 #f6c4d0, 53.5vw -48.6vh 0 0 #f6c4d0, 56.8vw 1.7vh 0 0 var(--sakura), 56.8vw -118.3vh 0 0 var(--sakura), 64.0vw 6.9vh 0 0 #f9d8e0, 64.0vw -113.1vh 0 0 #f9d8e0, 68.1vw 28.1vh 0 0 var(--sakura), 68.1vw -91.9vh 0 0 var(--sakura), 72.9vw 53.8vh 0 0 #f6c4d0, 72.9vw -66.2vh 0 0 #f6c4d0, 80.3vw 97.7vh 0 0 var(--sakura), 80.3vw -22.3vh 0 0 var(--sakura), 86.2vw 74.3vh 0 0 #f9d8e0, 86.2vw -45.7vh 0 0 #f9d8e0, 91.7vw 76.8vh 0 0 var(--sakura), 91.7vw -43.2vh 0 0 var(--sakura), 97.0vw 32.3vh 0 0 #f6c4d0, 97.0vw -87.7vh 0 0 #f6c4d0;
+  animation:
+    kx-fall-a 26s linear infinite,
+    kx-sway 5.5s ease-in-out infinite alternate;
+}
+
+html[data-theme="polnochnaya"]::after {
+  content: "";
+  position: fixed;
+  top: -24px;
+  left: 0;
+  z-index: -1;
+  width: 8px;
+  height: 6px;
+  pointer-events: none;
+  background: var(--shu-bg);
+  border-radius: 100% 0 100% 0;
+  opacity: 0.7;
+  box-shadow: 4.1vw 115.5vh 0 0 var(--shu-bg), 4.1vw -4.5vh 0 0 var(--shu-bg), 7.3vw 82.1vh 0 0 #f3d9a8, 7.3vw -37.9vh 0 0 #f3d9a8, 8.8vw 26.6vh 0 0 var(--shu-bg), 8.8vw -93.4vh 0 0 var(--shu-bg), 12.5vw 8.1vh 0 0 var(--shu-bg), 12.5vw -111.9vh 0 0 var(--shu-bg), 18.5vw 46.4vh 0 0 #f3d9a8, 18.5vw -73.6vh 0 0 #f3d9a8, 22.7vw 44.8vh 0 0 var(--shu-bg), 22.7vw -75.2vh 0 0 var(--shu-bg), 27.0vw 98.3vh 0 0 var(--shu-bg), 27.0vw -21.7vh 0 0 var(--shu-bg), 26.6vw 24.3vh 0 0 #f3d9a8, 26.6vw -95.7vh 0 0 #f3d9a8, 34.5vw 54.5vh 0 0 var(--shu-bg), 34.5vw -65.5vh 0 0 var(--shu-bg), 38.7vw 46.1vh 0 0 var(--shu-bg), 38.7vw -73.9vh 0 0 var(--shu-bg), 38.5vw 73.0vh 0 0 #f3d9a8, 38.5vw -47.0vh 0 0 #f3d9a8, 45.5vw 31.3vh 0 0 var(--shu-bg), 45.5vw -88.7vh 0 0 var(--shu-bg), 46.3vw 38.6vh 0 0 var(--shu-bg), 46.3vw -81.4vh 0 0 var(--shu-bg), 54.0vw 87.9vh 0 0 #f3d9a8, 54.0vw -32.1vh 0 0 #f3d9a8, 54.1vw 28.6vh 0 0 var(--shu-bg), 54.1vw -91.4vh 0 0 var(--shu-bg), 57.9vw 6.9vh 0 0 var(--shu-bg), 57.9vw -113.1vh 0 0 var(--shu-bg), 64.8vw 20.6vh 0 0 #f3d9a8, 64.8vw -99.4vh 0 0 #f3d9a8, 67.6vw 51.9vh 0 0 var(--shu-bg), 67.6vw -68.1vh 0 0 var(--shu-bg), 69.8vw 84.9vh 0 0 var(--shu-bg), 69.8vw -35.1vh 0 0 var(--shu-bg), 73.4vw 74.7vh 0 0 #f3d9a8, 73.4vw -45.3vh 0 0 #f3d9a8, 77.2vw 48.8vh 0 0 var(--shu-bg), 77.2vw -71.2vh 0 0 var(--shu-bg), 81.4vw 31.3vh 0 0 var(--shu-bg), 81.4vw -88.7vh 0 0 var(--shu-bg), 88.6vw 93.2vh 0 0 #f3d9a8, 88.6vw -26.8vh 0 0 #f3d9a8, 89.5vw 102.6vh 0 0 var(--shu-bg), 89.5vw -17.4vh 0 0 var(--shu-bg), 93.0vw 45.7vh 0 0 var(--shu-bg), 93.0vw -74.3vh 0 0 var(--shu-bg), 99.6vw 74.5vh 0 0 #f3d9a8, 99.6vw -45.5vh 0 0 #f3d9a8;
+  animation:
+    kx-fall-b 38s linear infinite,
+    kx-sway 7.5s ease-in-out infinite alternate-reverse;
+}
+
+html[data-theme="polnochnaya"] body::before {
+  content: "";
+  position: fixed;
+  top: 46vh;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-color: #14295a;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='24'%3E%3Cpath d='M0 12Q15 0 30 12T60 12T90 12T120 12' fill='none' stroke='%23cfe0ff' stroke-opacity='.16' stroke-width='2'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='40'%3E%3Cg fill='%23163066' stroke='%233b5f9f' stroke-opacity='.45' stroke-width='1.6'%3E%3Ccircle cx='0' cy='0' r='20'/%3E%3Ccircle cx='0' cy='0' r='14'/%3E%3Ccircle cx='0' cy='0' r='8'/%3E%3Ccircle cx='40' cy='0' r='20'/%3E%3Ccircle cx='40' cy='0' r='14'/%3E%3Ccircle cx='40' cy='0' r='8'/%3E%3Ccircle cx='80' cy='0' r='20'/%3E%3Ccircle cx='80' cy='0' r='14'/%3E%3Ccircle cx='80' cy='0' r='8'/%3E%3Ccircle cx='20' cy='20' r='20'/%3E%3Ccircle cx='20' cy='20' r='14'/%3E%3Ccircle cx='20' cy='20' r='8'/%3E%3Ccircle cx='60' cy='20' r='20'/%3E%3Ccircle cx='60' cy='20' r='14'/%3E%3Ccircle cx='60' cy='20' r='8'/%3E%3Ccircle cx='0' cy='40' r='20'/%3E%3Ccircle cx='0' cy='40' r='14'/%3E%3Ccircle cx='0' cy='40' r='8'/%3E%3Ccircle cx='40' cy='40' r='20'/%3E%3Ccircle cx='40' cy='40' r='14'/%3E%3Ccircle cx='40' cy='40' r='8'/%3E%3Ccircle cx='80' cy='40' r='20'/%3E%3Ccircle cx='80' cy='40' r='14'/%3E%3Ccircle cx='80' cy='40' r='8'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 120px 24px, 80px 40px;
+  border-top: 3px solid rgba(207, 224, 255, 0.3);
+  animation: kx-waves 34s linear infinite;
+}
+
+html[data-theme="polnochnaya"] body::after {
+  content: "";
+  position: fixed;
+  top: 8vh;
+  right: 10vw;
+  z-index: -3;
+  width: clamp(84px, 15vmin, 190px);
+  aspect-ratio: 1;
+  pointer-events: none;
+  background: var(--cream);
+  border-radius: 50%;
+  box-shadow:
+    inset -14px -10px 0 0 #e3d8bb,
+    0 0 0 16px rgba(246, 238, 219, 0.1),
+    0 0 0 40px rgba(246, 238, 219, 0.055),
+    0 0 0 78px rgba(246, 238, 219, 0.03);
+  animation: kx-moon 14s ease-in-out infinite;
+}
+
+@keyframes kx-fall-a {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(120vh);
+  }
+}
+
+@keyframes kx-fall-b {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(120vh);
+  }
+}
+
+@keyframes kx-sway {
+  from {
+    margin-left: -26px;
+  }
+  to {
+    margin-left: 34px;
+  }
+}
+
+@keyframes kx-waves {
+  from {
+    background-position: 0 0, 0 0;
+  }
+  to {
+    background-position: -120px 0, 80px 0;
+  }
+}
+
+@keyframes kx-moon {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-14px) scale(1.04);
+  }
+}
+
+@keyframes kx-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes kx-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes kx-sweep {
+  from {
+    transform: translateX(-120%);
+  }
+  to {
+    transform: translateX(420%);
+  }
+}
+
+@keyframes kx-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes kx-rise {
+  from {
+    opacity: 0;
+    transform: translateY(22px) rotate(0.7deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(0);
+  }
+}
+
+@keyframes kx-stamp {
+  0% {
+    opacity: 0;
+    transform: scale(2.1) rotate(-14deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.92) rotate(2deg);
+  }
+  100% {
+    transform: scale(1) rotate(-3deg);
+  }
+}
+
+@keyframes kx-sway-soft {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes kx-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes kx-draw {
+  from {
+    background-size: 0 3px;
+  }
+  to {
+    background-size: 100% 3px;
+  }
+}
+
+html[data-theme="polnochnaya"] ::selection {
+  color: var(--ink);
+  background: var(--gold);
+}
+
+html[data-theme="polnochnaya"] ::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+html[data-theme="polnochnaya"] ::-webkit-scrollbar-track {
+  background: var(--sea-0);
+}
+
+html[data-theme="polnochnaya"] ::-webkit-scrollbar-thumb {
+  background: var(--shu-l);
+  border: 3px solid var(--sea-0);
+  border-radius: 999px;
+}
+
+html[data-theme="polnochnaya"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
+}
+
+html[data-theme="polnochnaya"] button:focus-visible,
+html[data-theme="polnochnaya"] a:focus-visible,
+html[data-theme="polnochnaya"] input:focus-visible,
+html[data-theme="polnochnaya"] select:focus-visible,
+html[data-theme="polnochnaya"] textarea:focus-visible,
+html[data-theme="polnochnaya"] [role="button"]:focus-visible,
+html[data-theme="polnochnaya"] [tabindex]:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+
+html[data-theme="polnochnaya"] :where(button, input, select, textarea) {
+  font: inherit;
+}
+
+html[data-theme="polnochnaya"] :where(h1, h2, h3, h4) {
+  font-family: var(--font-display);
+  letter-spacing: 0;
+}
+
+html[data-theme="polnochnaya"] :where(a) {
+  color: var(--shu-l);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+html[data-theme="polnochnaya"] :where(a:hover) {
+  color: var(--gold);
+}
+
+html[data-theme="polnochnaya"] .anime-view,
+html[data-theme="polnochnaya"] .anime-detail,
+html[data-theme="polnochnaya"] .home-page,
+html[data-theme="polnochnaya"] .people-page,
+html[data-theme="polnochnaya"] .playlists-page,
+html[data-theme="polnochnaya"] .collection-page,
+html[data-theme="polnochnaya"] .add-anime-page {
+  position: relative;
+  min-height: 100vh;
+  color: var(--cream);
+  background-color: transparent;
+  background-image: none;
+}
+
+html[data-theme="polnochnaya"] .anime-view::before,
+html[data-theme="polnochnaya"] .anime-detail::before,
+html[data-theme="polnochnaya"] .home-page::before,
+html[data-theme="polnochnaya"] .people-page::before,
+html[data-theme="polnochnaya"] .playlists-page::before,
+html[data-theme="polnochnaya"] .collection-page::before,
+html[data-theme="polnochnaya"] .add-anime-page::before {
+  content: "物語　アニメ";
+  position: fixed;
+  top: 150px;
+  left: 20px;
+  z-index: 0;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.5em;
+  color: rgba(246, 238, 219, 0.3);
+  pointer-events: none;
+  writing-mode: vertical-rl;
+  animation: kx-pulse 6s ease-in-out infinite;
+}
+
+html[data-theme="polnochnaya"] .av-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 1.75rem 3.5rem 4.5rem;
+}
+
+html[data-theme="polnochnaya"] .av-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0.5rem 0.25rem 1rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid rgba(207, 224, 255, 0.25);
+}
+
+html[data-theme="polnochnaya"] .av-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  height: 46px;
+  padding: 0 1.3rem 0 1.9rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--ink);
+  cursor: pointer;
+  background-color: var(--paper);
+  background-image: var(--noise);
+  border: 0;
+  clip-path: polygon(18px 0, 100% 0, 100% 100%, 18px 100%, 0 50%);
+  transition:
+    transform 0.3s var(--spring),
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+html[data-theme="polnochnaya"] .av-tab::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  width: 9px;
+  height: 9px;
+  background: var(--sea-1);
+  border-radius: 50%;
+  transform: translateY(-50%);
+  transition: background-color 0.18s ease;
+}
+
+html[data-theme="polnochnaya"] .av-tab:hover {
+  background-color: var(--gold-bg);
+  transform: translateY(-4px) rotate(-1deg);
+}
+
+html[data-theme="polnochnaya"] .av-tab:active {
+  transform: translateY(1px) scale(0.97);
+}
+
+html[data-theme="polnochnaya"] .av-tab.active {
+  color: var(--paper);
+  background-color: var(--shu);
+  background-image: none;
+  transform: translateY(-2px);
+}
+
+html[data-theme="polnochnaya"] .av-tab.active::before {
+  background: var(--paper);
+}
+
+html[data-theme="polnochnaya"] .av-tab.active .av-tab-icon,
+html[data-theme="polnochnaya"] .av-tab.active .sakura-icon {
+  color: var(--paper) !important;
+}
+
+html[data-theme="polnochnaya"] .av-tab-icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--shu);
+}
+
+html[data-theme="polnochnaya"] .av-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--paper);
+  background: var(--ink);
+  border-radius: 3px;
+}
+
+html[data-theme="polnochnaya"] .av-tab.active .av-tab-badge {
+  color: var(--ink);
+  background: var(--paper);
+}
+
+html[data-theme="polnochnaya"] .av-fade-enter-active,
+html[data-theme="polnochnaya"] .av-fade-leave-active {
+  transition:
+    opacity 0.3s ease,
+    transform 0.45s var(--glide);
+}
+
+html[data-theme="polnochnaya"] .av-fade-enter-from,
+html[data-theme="polnochnaya"] .av-fade-leave-to {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+html[data-theme="polnochnaya"] .anime-detail {
+  padding: 2.25rem 3.5rem 5rem;
+}
+
+html[data-theme="polnochnaya"] .anime-detail .container {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+html[data-theme="polnochnaya"] .loading-state,
+html[data-theme="polnochnaya"] .anime-detail .error-state {
+  position: relative;
+  padding: 4.5rem 2rem;
+  color: var(--ink);
+  text-align: center;
+  background-color: var(--paper);
+  background-image: var(--noise);
+  border-radius: 6px;
+  box-shadow: var(--lift);
+  outline: 1px solid rgba(26, 24, 34, 0.4);
+  outline-offset: -9px;
+}
+
+html[data-theme="polnochnaya"] .spinner-container {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  margin: 0 auto 1.75rem;
+}
+
+html[data-theme="polnochnaya"] .spinner,
+html[data-theme="polnochnaya"] .spinner-ring {
+  position: absolute;
+  border-style: solid;
+  border-radius: 50%;
+}
+
+html[data-theme="polnochnaya"] .spinner {
+  inset: 0;
+  border-width: 7px;
+  border-color: var(--ink);
+  border-right-color: transparent;
+  animation: kx-spin 1.2s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+}
+
+html[data-theme="polnochnaya"] .spinner-ring {
+  inset: 22px;
+  border-width: 6px;
+  border-color: var(--shu);
+  border-left-color: transparent;
+  animation: kx-spin 1.8s linear infinite reverse;
+}
+
+html[data-theme="polnochnaya"] .loading-state p {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--ink-3);
+  animation: kx-pulse 1.8s ease-in-out infinite;
+}
+
+html[data-theme="polnochnaya"] .anime-detail .error-icon {
+  margin-bottom: 1rem;
+  font-size: 4rem;
+  color: var(--shu);
+  animation: kx-sway-soft 3s ease-in-out infinite;
+}
+
+html[data-theme="polnochnaya"] .error-message {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--shu-d);
+}
+
+html[data-theme="polnochnaya"] .anime-detail-card {
+  position: relative;
+  overflow: hidden;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image: var(--noise);
+  border-radius: 6px;
+  box-shadow: var(--lift-hover);
+  animation: kx-rise 0.7s var(--glide) both;
+}
+
+html[data-theme="polnochnaya"] .anime-detail-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  border: 1px solid rgba(26, 24, 34, 0.45);
+  margin: 9px;
+  border-radius: 3px;
+}
+
+html[data-theme="polnochnaya"] .detail-header {
+  position: relative;
+  padding: 2.4rem 2.75rem 2rem;
+  background-color: var(--paper-2);
+  background-image: var(--noise);
+  border-bottom: 2px solid var(--ink);
+}
+
+html[data-theme="polnochnaya"] .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 42px;
+  padding: 0.5rem 1.2rem 0.5rem 1rem;
+  margin-bottom: 1.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  transition:
+    transform 0.3s var(--spring),
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+html[data-theme="polnochnaya"] .back-link:hover {
+  color: var(--paper);
+  background: var(--ink);
+  transform: translateX(-6px);
+}
+
+html[data-theme="polnochnaya"] .back-link:active {
+  transform: translateX(-2px) scale(0.97);
+}
+
+html[data-theme="polnochnaya"] .anime-title {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3.6vw, 3.1rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: 0;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+html[data-theme="polnochnaya"] .detail-header .anime-title {
+  position: relative;
+  padding-bottom: 0.55rem;
+}
+
+html[data-theme="polnochnaya"] .detail-header .anime-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 96px;
+  height: 5px;
+  background: var(--shu);
+  border-radius: 999px;
+  animation: kx-stamp 0.7s var(--glide) 0.3s both;
+}
+
+html[data-theme="polnochnaya"] .anime-title-en {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-style: italic;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+
+html[data-theme="polnochnaya"] .anime-main-info {
+  display: grid;
+  grid-template-columns: 310px minmax(0, 1fr);
+  gap: 2.75rem;
+  padding: 2.75rem;
+}
+
+html[data-theme="polnochnaya"] .poster-section {
+  display: flex;
+  flex-direction: column;
+  align-self: start;
+  gap: 1.35rem;
+  width: 100%;
+  max-width: 310px;
+}
+
+html[data-theme="polnochnaya"] .anime-poster-large {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  background: var(--paper-3);
+  border: 8px solid var(--paper);
+  border-radius: 2px;
+  box-shadow:
+    0 0 0 2px var(--ink),
+    0 22px 36px -12px rgba(26, 24, 34, 0.6);
+  transform: rotate(-1.6deg);
+  transition: transform 0.5s var(--spring), box-shadow 0.3s ease;
+}
+
+html[data-theme="polnochnaya"] .anime-poster-large:hover {
+  transform: rotate(0.8deg) scale(1.03) translateY(-4px);
+  box-shadow:
+    0 0 0 2px var(--ink),
+    0 34px 44px -14px rgba(26, 24, 34, 0.7);
+}
+
+html[data-theme="polnochnaya"] .poster-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+html[data-theme="polnochnaya"] .poster-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  font-size: 4rem;
+  color: var(--shu);
+  background: var(--paper-3);
+}
+
+html[data-theme="polnochnaya"] .rating-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1rem;
+  margin-top: 0.4rem;
+  box-sizing: border-box;
+  background: var(--paper-2);
+  border: 2px dashed var(--ink-3);
+  border-radius: 4px;
+}
+
+html[data-theme="polnochnaya"] .rating-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1rem;
+  background: var(--shu);
+  border: 3px double var(--paper);
+  border-radius: 6px;
+  box-shadow: 0 0 0 2px var(--shu-d);
+  animation: kx-stamp 0.8s var(--glide) 0.4s both;
+}
+
+html[data-theme="polnochnaya"] .rating-stars::before {
+  content: "★";
+  display: inline-block;
+  font-size: 1.55rem;
+  line-height: 1;
+  color: var(--gold-bg);
+  animation: kx-sway-soft 3.4s ease-in-out infinite;
+}
+
+html[data-theme="polnochnaya"] .rating-value {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--paper);
+  font-variant-numeric: tabular-nums;
+}
+
+html[data-theme="polnochnaya"] .stats-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+html[data-theme="polnochnaya"] .stat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  border-radius: 3px;
+}
+
+html[data-theme="polnochnaya"] .rank-badge {
+  color: var(--gold-d);
+  background: var(--gold-bg);
+  border-color: var(--gold-d);
+}
+
+html[data-theme="polnochnaya"] .popularity-badge {
+  color: var(--sakura-d);
+  background: var(--sakura-bg);
+  border-color: var(--sakura-d);
+}
+
+html[data-theme="polnochnaya"] .anime-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+html[data-theme="polnochnaya"] .detail-row {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 1rem 0.25rem;
+  border-bottom: 1.5px dotted var(--ink-3);
+  transition: padding 0.3s var(--glide), background-color 0.2s ease;
+}
+
+html[data-theme="polnochnaya"] .detail-row:hover {
+  padding-left: 1rem;
+  background: var(--paper-2);
+}
+
+html[data-theme="polnochnaya"] .detail-row:last-of-type {
+  border-bottom: 0;
+}
+
+html[data-theme="polnochnaya"] .detail-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 160px;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--shu-d);
+}
+
+html[data-theme="polnochnaya"] .detail-label::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  background: var(--shu);
+  transform: rotate(45deg);
+}
+
+html[data-theme="polnochnaya"] .detail-value {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+html[data-theme="polnochnaya"] .status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.28rem 0.95rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: 2px solid currentColor;
+  border-radius: 3px;
+}
+
+html[data-theme="polnochnaya"] .status-badge::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: currentColor;
+  border-radius: 50%;
+}
+
+html[data-theme="polnochnaya"] .status-ongoing,
+html[data-theme="polnochnaya"] .status-released {
+  color: #3f6b36;
+  background: var(--moss-bg);
+}
+
+html[data-theme="polnochnaya"] .status-ongoing::before {
+  animation: kx-blink 1.2s steps(1) infinite;
+}
+
+html[data-theme="polnochnaya"] .status-finished {
+  color: var(--fuji);
+  background: var(--fuji-bg);
+}
+
+html[data-theme="polnochnaya"] .status-announced {
+  color: #2f5a9c;
+  background: var(--ai-bg);
+}
+
+html[data-theme="polnochnaya"] .genres-list,
+html[data-theme="polnochnaya"] .studios-list,
+html[data-theme="polnochnaya"] .external-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+html[data-theme="polnochnaya"] .genre-tag-large,
+html[data-theme="polnochnaya"] .studio-tag {
+  padding: 0.36rem 0.95rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  border: 1.5px solid var(--ink);
+  border-radius: 3px;
+  transition:
+    transform 0.3s var(--spring),
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+html[data-theme="polnochnaya"] .genre-tag-large {
+  color: var(--ink);
+  background: var(--paper);
+}
+
+html[data-theme="polnochnaya"] .genre-tag-large:nth-child(4n + 1) {
+  background: var(--sakura-bg);
+}
+
+html[data-theme="polnochnaya"] .genre-tag-large:nth-child(4n + 2) {
+  background: var(--moss-bg);
+}
+
+html[data-theme="polnochnaya"] .genre-tag-large:nth-child(4n + 3) {
+  background: var(--gold-bg);
+}
+
+html[data-theme="polnochnaya"] .genre-tag-large:nth-child(4n) {
+  background: var(--ai-bg);
+}
+
+html[data-theme="polnochnaya"] .studio-tag {
+  color: var(--fuji);
+  background: var(--fuji-bg);
+  border-color: var(--fuji);
+}
+
+html[data-theme="polnochnaya"] .genre-tag-large.clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+html[data-theme="polnochnaya"] .genre-tag-large.clickable:hover {
+  color: var(--paper);
+  background: var(--shu);
+  border-color: var(--shu-d);
+  transform: translateY(-4px) rotate(-2.5deg);
+}
+
+html[data-theme="polnochnaya"] .genre-tag-large.clickable:active {
+  transform: translateY(0) scale(0.95);
+}
+
+html[data-theme="polnochnaya"] .external-link {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 40px;
+  padding: 0.4rem 1.2rem;
+  overflow: hidden;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  transition: color 0.25s ease, transform 0.3s var(--spring);
+}
+
+html[data-theme="polnochnaya"] .external-link::before {
+  content: "";
+  position: absolute;
+  inset: -60%;
+  z-index: -1;
+  background: var(--ink);
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform 0.5s var(--glide);
+}
+
+html[data-theme="polnochnaya"] .external-link:hover {
+  color: var(--paper);
+  transform: translateY(-3px);
+}
+
+html[data-theme="polnochnaya"] .external-link:hover::before {
+  transform: scale(1);
+}
+
+html[data-theme="polnochnaya"] .external-link:active {
+  transform: translateY(1px) scale(0.97);
+}
+
+html[data-theme="polnochnaya"] .external-link.shikimori {
+  color: #3f6b36;
+  background: var(--moss-bg);
+  border-color: #3f6b36;
+}
+
+html[data-theme="polnochnaya"] .external-link.mal {
+  color: #2f5a9c;
+  background: var(--ai-bg);
+  border-color: #2f5a9c;
+}
+
+html[data-theme="polnochnaya"] .watch-button,
+html[data-theme="polnochnaya"] .btn,
+html[data-theme="polnochnaya"] .retry-btn,
+html[data-theme="polnochnaya"] .btn-retry,
+html[data-theme="polnochnaya"] .catalog-retry,
+html[data-theme="polnochnaya"] .btn-add-all,
+html[data-theme="polnochnaya"] .btn-add,
+html[data-theme="polnochnaya"] .btn-secondary,
+html[data-theme="polnochnaya"] .btn-ghost,
+html[data-theme="polnochnaya"] .btn-danger {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 46px;
+  overflow: hidden;
+  font-family: var(--font-body);
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.3s var(--spring);
+}
+
+html[data-theme="polnochnaya"] .watch-button::before,
+html[data-theme="polnochnaya"] .btn::before,
+html[data-theme="polnochnaya"] .retry-btn::before,
+html[data-theme="polnochnaya"] .btn-retry::before,
+html[data-theme="polnochnaya"] .catalog-retry::before,
+html[data-theme="polnochnaya"] .btn-add-all::before,
+html[data-theme="polnochnaya"] .btn-add::before,
+html[data-theme="polnochnaya"] .btn-secondary::before,
+html[data-theme="polnochnaya"] .btn-ghost::before,
+html[data-theme="polnochnaya"] .btn-danger::before {
+  content: "";
+  position: absolute;
+  inset: -60%;
+  z-index: -1;
+  background: var(--ink);
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform 0.55s var(--glide);
+}
+
+html[data-theme="polnochnaya"] .watch-button:hover:not(:disabled)::before,
+html[data-theme="polnochnaya"] .btn:hover:not(:disabled)::before,
+html[data-theme="polnochnaya"] .retry-btn:hover::before,
+html[data-theme="polnochnaya"] .btn-retry:hover::before,
+html[data-theme="polnochnaya"] .catalog-retry:hover::before,
+html[data-theme="polnochnaya"] .btn-add-all:hover:not(:disabled)::before,
+html[data-theme="polnochnaya"] .btn-add:hover:not(:disabled)::before,
+html[data-theme="polnochnaya"] .btn-secondary:hover::before,
+html[data-theme="polnochnaya"] .btn-ghost:hover::before,
+html[data-theme="polnochnaya"] .btn-danger:hover::before {
+  transform: scale(1);
+}
+
+html[data-theme="polnochnaya"] .watch-button:hover:not(:disabled),
+html[data-theme="polnochnaya"] .btn:hover:not(:disabled),
+html[data-theme="polnochnaya"] .retry-btn:hover,
+html[data-theme="polnochnaya"] .btn-retry:hover,
+html[data-theme="polnochnaya"] .catalog-retry:hover,
+html[data-theme="polnochnaya"] .btn-add-all:hover:not(:disabled),
+html[data-theme="polnochnaya"] .btn-add:hover:not(:disabled),
+html[data-theme="polnochnaya"] .btn-secondary:hover,
+html[data-theme="polnochnaya"] .btn-ghost:hover,
+html[data-theme="polnochnaya"] .btn-danger:hover {
+  color: var(--paper);
+  transform: translateY(-3px);
+}
+
+html[data-theme="polnochnaya"] .watch-button:active:not(:disabled),
+html[data-theme="polnochnaya"] .btn:active:not(:disabled),
+html[data-theme="polnochnaya"] .retry-btn:active,
+html[data-theme="polnochnaya"] .btn-retry:active,
+html[data-theme="polnochnaya"] .catalog-retry:active,
+html[data-theme="polnochnaya"] .btn-add-all:active:not(:disabled),
+html[data-theme="polnochnaya"] .btn-add:active:not(:disabled),
+html[data-theme="polnochnaya"] .btn-secondary:active,
+html[data-theme="polnochnaya"] .btn-ghost:active,
+html[data-theme="polnochnaya"] .btn-danger:active {
+  transform: translateY(1px) scale(0.97);
+}
+
+html[data-theme="polnochnaya"] .watch-button {
+  padding: 0.85rem 2.4rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--paper);
+  background: var(--shu);
+  border-color: var(--shu-d);
+  animation: kx-float 3s ease-in-out infinite;
+}
+
+html[data-theme="polnochnaya"] .watch-button:hover:not(:disabled) {
+  animation-play-state: paused;
+  border-color: var(--ink);
+}
+
+html[data-theme="polnochnaya"] .btn {
+  padding: 0.7rem 1.4rem;
+  font-size: 0.92rem;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+html[data-theme="polnochnaya"] .btn-outline {
+  background: transparent;
+}
+
+html[data-theme="polnochnaya"] .btn-primary {
+  color: var(--paper);
+  background: var(--shu);
+  border-color: var(--shu-d);
+}
+
+html[data-theme="polnochnaya"] .btn:disabled,
+html[data-theme="polnochnaya"] .btn-add:disabled,
+html[data-theme="polnochnaya"] .btn-add-all:disabled,
+html[data-theme="polnochnaya"] .watch-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: saturate(0.4);
+}
+
+html[data-theme="polnochnaya"] .discuss-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+html[data-theme="polnochnaya"] .action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+html[data-theme="polnochnaya"] .action-buttons button {
+  min-height: 46px;
+  border-radius: 3px;
+}
+
+html[data-theme="polnochnaya"] .create-playlist-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: var(--overlay);
+  backdrop-filter: blur(5px);
+}
+
+html[data-theme="polnochnaya"] .create-playlist-modal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  width: min(100%, 440px);
+  padding: 1.9rem;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image: var(--noise);
+  border-radius: 6px;
+  box-shadow: var(--shadow-modal);
+  outline: 1px solid rgba(26, 24, 34, 0.45);
+  outline-offset: -9px;
+  animation: kx-rise 0.5s var(--glide) both;
+}
+
+html[data-theme="polnochnaya"] .create-playlist-modal h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+html[data-theme="polnochnaya"] .create-playlist-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  font-size: 0.96rem;
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--paper-2);
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  outline: none;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+html[data-theme="polnochnaya"] .create-playlist-input::placeholder {
+  color: var(--ink-3);
+}
+
+html[data-theme="polnochnaya"] .create-playlist-input:focus {
+  background: var(--paper);
+  box-shadow: 0 0 0 4px rgba(217, 74, 50, 0.35);
+}
+
+html[data-theme="polnochnaya"] .create-playlist-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+html[data-theme="polnochnaya"] .create-playlist-checkbox input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--shu);
+}
+
+html[data-theme="polnochnaya"] .create-playlist-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+html[data-theme="polnochnaya"] .create-playlist-btn {
+  position: relative;
+  isolation: isolate;
+  min-height: 46px;
+  padding: 0 1.4rem;
+  overflow: hidden;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  transition: color 0.25s ease, transform 0.3s var(--spring);
+}
+
+html[data-theme="polnochnaya"] .create-playlist-btn::before {
+  content: "";
+  position: absolute;
+  inset: -60%;
+  z-index: -1;
+  background: var(--ink);
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform 0.55s var(--glide);
+}
+
+html[data-theme="polnochnaya"] .create-playlist-btn:hover:not(:disabled)::before {
+  transform: scale(1);
+}
+
+html[data-theme="polnochnaya"] .create-playlist-btn:hover:not(:disabled) {
+  color: var(--paper);
+  transform: translateY(-3px);
+}
+
+html[data-theme="polnochnaya"] .create-playlist-btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.97);
+}
+
+html[data-theme="polnochnaya"] .create-playlist-btn-cancel {
+  color: var(--ink);
+  background: var(--paper);
+}
+
+html[data-theme="polnochnaya"] .create-playlist-btn-submit {
+  color: var(--paper);
+  background: var(--shu);
+  border-color: var(--shu-d);
+}
+
+html[data-theme="polnochnaya"] .create-playlist-btn.disabled,
+html[data-theme="polnochnaya"] .create-playlist-btn-submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+html[data-theme="polnochnaya"] .anime-description-section,
+html[data-theme="polnochnaya"] .anime-screenshots-section,
+html[data-theme="polnochnaya"] .franchise-section,
+html[data-theme="polnochnaya"] .dubs-section {
+  position: relative;
+  padding: 2.4rem 2.75rem;
+  color: var(--ink);
+  border-top: 2px solid var(--ink);
+}
+
+html[data-theme="polnochnaya"] .anime-screenshots-section {
+  background-color: var(--sea-1);
+  color: var(--cream);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='40'%3E%3Cg fill='none' stroke='%233b5f9f' stroke-opacity='.35' stroke-width='1.5'%3E%3Ccircle cx='40' cy='40' r='20'/%3E%3Ccircle cx='40' cy='40' r='13'/%3E%3Ccircle cx='0' cy='40' r='20'/%3E%3Ccircle cx='0' cy='40' r='13'/%3E%3Ccircle cx='80' cy='40' r='20'/%3E%3Ccircle cx='80' cy='40' r='13'/%3E%3Ccircle cx='20' cy='20' r='20'/%3E%3Ccircle cx='20' cy='20' r='13'/%3E%3Ccircle cx='60' cy='20' r='20'/%3E%3Ccircle cx='60' cy='20' r='13'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+html[data-theme="polnochnaya"] .dubs-section {
+  background-color: var(--paper-2);
+  background-image: var(--noise);
+}
+
+html[data-theme="polnochnaya"] .anime-description-section h3,
+html[data-theme="polnochnaya"] .anime-screenshots-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin: 0 0 1.25rem;
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+html[data-theme="polnochnaya"] .anime-description-section h3 {
+  color: var(--ink);
+}
+
+html[data-theme="polnochnaya"] .anime-screenshots-section h3 {
+  color: var(--cream);
+}
+
+html[data-theme="polnochnaya"] .anime-description-section h3 svg,
+html[data-theme="polnochnaya"] .anime-screenshots-section h3 svg {
+  flex: none;
+  box-sizing: content-box;
+  width: 20px;
+  height: 20px;
+  padding: 7px;
+  color: var(--paper);
+  background: var(--shu);
+  border-radius: 4px;
+  transform: rotate(-5deg);
+}
+
+html[data-theme="polnochnaya"] .anime-description-full {
+  max-width: 72ch;
+  margin: 0;
+  font-size: 1.06rem;
+  line-height: 1.9;
+  color: var(--ink-2);
+}
+
+html[data-theme="polnochnaya"] .anime-description-full::first-letter {
+  float: left;
+  margin: 0.06em 0.16em 0 0;
+  padding: 0.08em 0.14em;
+  font-family: var(--font-display);
+  font-size: 2.6em;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--paper);
+  background: var(--shu);
+  border-radius: 4px;
+}
+
+html[data-theme="polnochnaya"] .screenshots-carousel {
+  position: relative;
+}
+
+html[data-theme="polnochnaya"] .screenshots-grid {
+  display: flex;
+  gap: 1.25rem;
+  padding: 0.75rem 0.5rem 1.4rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-color: var(--shu-l) var(--sea-0);
+}
+
+html[data-theme="polnochnaya"] .screenshots-grid::-webkit-scrollbar {
+  height: 12px;
+}
+
+html[data-theme="polnochnaya"] .screenshots-grid::-webkit-scrollbar-track {
+  background: var(--sea-0);
+  border-radius: 999px;
+}
+
+html[data-theme="polnochnaya"] .screenshots-grid::-webkit-scrollbar-thumb {
+  background: var(--shu-l);
+  border: 3px solid var(--sea-0);
+  border-radius: 999px;
+}
+
+html[data-theme="polnochnaya"] .screenshot-wrapper {
+  position: relative;
+  flex: 0 0 min(350px, 100%);
+  width: min(350px, 100%);
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  cursor: pointer;
+  scroll-snap-align: center;
+  background: var(--paper-3);
+  border: 7px solid var(--paper);
+  border-radius: 2px;
+  box-shadow: 0 0 0 2px var(--ink), 0 18px 28px -12px rgba(2, 6, 18, 0.8);
+  transition: transform 0.45s var(--spring), box-shadow 0.3s ease;
+}
+
+html[data-theme="polnochnaya"] .screenshot-wrapper:nth-child(odd) {
+  transform: rotate(-1.4deg);
+}
+
+html[data-theme="polnochnaya"] .screenshot-wrapper:nth-child(even) {
+  transform: rotate(1.2deg);
+}
+
+html[data-theme="polnochnaya"] .screenshot-wrapper:hover {
+  transform: rotate(0deg) translateY(-8px) scale(1.04);
+  box-shadow: 0 0 0 2px var(--ink), 0 30px 40px -14px rgba(2, 6, 18, 0.9);
+}
+
+html[data-theme="polnochnaya"] .screenshot-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s var(--glide);
+}
+
+html[data-theme="polnochnaya"] .screenshot-wrapper:hover .screenshot-image {
+  transform: scale(1.1);
+}
+
+html[data-theme="polnochnaya"] .screenshot-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--paper);
+  background: rgba(217, 74, 50, 0.72);
+  opacity: 0;
+  clip-path: circle(0% at 50% 50%);
+  transition: opacity 0.25s ease, clip-path 0.55s var(--glide);
+}
+
+html[data-theme="polnochnaya"] .screenshot-wrapper:hover .screenshot-overlay {
+  opacity: 1;
+  clip-path: circle(80% at 50% 50%);
+}
+
+html[data-theme="polnochnaya"] .screenshot-nav-btn {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  color: var(--paper);
+  cursor: pointer;
+  background: var(--shu);
+  border: 3px double var(--paper);
+  border-radius: 50%;
+  box-shadow: 0 8px 16px -6px rgba(2, 6, 18, 0.7);
+  transform: translateY(-50%);
+  transition: transform 0.3s var(--spring), background-color 0.15s ease;
+}
+
+html[data-theme="polnochnaya"] .screenshot-nav-btn:hover {
+  background: var(--shu-d);
+  transform: translateY(-50%) scale(1.18) rotate(-8deg);
+}
+
+html[data-theme="polnochnaya"] .screenshot-nav-btn:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+html[data-theme="polnochnaya"] .screenshot-nav-btn-left {
+  left: -16px;
+}
+
+html[data-theme="polnochnaya"] .screenshot-nav-btn-right {
+  right: -16px;
+}
+
+html[data-theme="polnochnaya"] .franchise-section {
+  background-color: var(--paper);
+  background-image: var(--noise);
+}
+
+html[data-theme="polnochnaya"] .franchise-section .carousel-section {
+  margin-bottom: 0;
+}
+
+html[data-theme="polnochnaya"] .franchise-section .carousel-arrow {
+  opacity: 1;
+  color: var(--paper);
+  background: var(--shu);
+  border: 3px double var(--paper);
+}
+
+html[data-theme="polnochnaya"] .franchise-slide {
+  position: relative;
+  flex: 0 0 200px;
+  width: 200px;
+  height: 380px;
+  border-radius: 4px;
+  transition: transform 0.4s var(--spring);
+}
+
+html[data-theme="polnochnaya"] .franchise-slide:hover {
+  transform: translateY(-8px) rotate(-1.4deg);
+}
+
+html[data-theme="polnochnaya"] .franchise-slide .anime-card {
+  width: 100%;
+  height: 100%;
+}
+
+html[data-theme="polnochnaya"] .franchise-slide .anime-poster {
+  flex: 0 0 auto;
+  aspect-ratio: 2 / 3;
+}
+
+html[data-theme="polnochnaya"] .franchise-slide .anime-info {
+  flex: 1 1 auto;
+}
+
+html[data-theme="polnochnaya"] .franchise-slide .anime-genres {
+  display: none;
+}
+
+html[data-theme="polnochnaya"] .franchise-slide.is-current {
+  outline: 3px solid var(--shu);
+  outline-offset: 5px;
+  animation: kx-float 3.2s ease-in-out infinite;
+}
+
+html[data-theme="polnochnaya"] .franchise-current-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--paper);
+  pointer-events: none;
+  background: var(--shu);
+  border: 2px double var(--paper);
+  border-radius: 4px;
+  animation: kx-stamp 0.7s var(--glide) 0.2s both;
+}
+
+html[data-theme="polnochnaya"] .dubs-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.6rem;
+}
+
+html[data-theme="polnochnaya"] .dubs-title {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+html[data-theme="polnochnaya"] .dubs-title svg {
+  flex: none;
+  color: var(--shu);
+}
+
+html[data-theme="polnochnaya"] .dubs-count,
+html[data-theme="polnochnaya"] .filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  border-radius: 3px;
+}
+
+html[data-theme="polnochnaya"] .dubs-count {
+  min-width: 26px;
+  height: 26px;
+  padding: 0 8px;
+  font-size: 0.74rem;
+  color: var(--paper);
+  background: var(--shu);
+}
+
+html[data-theme="polnochnaya"] .dubs-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+html[data-theme="polnochnaya"] .dubs-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 38px;
+  padding: 0.35rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    transform 0.3s var(--spring);
+}
+
+html[data-theme="polnochnaya"] .dubs-filter-btn:hover {
+  background: var(--gold-bg);
+  transform: translateY(-3px);
+}
+
+html[data-theme="polnochnaya"] .dubs-filter-btn.active {
+  color: var(--paper);
+  background: var(--ink);
+}
+
+html[data-theme="polnochnaya"] .filter-count {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  font-size: 0.7rem;
+  background: rgba(246, 238, 219, 0.28);
+}
+
+html[data-theme="polnochnaya"] .dubs-filter-btn:not(.active) .filter-count {
+  color: var(--paper);
+  background: var(--ink-2);
+}
+
+html[data-theme="polnochnaya"] .dubs-list,
+html[data-theme="polnochnaya"] .dubs-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+html[data-theme="polnochnaya"] .dub-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1.1rem;
+  cursor: pointer;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  transition:
+    transform 0.35s var(--spring),
+    box-shadow 0.25s ease,
+    background-color 0.15s ease;
+}
+
+html[data-theme="polnochnaya"] .dub-item:hover {
+  background: var(--gold-bg);
+  box-shadow: 6px 6px 0 var(--ink);
+  transform: translate(-3px, -3px);
+}
+
+html[data-theme="polnochnaya"] .dub-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--paper);
+  background: var(--shu);
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+}
+
+html[data-theme="polnochnaya"] .dub-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+html[data-theme="polnochnaya"] .dub-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+html[data-theme="polnochnaya"] .dub-name {
+  overflow: hidden;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html[data-theme="polnochnaya"] .dub-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+html[data-theme="polnochnaya"] .dub-tag {
+  padding: 0.12rem 0.6rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--shu-d);
+  background: var(--shu-bg);
+  border-radius: 2px;
+}
+
+html[data-theme="polnochnaya"] .dub-tag.tag-voice {
+  color: #2f5a9c;
+  background: var(--ai-bg);
+}
+
+html[data-theme="polnochnaya"] .dub-tag.tag-subtitles {
+  color: #3f6b36;
+  background: var(--moss-bg);
+}
+
+html[data-theme="polnochnaya"] .dub-tag.tag-raw {
+  color: var(--gold-d);
+  background: var(--gold-bg);
+}
+
+html[data-theme="polnochnaya"] .dub-tag.tag-quality {
+  color: var(--fuji);
+  background: var(--fuji-bg);
+}
+
+html[data-theme="polnochnaya"] .dub-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  color: var(--ink);
+  background: var(--paper-3);
+  border-radius: 50%;
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.4s var(--spring);
+}
+
+html[data-theme="polnochnaya"] .dub-item:hover .dub-action {
+  color: var(--paper);
+  background: var(--shu);
+  transform: rotate(-90deg) scale(1.12);
+}
+
+html[data-theme="polnochnaya"] .dub-skeleton {
+  position: relative;
+  height: 68px;
+  overflow: hidden;
+  background: var(--paper);
+  border: 2px solid var(--paper-edge);
+  border-radius: 4px;
+}
+
+html[data-theme="polnochnaya"] .dub-skeleton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 26%;
+  background: rgba(255, 255, 255, 0.5);
+  animation: kx-sweep 1.7s ease-in-out infinite;
+}
+
+html[data-theme="polnochnaya"] .dubs-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 3rem 2rem;
+  text-align: center;
+  color: var(--ink-3);
+  border: 2px dashed var(--ink-3);
+  border-radius: 6px;
+}
+
+html[data-theme="polnochnaya"] .dubs-empty svg {
+  color: var(--shu);
+  opacity: 0.75;
+  animation: kx-float 2.8s ease-in-out infinite;
+}
+
+html[data-theme="polnochnaya"] .dubs-empty p {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 500;
+}
+
+html[data-theme="polnochnaya"] .dubs-reset-btn {
+  position: relative;
+  isolation: isolate;
+  padding: 0.55rem 1.4rem;
+  overflow: hidden;
+  font-weight: 700;
+  color: var(--shu-d);
+  cursor: pointer;
+  background: var(--paper);
+  border: 2px solid var(--shu);
+  border-radius: 3px;
+  transition: color 0.25s ease, transform 0.3s var(--spring);
+}
+
+html[data-theme="polnochnaya"] .dubs-reset-btn::before {
+  content: "";
+  position: absolute;
+  inset: -60%;
+  z-index: -1;
+  background: var(--shu);
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform 0.55s var(--glide);
+}
+
+html[data-theme="polnochnaya"] .dubs-reset-btn:hover {
+  color: var(--paper);
+  transform: translateY(-2px);
+}
+
+html[data-theme="polnochnaya"] .dubs-reset-btn:hover::before {
+  transform: scale(1);
+}
+
+html[data-theme="polnochnaya"] .home-page {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 1.75rem 3.5rem 4rem;
+}
+
+html[data-theme="polnochnaya"] .home-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3.75rem;
+}
+
+html[data-theme="polnochnaya"] .home-content .rc {
+  background: transparent;
+  border: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html[data-theme="polnochnaya"] .error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  max-width: 480px;
+  padding: 2.75rem 1.75rem;
+  margin: 80px auto;
+  color: var(--ink);
+  text-align: center;
+  background-color: var(--paper);
+  background-image: var(--noise);
+  border-radius: 6px;
+  box-shadow: var(--lift-hover);
+  outline: 1px solid rgba(26, 24, 34, 0.45);
+  outline-offset: -9px;
+}
+
+html[data-theme="polnochnaya"] .error-icon {
+  color: var(--shu);
+}
+
+html[data-theme="polnochnaya"] .error-icon svg {
+  stroke-width: 2.2;
+  animation: kx-sway-soft 3s ease-in-out infinite;
+}
+
+html[data-theme="polnochnaya"] .error-title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+html[data-theme="polnochnaya"] .error-sub {
+  max-width: 340px;
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+
+html[data-theme="polnochnaya"] .retry-btn,
+html[data-theme="polnochnaya"] .btn-retry,
+html[data-theme="polnochnaya"] .catalog-retry {
+  padding: 0 1.7rem;
+  font-size: 0.95rem;
+  color: var(--paper);
+  background: var(--shu);
+  border-color: var(--shu-d);
+}
+
+html[data-theme="polnochnaya"] .home-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 3.75rem;
+}
+
+html[data-theme="polnochnaya"] .hero-skeleton {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 620px;
+  overflow: hidden;
+  border: 2px solid rgba(207, 224, 255, 0.3);
+  border-radius: 8px;
+}
+
+html[data-theme="polnochnaya"] .hero-skeleton-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--sea-2);
+}
+
+html[data-theme="polnochnaya"] .hero-skeleton-bg::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 20%;
+  background: rgba(207, 224, 255, 0.07);
+  animation: kx-sweep 2.4s ease-in-out infinite;
+}
+
+html[data-theme="polnochnaya"] .hero-skeleton-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+  padding: 2.25rem;
+}
+
+html[data-theme="polnochnaya"] .skeleton-header {
+  margin-bottom: 1rem;
+}
+
+html[data-theme="polnochnaya"] .skeleton-track {
+  display: flex;
+  gap: 18px;
+  overflow: hidden;
+}
+
+html[data-theme="polnochnaya"] .skeleton-card {
+  flex: 0 0 180px;
+  overflow: hidden;
+  background: var(--paper);
+  border-radius: 4px;
+  box-shadow: var(--lift);
+}
+
+html[data-theme="polnochnaya"] .skeleton-poster {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 2 / 3;
+  background: var(--paper-3);
+}
+
+html[data-theme="polnochnaya"] .skeleton-poster::after,
+html[data-theme="polnochnaya"] .skeleton-title-bar::after,
+html[data-theme="polnochnaya"] .skeleton-line::after,
+html[data-theme="polnochnaya"] .rc-skel-poster::after,
+html[data-theme="polnochnaya"] .rc-skel-line::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 28%;
+  background: rgba(255, 255, 255, 0.35);
+  animation: kx-sweep 1.6s ease-in-out infinite;
+}
+
+html[data-theme="polnochnaya"] .skeleton-info {
+  padding: 13px 14px 16px;
+}
+
+html[data-theme="polnochnaya"] .skeleton-title-bar,
+html[data-theme="polnochnaya"] .skeleton-line {
+  position: relative;
+  overflow: hidden;
+  background: var(--sea-3);
+  border-radius: 2px;
+}
+
+html[data-theme="polnochnaya"] .skeleton-card .skeleton-line {
+  background: var(--paper-3);
+}
+
+html[data-theme="polnochnaya"] .skeleton-title-bar {
+  width: 240px;
+  max-width: 100%;
+  height: 30px;
+  margin-bottom: 14px;
+}
+
+html[data-theme="polnochnaya"] .skeleton-line {
+  height: 14px;
+  margin-top: 10px;
+}
+
+html[data-theme="polnochnaya"] .w40 {
+  width: 40%;
+}
+
+html[data-theme="polnochnaya"] .w55 {
+  width: 55%;
+}
+
+html[data-theme="polnochnaya"] .w60 {
+  width: 60%;
+}
+
+html[data-theme="polnochnaya"] .w80 {
+  width: 80%;
+}
+
+html[data-theme="polnochnaya"] .rc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.35rem;
+}
+
+html[data-theme="polnochnaya"] .rc-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] .rc-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--paper);
+  background: var(--shu);
+  border: 3px double var(--paper);
+  border-radius: 6px;
+  box-shadow: 0 0 0 2px var(--shu-d), 0 10px 18px -8px rgba(2, 6, 18, 0.8);
+  transform: rotate(-4deg);
+  animation: kx-stamp 0.8s var(--glide) both;
+  transition: transform 0.5s var(--spring);
+}
+
+html[data-theme="polnochnaya"] .rc-header:hover .rc-icon {
+  transform: rotate(6deg) scale(1.1);
+}
+
+html[data-theme="polnochnaya"] .rc-texts {
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] .rc-title {
+  position: relative;
+  width: fit-content;
+  margin: 0;
+  padding-bottom: 6px;
+  font-size: clamp(1.25rem, 2.4vw, 1.8rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--cream);
+  background: transparent;
+}
+
+html[data-theme="polnochnaya"] .rc-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 54px;
+  height: 3px;
+  background: var(--shu-l);
+  border-radius: 999px;
+  transition: width 0.5s var(--glide);
+}
+
+html[data-theme="polnochnaya"] .rc-header:hover .rc-title::after {
+  width: 100%;
+}
+
+html[data-theme="polnochnaya"] .rc-desc {
+  margin: 6px 0 0;
+  font-size: 0.92rem;
+  font-weight: 400;
+  color: var(--cream-2);
+}
+
+html[data-theme="polnochnaya"] .rc-view-all {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  min-height: 42px;
+  padding: 0 1.2rem;
+  overflow: hidden;
+  font-size: 0.88rem;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--cream);
+  cursor: pointer;
+  background: transparent;
+  border: 2px solid var(--cream);
+  border-radius: 3px;
+  transition: color 0.25s ease, transform 0.3s var(--spring);
+}
+
+html[data-theme="polnochnaya"] .rc-view-all::before {
+  content: "";
+  position: absolute;
+  inset: -60%;
+  z-index: -1;
+  background: var(--cream);
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform 0.55s var(--glide);
+}
+
+html[data-theme="polnochnaya"] .rc-view-all:hover {
+  color: var(--ink);
+  transform: translateX(5px);
+}
+
+html[data-theme="polnochnaya"] .rc-view-all:hover::before {
+  transform: scale(1);
+}
+
+html[data-theme="polnochnaya"] .rc-view-all:active {
+  transform: translateX(1px) scale(0.96);
+}
+
+html[data-theme="polnochnaya"] .rc-empty {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.6rem;
+  font-size: 0.92rem;
+  color: var(--cream-2);
+  background: rgba(26, 49, 96, 0.7);
+  border: 2px dashed rgba(207, 224, 255, 0.45);
+  border-radius: 8px;
+}
+
+html[data-theme="polnochnaya"] .rc-empty svg {
+  flex-shrink: 0;
+  color: var(--shu-l);
+  stroke-width: 2;
+}
+
+html[data-theme="polnochnaya"] .rc-empty-title {
+  margin-bottom: 2px;
+  font-weight: 700;
+  color: var(--cream);
+}
+
+html[data-theme="polnochnaya"] .rc-empty-sub {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--cream-3);
+}
+
+html[data-theme="polnochnaya"] .rc-carousel-wrap {
+  position: relative;
+}
+
+html[data-theme="polnochnaya"] .rc-carousel-wrap::before,
+html[data-theme="polnochnaya"] .rc-carousel-wrap::after {
+  display: none;
+}
+
+html[data-theme="polnochnaya"] .rc-track {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  gap: 1.4rem;
+  padding: 16px 10px 30px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html[data-theme="polnochnaya"] .rc-track::-webkit-scrollbar {
+  display: none;
+}
+
+html[data-theme="polnochnaya"] .rc-card-wrap {
+  flex: 0 0 220px;
+  width: 220px;
+  scroll-snap-align: start;
+}
+
+html[data-theme="polnochnaya"] .rc-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  color: var(--paper);
+  cursor: pointer;
+  background: var(--shu);
+  border: 3px double var(--paper);
+  border-radius: 50%;
+  box-shadow: 0 10px 18px -6px rgba(2, 6, 18, 0.8);
+  opacity: 0;
+  transform: translateY(-50%) scale(0.6);
+  transition:
+    opacity 0.25s ease,
+    transform 0.4s var(--spring),
+    background-color 0.15s ease;
+}
+
+html[data-theme="polnochnaya"] .rc-carousel-wrap:hover .rc-arrow,
+html[data-theme="polnochnaya"] .rc-carousel-wrap:focus-within .rc-arrow {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+html[data-theme="polnochnaya"] .rc-arrow:hover {
+  background: var(--shu-d);
+  transform: translateY(-50%) scale(1.15) rotate(-7deg);
+}
+
+html[data-theme="polnochnaya"] .rc-arrow:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+html[data-theme="polnochnaya"] .rc-arrow-left {
+  left: -18px;
+}
+
+html[data-theme="polnochnaya"] .rc-arrow-right {
+  right: -18px;
+}
+
+html[data-theme="polnochnaya"] .rc-skel {
+  display: flex;
+  flex: 0 0 220px;
+  flex-direction: column;
+  gap: 10px;
+  width: 220px;
+}
+
+html[data-theme="polnochnaya"] .rc-skel-poster {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 2 / 3;
+  background: var(--sea-3);
+  border-radius: 4px;
+}
+
+html[data-theme="polnochnaya"] .rc-skel-line {
+  position: relative;
+  width: 85%;
+  height: 13px;
+  overflow: hidden;
+  background: var(--sea-3);
+  border-radius: 2px;
+}
+
+html[data-theme="polnochnaya"] .rc-skel-line.short {
+  width: 58%;
+}
+
+html[data-theme="polnochnaya"] .rc-skel-poster::after,
+html[data-theme="polnochnaya"] .rc-skel-line::after {
+  background: rgba(207, 224, 255, 0.16);
+}
+
+html[data-theme="polnochnaya"] .anime-card {
+  position: relative;
+  overflow: hidden;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image: var(--noise);
+  border: 0;
+  border-radius: 4px;
+  box-shadow: var(--lift);
+  transition:
+    transform 0.45s var(--spring),
+    box-shadow 0.3s ease;
+}
+
+html[data-theme="polnochnaya"] .anime-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 5;
+  pointer-events: none;
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+}
+
+html[data-theme="polnochnaya"] .anime-card:hover {
+  box-shadow: var(--lift-hover);
+  transform: translateY(-10px) rotate(-1.4deg);
+}
+
+html[data-theme="polnochnaya"] .anime-card:active {
+  transform: translateY(-2px) rotate(0) scale(0.98);
+}
+
+html[data-theme="polnochnaya"] .anime-card .anime-poster {
+  background: var(--paper-3);
+  border-bottom: 1.5px solid var(--ink);
+}
+
+html[data-theme="polnochnaya"] .anime-card .anime-poster img {
+  transition: transform 0.7s var(--glide);
+}
+
+html[data-theme="polnochnaya"] .anime-card:hover .anime-poster img {
+  transform: scale(1.08);
+}
+
+html[data-theme="polnochnaya"] .anime-card .anime-info {
+  padding: 0.85rem 0.95rem 1rem;
+}
+
+html[data-theme="polnochnaya"] .anime-card .play-btn {
+  color: var(--paper);
+  background: var(--shu);
+  border: 3px double var(--paper);
+  transition: transform 0.35s var(--spring);
+}
+
+html[data-theme="polnochnaya"] .anime-card .play-btn:hover {
+  transform: scale(1.2) rotate(-8deg);
+}
+
+html[data-theme="polnochnaya"] .anime-card .score-badge {
+  font-weight: 800;
+  color: var(--paper);
+  background: var(--shu);
+  border: 2px double var(--paper);
+  border-radius: 3px;
+  transform: rotate(3deg);
+}
+
+html[data-theme="polnochnaya"] .anime-card .genre-tag {
+  font-weight: 600;
+  color: var(--shu-d);
+  background: var(--shu-bg);
+  border-radius: 2px;
+}
+
+html[data-theme="polnochnaya"] .anime-card .anime-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: 0;
+  color: var(--ink);
+}
+
+html[data-theme="polnochnaya"] .anime-card:hover .anime-title {
+  text-decoration: underline wavy var(--shu);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+
+html[data-theme="polnochnaya"] .anime-card .meta-item,
+html[data-theme="polnochnaya"] .anime-card .progress-text {
+  color: var(--ink-3);
+}
+
+html[data-theme="polnochnaya"] .achievements-manager {
+  display: grid;
+  grid-template-columns: 330px minmax(0, 1fr);
+  gap: 1.75rem;
+  min-height: 580px;
+  color: var(--ink);
+}
+
+html[data-theme="polnochnaya"] .am-sidebar,
+html[data-theme="polnochnaya"] .am-main {
+  background-color: var(--paper);
+  background-image: var(--noise);
+  border-radius: 6px;
+  box-shadow: var(--lift);
+}
+
+html[data-theme="polnochnaya"] .am-sidebar {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+html[data-theme="polnochnaya"] .am-main {
+  display: flex;
+  padding: 1.8rem;
+}
+
+html[data-theme="polnochnaya"] .am-sidebar-head {
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.9rem;
+  background: var(--paper-2);
+  border-bottom: 2px solid var(--ink);
+}
+
+html[data-theme="polnochnaya"] .am-search {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+  padding: 0 0.95rem;
+  color: var(--shu);
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  transition: box-shadow 0.15s ease;
+}
+
+html[data-theme="polnochnaya"] .am-search:focus-within {
+  box-shadow: 0 0 0 4px rgba(217, 74, 50, 0.35);
+}
+
+html[data-theme="polnochnaya"] .am-search input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.65rem 0;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  outline: none;
+}
+
+html[data-theme="polnochnaya"] .am-search input::placeholder {
+  color: var(--ink-3);
+}
+
+html[data-theme="polnochnaya"] .am-create-btn {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 1rem;
+  overflow: hidden;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--paper);
+  cursor: pointer;
+  background: var(--shu);
+  border: 2px solid var(--shu-d);
+  border-radius: 3px;
+  transition: transform 0.3s var(--spring);
+}
+
+html[data-theme="polnochnaya"] .am-create-btn::before {
+  content: "";
+  position: absolute;
+  inset: -60%;
+  z-index: -1;
+  background: var(--ink);
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform 0.55s var(--glide);
+}
+
+html[data-theme="polnochnaya"] .am-create-btn:hover {
+  transform: translateY(-2px);
+}
+
+html[data-theme="polnochnaya"] .am-create-btn:hover::before {
+  transform: scale(1);
+}
+
+html[data-theme="polnochnaya"] .am-create-btn:active {
+  transform: translateY(1px) scale(0.96);
+}
+
+html[data-theme="polnochnaya"] .am-list {
+  flex: 1;
+  padding: 0.7rem 0.7rem 1rem;
+  overflow-y: auto;
+  scrollbar-color: var(--shu) transparent;
+}
+
+html[data-theme="polnochnaya"] .am-list::-webkit-scrollbar,
+html[data-theme="polnochnaya"] .am-icon-grid::-webkit-scrollbar {
+  width: 9px;
+}
+
+html[data-theme="polnochnaya"] .am-list::-webkit-scrollbar-thumb,
+html[data-theme="polnochnaya"] .am-icon-grid::-webkit-scrollbar-thumb {
+  background: var(--shu);
+  border: 2px solid var(--paper);
+  border-radius: 999px;
+}
+
+html[data-theme="polnochnaya"] .am-list::-webkit-scrollbar-track,
+html[data-theme="polnochnaya"] .am-icon-grid::-webkit-scrollbar-track {
+  background: var(--paper-2);
+}
+
+html[data-theme="polnochnaya"] .am-list-loading,
+html[data-theme="polnochnaya"] .am-empty-list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem 0.75rem;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+
+html[data-theme="polnochnaya"] .am-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  margin-bottom: 0.3rem;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.35s var(--spring);
+}
+
+html[data-theme="polnochnaya"] .am-item:hover {
+  background: var(--paper-2);
+  border-color: var(--ink-3);
+  transform: translateX(5px);
+}
+
+html[data-theme="polnochnaya"] .am-item.active {
+  background: var(--gold-bg);
+  border-color: var(--ink);
+  transform: translateX(9px);
+}
+
+html[data-theme="polnochnaya"] .am-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  background: var(--paper-3);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  transition: transform 0.4s var(--spring);
+}
+
+html[data-theme="polnochnaya"] .am-item:hover .am-item-icon {
+  transform: rotate(-8deg) scale(1.1);
+}
+
+html[data-theme="polnochnaya"] .am-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] .am-item-name {
+  overflow: hidden;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html[data-theme="polnochnaya"] .am-inactive {
+  display: inline-block;
+  padding: 2px 8px;
+  margin-left: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gold-d);
+  vertical-align: 1px;
+  background: var(--gold-bg);
+  border: 1px solid var(--gold-d);
+  border-radius: 2px;
+}
+
+html[data-theme="polnochnaya"] .am-item-meta {
+  overflow: hidden;
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--ink-3);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html[data-theme="polnochnaya"] .am-sidebar-footer {
+  padding: 0.7rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--shu-d);
+  background: var(--paper-2);
+  border-top: 2px solid var(--ink);
+}
+
+html[data-theme="polnochnaya"] .am-main-empty {
+  margin: auto;
+  font-weight: 700;
+  text-align: center;
+  color: var(--ink-3);
+}
+
+html[data-theme="polnochnaya"] .am-main-empty svg {
+  color: var(--shu);
+  animation: kx-float 2.8s ease-in-out infinite;
+}
+
+html[data-theme="polnochnaya"] .am-main-empty p {
+  margin: 0.8rem 0 0;
+}
+
+html[data-theme="polnochnaya"] .am-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+  width: 100%;
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] .am-editor-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px dotted var(--ink-3);
+}
+
+html[data-theme="polnochnaya"] .am-editor-head h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--ink);
+  background: transparent;
+}
+
+html[data-theme="polnochnaya"] .am-head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+html[data-theme="polnochnaya"] .am-btn {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 1.1rem;
+  overflow: hidden;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  transition: color 0.25s ease, transform 0.3s var(--spring);
+}
+
+html[data-theme="polnochnaya"] .am-btn::before {
+  content: "";
+  position: absolute;
+  inset: -60%;
+  z-index: -1;
+  background: var(--ink);
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform 0.55s var(--glide);
+}
+
+html[data-theme="polnochnaya"] .am-btn.small {
+  min-height: 36px;
+  padding: 0 0.9rem;
+  font-size: 0.8rem;
+}
+
+html[data-theme="polnochnaya"] .am-btn:hover:not(:disabled) {
+  color: var(--paper);
+  transform: translateY(-2px);
+}
+
+html[data-theme="polnochnaya"] .am-btn:hover:not(:disabled)::before {
+  transform: scale(1);
+}
+
+html[data-theme="polnochnaya"] .am-btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.97);
+}
+
+html[data-theme="polnochnaya"] .am-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+html[data-theme="polnochnaya"] .am-btn.primary {
+  color: var(--paper);
+  background: var(--shu);
+  border-color: var(--shu-d);
+}
+
+html[data-theme="polnochnaya"] .am-btn.danger {
+  color: var(--danger-ink);
+  background: var(--danger-bg);
+  border-color: var(--danger-ink);
+}
+
+html[data-theme="polnochnaya"] .am-btn.danger::before {
+  background: var(--danger-ink);
+}
+
+html[data-theme="polnochnaya"] .am-btn.danger:hover:not(:disabled) {
+  color: var(--paper);
+}
+
+html[data-theme="polnochnaya"] .am-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+html[data-theme="polnochnaya"] .am-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.9rem;
+}
+
+html[data-theme="polnochnaya"] .am-value {
+  max-width: 140px;
+}
+
+html[data-theme="polnochnaya"] .am-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+html[data-theme="polnochnaya"] .am-field label {
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--shu-d);
+}
+
+html[data-theme="polnochnaya"] .am-field input[type="text"],
+html[data-theme="polnochnaya"] .am-field input[type="number"],
+html[data-theme="polnochnaya"] .am-field textarea,
+html[data-theme="polnochnaya"] .am-field select {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--paper-2);
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  outline: none;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+html[data-theme="polnochnaya"] .am-field input::placeholder,
+html[data-theme="polnochnaya"] .am-field textarea::placeholder {
+  font-weight: 400;
+  color: var(--ink-3);
+}
+
+html[data-theme="polnochnaya"] .am-field input:focus,
+html[data-theme="polnochnaya"] .am-field textarea:focus,
+html[data-theme="polnochnaya"] .am-field select:focus {
+  background: var(--paper);
+  box-shadow: 0 0 0 4px rgba(217, 74, 50, 0.35);
+}
+
+html[data-theme="polnochnaya"] .am-field textarea {
+  resize: vertical;
+}
+
+html[data-theme="polnochnaya"] .am-icon-area {
+  gap: 0.7rem;
+}
+
+html[data-theme="polnochnaya"] .am-icon-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
+  background: var(--paper-3);
+  border: 3px double var(--ink);
+  border-radius: 6px;
+  box-shadow: 0 10px 16px -8px rgba(26, 24, 34, 0.5);
+  transform: rotate(-4deg);
+}
+
+html[data-theme="polnochnaya"] .am-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(42px, 1fr));
+  gap: 0.4rem;
+  max-height: 160px;
+  padding: 0.6rem;
+  overflow-y: auto;
+  background: var(--paper-2);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  scrollbar-color: var(--shu) transparent;
+}
+
+html[data-theme="polnochnaya"] .am-icon-choice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  color: var(--ink);
+  cursor: pointer;
+  background: var(--paper);
+  border: 2px solid transparent;
+  border-radius: 3px;
+  transition:
+    transform 0.3s var(--spring),
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+html[data-theme="polnochnaya"] .am-icon-choice:hover {
+  background: var(--gold-bg);
+  border-color: var(--ink);
+  transform: translateY(-3px) rotate(-5deg);
+}
+
+html[data-theme="polnochnaya"] .am-icon-choice.active {
+  color: var(--paper);
+  background: var(--shu);
+  border-color: var(--ink);
+}
+
+html[data-theme="polnochnaya"] .am-error {
+  padding: 0.7rem 0.95rem;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--danger-ink);
+  background: var(--danger-bg);
+  border: 2px solid var(--danger-ink);
+  border-radius: 3px;
+}
+
+html[data-theme="polnochnaya"] .home-hero {
+  position: relative;
+  overflow: hidden;
+  color: var(--cream);
+  background: var(--sea-0);
+  border: 9px solid var(--paper);
+  border-radius: 6px;
+  box-shadow: 0 0 0 2px var(--ink), var(--lift-hover);
+}
+
+html[data-theme="polnochnaya"] .hero-bg-wrap {
+  background: var(--sea-2);
+  border-radius: 0;
+}
+
+html[data-theme="polnochnaya"] .hero-bg-slide {
+  filter: blur(16px) brightness(0.5) saturate(1.2);
+  opacity: 0.55;
+}
+
+html[data-theme="polnochnaya"] .hero-bg-slide.active {
+  opacity: 0.55;
+}
+
+html[data-theme="polnochnaya"] .hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 1rem;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--paper);
+  background: var(--shu);
+  border: 3px double var(--paper);
+  border-radius: 4px;
+  animation: kx-stamp 0.8s var(--glide) 0.2s both;
+}
+
+html[data-theme="polnochnaya"] .hero-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: 0;
+  color: var(--cream);
+  text-shadow: 0 4px 22px rgba(2, 6, 18, 0.8);
+}
+
+html[data-theme="polnochnaya"] .hero-meta,
+html[data-theme="polnochnaya"] .hero-desc {
+  color: var(--cream-2);
+}
+
+html[data-theme="polnochnaya"] .hero-desc {
+  line-height: 1.75;
+}
+
+html[data-theme="polnochnaya"] .hero-genres .genre-tag {
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  border-radius: 3px;
+}
+
+html[data-theme="polnochnaya"] .hero-genres .genre-tag:nth-child(3n + 2) {
+  background: var(--sakura-bg);
+}
+
+html[data-theme="polnochnaya"] .hero-genres .genre-tag:nth-child(3n) {
+  background: var(--gold-bg);
+}
+
+html[data-theme="polnochnaya"] .hero-genres .genre-more {
+  font-weight: 700;
+  color: var(--fuji);
+  background: var(--fuji-bg);
+  border: 1.5px solid var(--fuji);
+  border-radius: 3px;
+}
+
+html[data-theme="polnochnaya"] .hero-poster .anime-card {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  transform: none;
+}
+
+html[data-theme="polnochnaya"] .hero-poster .anime-card::after {
+  display: none;
+}
+
+html[data-theme="polnochnaya"] .hero-poster .anime-card:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+html[data-theme="polnochnaya"] .hero-arrow {
+  color: var(--paper);
+  background: var(--shu);
+  border: 3px double var(--paper);
+  border-radius: 50%;
+  transition: transform 0.35s var(--spring), background-color 0.15s ease;
+}
+
+html[data-theme="polnochnaya"] .hero-arrow:hover {
+  background: var(--shu-d);
+  border-color: var(--paper);
+  transform: scale(1.15) rotate(-7deg);
+}
+
+html[data-theme="polnochnaya"] .hero-arrow:active {
+  transform: scale(0.92);
+}
+
+html[data-theme="polnochnaya"] .people-page .skeleton-grid,
+html[data-theme="polnochnaya"] .people-page .people-grid {
+  padding: 1.4rem;
+  background: rgba(26, 49, 96, 0.55);
+  border: 2px solid rgba(207, 224, 255, 0.3);
+  border-radius: 8px;
+}
+
+html[data-theme="polnochnaya"] .people-page .skeleton-card {
+  border-radius: 4px;
+  box-shadow: var(--lift);
+}
+
+html[data-theme="polnochnaya"] .person-card {
+  position: relative;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image: var(--noise);
+  border: 0 !important;
+  border-radius: 4px;
+  box-shadow: var(--lift);
+  transition:
+    transform 0.45s var(--spring),
+    box-shadow 0.3s ease;
+}
+
+html[data-theme="polnochnaya"] .person-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+}
+
+html[data-theme="polnochnaya"] .person-card:nth-child(3n + 1) {
+  transform: rotate(-0.9deg);
+}
+
+html[data-theme="polnochnaya"] .person-card:nth-child(3n + 2) {
+  transform: rotate(0.7deg);
+}
+
+html[data-theme="polnochnaya"] .person-card:hover {
+  box-shadow: var(--lift-hover);
+  transform: translateY(-9px) rotate(0deg);
+}
+
+html[data-theme="polnochnaya"] .person-name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: var(--ink);
+}
+
+html[data-theme="polnochnaya"] .person-nickname {
+  font-weight: 500;
+  font-style: italic;
+  color: var(--ink-3);
+}
+
+html[data-theme="polnochnaya"] .people-page .tabs {
+  padding: 0.3rem;
+  background: rgba(11, 23, 48, 0.7);
+  border: 2px solid rgba(207, 224, 255, 0.3);
+  border-radius: 4px;
+}
+
+html[data-theme="polnochnaya"] .people-page .tab-btn {
+  font-weight: 700;
+  color: var(--cream-2);
+  border-radius: 3px;
+  transition: color 0.15s ease, background-color 0.15s ease, transform 0.3s var(--spring);
+}
+
+html[data-theme="polnochnaya"] .people-page .tab-btn:hover {
+  color: var(--cream);
+  transform: translateY(-1px);
+}
+
+html[data-theme="polnochnaya"] .people-page .tab-btn.active {
+  color: var(--paper);
+  background: var(--shu);
+}
+
+html[data-theme="polnochnaya"] .search-input,
+html[data-theme="polnochnaya"] .page-size-select {
+  color: var(--ink);
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  transition: box-shadow 0.15s ease;
+}
+
+html[data-theme="polnochnaya"] .search-input:focus,
+html[data-theme="polnochnaya"] .page-size-select:focus {
+  box-shadow: 0 0 0 4px rgba(240, 122, 95, 0.5);
+  outline: none;
+}
+
+html[data-theme="polnochnaya"] .search-input::placeholder {
+  color: var(--ink-3);
+}
+
+html[data-theme="polnochnaya"] .pagination-btn,
+html[data-theme="polnochnaya"] .page-number {
+  font-weight: 700;
+  color: var(--cream);
+  background: transparent;
+  border: 2px solid rgba(207, 224, 255, 0.5);
+  border-radius: 3px;
+  transition:
+    transform 0.3s var(--spring),
+    border-color 0.15s ease,
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+html[data-theme="polnochnaya"] .pagination-btn:hover:not(:disabled),
+html[data-theme="polnochnaya"] .page-number:hover {
+  color: var(--ink);
+  background: var(--cream);
+  border-color: var(--cream);
+  transform: translateY(-3px);
+}
+
+html[data-theme="polnochnaya"] .page-number.active {
+  color: var(--paper);
+  background: var(--shu);
+  border-color: var(--paper);
+  transform: rotate(-4deg) scale(1.1);
+}
+
+html[data-theme="polnochnaya"] .pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+html[data-theme="polnochnaya"] .btn-secondary,
+html[data-theme="polnochnaya"] .btn-ghost,
+html[data-theme="polnochnaya"] .btn-danger {
+  padding: 0.65rem 1.4rem;
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+html[data-theme="polnochnaya"] .btn-ghost {
+  background: transparent;
+}
+
+html[data-theme="polnochnaya"] .btn-danger {
+  color: var(--danger-ink);
+  background: var(--danger-bg);
+  border-color: var(--danger-ink);
+}
+
+html[data-theme="polnochnaya"] .btn-danger::before {
+  background: var(--danger-ink);
+}
+
+html[data-theme="polnochnaya"] .btn-retry,
+html[data-theme="polnochnaya"] .catalog-retry {
+  min-height: 42px;
+  padding: 0 1.4rem;
+}
+
+html[data-theme="polnochnaya"] .people-page .skeleton-avatar {
+  background: var(--paper-3);
+}
+
+html[data-theme="polnochnaya"] .people-page .skeleton-name,
+html[data-theme="polnochnaya"] .people-page .skeleton-role {
+  background: var(--paper-3);
+  border-radius: 2px;
+}
+
+html[data-theme="polnochnaya"] .col-card .card-poster {
+  position: relative;
+  overflow: hidden;
+  background: var(--paper-3);
+  border: 7px solid var(--paper);
+  border-radius: 2px;
+  box-shadow: 0 0 0 2px var(--ink), 0 16px 26px -12px rgba(2, 6, 18, 0.8);
+  transition: transform 0.45s var(--spring), box-shadow 0.3s ease;
+}
+
+html[data-theme="polnochnaya"] .col-card:hover .card-poster {
+  box-shadow: 0 0 0 2px var(--ink), 0 30px 40px -14px rgba(2, 6, 18, 0.9);
+  transform: translateY(-9px) rotate(-1.3deg);
+}
+
+html[data-theme="polnochnaya"] .col-card .card-title {
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--cream);
+  transition: color 0.15s ease;
+}
+
+html[data-theme="polnochnaya"] .col-card .card-title:hover {
+  color: var(--gold);
+  text-decoration: underline wavy var(--shu-l);
+  text-underline-offset: 4px;
+}
+
+html[data-theme="polnochnaya"] .col-card .qa-btn {
+  color: var(--ink);
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  transition:
+    transform 0.3s var(--spring),
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+html[data-theme="polnochnaya"] .col-card .qa-btn:hover {
+  color: var(--paper);
+  background: var(--shu);
+  transform: scale(1.14) rotate(-5deg);
+}
+
+html[data-theme="polnochnaya"] .playlist-card {
+  position: relative;
+  overflow: hidden;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image: var(--noise);
+  border: 0;
+  border-radius: 4px;
+  box-shadow: var(--lift);
+  transition: transform 0.45s var(--spring), box-shadow 0.3s ease;
+}
+
+html[data-theme="polnochnaya"] .playlist-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 5;
+  pointer-events: none;
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+}
+
+html[data-theme="polnochnaya"] .playlist-card:hover {
+  box-shadow: var(--lift-hover);
+  transform: translateY(-10px) rotate(1deg);
+}
+
+html[data-theme="polnochnaya"] .playlist-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--ink);
+  transition: color 0.15s ease;
+}
+
+html[data-theme="polnochnaya"] .playlist-card:hover .playlist-title {
+  color: var(--shu-d);
+}
+
+html[data-theme="polnochnaya"] .playlist-cover {
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border-bottom: 1.5px solid var(--ink);
+}
+
+html[data-theme="polnochnaya"] .anime-poster-card .poster-wrap {
+  position: relative;
+  overflow: hidden;
+  background: var(--paper-3);
+  border: 7px solid var(--paper);
+  border-radius: 2px;
+  box-shadow: 0 0 0 2px var(--ink), 0 16px 26px -12px rgba(2, 6, 18, 0.8);
+  transition: transform 0.45s var(--spring), box-shadow 0.3s ease;
+}
+
+html[data-theme="polnochnaya"] .anime-poster-card:hover .poster-wrap {
+  box-shadow: 0 0 0 2px var(--ink), 0 30px 40px -14px rgba(2, 6, 18, 0.9);
+  transform: translateY(-9px) rotate(-1.3deg);
+}
+
+html[data-theme="polnochnaya"] .anime-poster-card .card-title {
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--cream);
+}
+
+html[data-theme="polnochnaya"] .items-count-badge,
+html[data-theme="polnochnaya"] .duration-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 800;
+  color: var(--paper);
+  background: var(--shu);
+  border: 2px double var(--paper);
+  border-radius: 3px;
+}
+
+html[data-theme="polnochnaya"] .items-count-badge svg,
+html[data-theme="polnochnaya"] .duration-badge svg {
+  color: var(--paper);
+}
+
+html[data-theme="polnochnaya"] .badge-rank:not(.rank-top),
+html[data-theme="polnochnaya"] .badge-franchise {
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  border-radius: 3px;
+}
+
+html[data-theme="polnochnaya"] .badge-rank.rank-top {
+  color: var(--ink);
+  background: var(--gold);
+  border: 1.5px solid var(--ink);
+  border-radius: 3px;
+}
+
+html[data-theme="polnochnaya"] .result-card {
+  position: relative;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image: var(--noise);
+  border: 0;
+  border-radius: 4px;
+  box-shadow: var(--lift);
+  transition: transform 0.45s var(--spring), box-shadow 0.3s ease;
+}
+
+html[data-theme="polnochnaya"] .result-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+}
+
+html[data-theme="polnochnaya"] .result-card:hover {
+  box-shadow: var(--lift-hover);
+  transform: translateY(-9px) rotate(-0.9deg);
+}
+
+html[data-theme="polnochnaya"] .result-card .poster-wrap {
+  border: 2px solid var(--ink);
+  border-radius: 2px;
+}
+
+html[data-theme="polnochnaya"] .result-card .card-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: var(--ink);
+}
+
+html[data-theme="polnochnaya"] .result-card .chip {
+  font-weight: 600;
+  color: var(--shu-d);
+  background: var(--shu-bg);
+  border-color: transparent;
+  border-radius: 2px;
+}
+
+html[data-theme="polnochnaya"] .kind-chip {
+  font-weight: 700;
+  color: var(--cream);
+  background: transparent;
+  border: 2px solid rgba(207, 224, 255, 0.5);
+  border-radius: 3px;
+  transition:
+    transform 0.3s var(--spring),
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+html[data-theme="polnochnaya"] .kind-chip:hover {
+  color: var(--ink);
+  background: var(--cream);
+  border-color: var(--cream);
+  transform: translateY(-3px) rotate(-1.5deg);
+}
+
+html[data-theme="polnochnaya"] .kind-chip-active {
+  color: var(--paper);
+  background: var(--shu);
+  border-color: var(--paper);
+}
+
+html[data-theme="polnochnaya"] .btn-add-all,
+html[data-theme="polnochnaya"] .btn-add {
+  min-height: 42px;
+  padding: 0 1.3rem;
+  color: var(--paper);
+  background: var(--shu);
+  border-color: var(--shu-d);
+}
+
+html[data-theme="polnochnaya"] .btn-add-all:disabled,
+html[data-theme="polnochnaya"] .btn-add:disabled {
+  color: var(--ink-3);
+  background: var(--paper-2);
+  border-color: var(--paper-edge);
+}
+
+html[data-theme="polnochnaya"] .btn-add-all:disabled::before,
+html[data-theme="polnochnaya"] .btn-add:disabled::before {
+  display: none;
+}
+
+html[data-theme="polnochnaya"] :where(input[type="checkbox"], input[type="radio"], input[type="range"], progress) {
+  accent-color: var(--shu);
+}
+
+html[data-theme="polnochnaya"] :where(hr) {
+  height: 0;
+  margin: 1.5rem 0;
+  border: 0;
+  border-top: 2px dotted rgba(207, 224, 255, 0.4);
+}
+
+html[data-theme="polnochnaya"] :where(blockquote) {
+  padding: 0.4rem 0 0.4rem 1.3rem;
+  margin: 1rem 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--cream-2);
+  border-left: 5px solid var(--shu-l);
+}
+
+html[data-theme="polnochnaya"] :where(code, kbd, samp) {
+  padding: 0.12em 0.45em;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.88em;
+  color: var(--ink);
+  background: var(--paper-2);
+  border-radius: 3px;
+}
+
+html[data-theme="polnochnaya"] :where(img, video) {
+  max-width: 100%;
+}
+
+html[data-theme="polnochnaya"] :where(table) {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+html[data-theme="polnochnaya"] :where(th) {
+  padding: 0.7rem 1rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-align: left;
+  color: var(--ink);
+  background: var(--paper-2);
+  border-bottom: 2px solid var(--ink);
+}
+
+html[data-theme="polnochnaya"] :where(td) {
+  padding: 0.7rem 1rem;
+  border-bottom: 1.5px dotted var(--ink-3);
+}
+
+html[data-theme="polnochnaya"] :where(tbody tr:hover td) {
+  background: var(--paper-2);
+}
+
+html[data-theme="polnochnaya"] :where(button:disabled, [disabled]) {
+  cursor: not-allowed;
+}
+
+html[data-theme="polnochnaya"] :where(label) {
+  cursor: pointer;
+}
+
+html[data-theme="polnochnaya"] :where(summary) {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--shu-l);
+}
+
+html[data-theme="polnochnaya"] :where(mark) {
+  padding: 0 0.25em;
+  color: var(--ink);
+  background: var(--gold);
+  border-radius: 2px;
+}
+
+@media (max-width: 1100px) {
+  html[data-theme="polnochnaya"] .av-container {
+    padding: 1.5rem 2.75rem 4rem;
+  }
+
+  html[data-theme="polnochnaya"] .anime-detail {
+    padding: 1.75rem 2.5rem 4rem;
+  }
+
+  html[data-theme="polnochnaya"] .home-page {
+    padding: 1.5rem 2.5rem 3.5rem;
+  }
+
+  html[data-theme="polnochnaya"] .anime-main-info {
+    grid-template-columns: 270px minmax(0, 1fr);
+    gap: 2rem;
+  }
+
+  html[data-theme="polnochnaya"] .achievements-manager {
+    grid-template-columns: 290px minmax(0, 1fr);
+  }
+
+  html[data-theme="polnochnaya"] .rc-arrow-left {
+    left: -8px;
+  }
+
+  html[data-theme="polnochnaya"] .rc-arrow-right {
+    right: -8px;
+  }
+
+  html[data-theme="polnochnaya"] .anime-view::before,
+  html[data-theme="polnochnaya"] .anime-detail::before,
+  html[data-theme="polnochnaya"] .home-page::before,
+  html[data-theme="polnochnaya"] .people-page::before,
+  html[data-theme="polnochnaya"] .playlists-page::before,
+  html[data-theme="polnochnaya"] .collection-page::before,
+  html[data-theme="polnochnaya"] .add-anime-page::before {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  html[data-theme="polnochnaya"] .anime-main-info {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+    padding: 1.6rem;
+  }
+
+  html[data-theme="polnochnaya"] .poster-section {
+    order: -1;
+    max-width: 250px;
+    margin: 0 auto;
+  }
+
+  html[data-theme="polnochnaya"] .achievements-manager {
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 1.1rem;
+    min-height: 500px;
+  }
+
+  html[data-theme="polnochnaya"] .am-main {
+    padding: 1.2rem;
+  }
+
+  html[data-theme="polnochnaya"] .am-editor-head h3 {
+    font-size: 1.05rem;
+  }
+
+  html[data-theme="polnochnaya"] .detail-header {
+    padding: 1.8rem 1.6rem;
+  }
+
+  html[data-theme="polnochnaya"] .anime-description-section,
+  html[data-theme="polnochnaya"] .anime-screenshots-section,
+  html[data-theme="polnochnaya"] .franchise-section,
+  html[data-theme="polnochnaya"] .dubs-section {
+    padding: 1.8rem 1.6rem;
+  }
+
+  html[data-theme="polnochnaya"] .home-hero {
+    border-width: 6px;
+  }
+
+  html[data-theme="polnochnaya"] body::after {
+    right: 6vw;
+  }
+}
+
+@media (max-width: 767px) {
+  html[data-theme="polnochnaya"] .av-container {
+    padding: 1rem 1.25rem 2.5rem;
+  }
+
+  html[data-theme="polnochnaya"] .av-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  html[data-theme="polnochnaya"] .av-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  html[data-theme="polnochnaya"] .av-tab {
+    flex-shrink: 0;
+    white-space: nowrap;
+    scroll-snap-align: start;
+  }
+
+  html[data-theme="polnochnaya"] .home-page {
+    padding: 1rem 1.25rem 2.5rem;
+  }
+
+  html[data-theme="polnochnaya"] .home-content,
+  html[data-theme="polnochnaya"] .home-skeleton {
+    gap: 2.5rem;
+  }
+
+  html[data-theme="polnochnaya"] .hero-skeleton {
+    min-height: 520px;
+  }
+
+  html[data-theme="polnochnaya"] .hero-skeleton-content {
+    padding: 1.25rem;
+  }
+
+  html[data-theme="polnochnaya"] .skeleton-card {
+    flex-basis: 140px;
+  }
+
+  html[data-theme="polnochnaya"] .error-state {
+    margin: 40px auto;
+  }
+
+  html[data-theme="polnochnaya"] .rc-card-wrap,
+  html[data-theme="polnochnaya"] .rc-skel {
+    flex: 0 0 156px;
+    width: 156px;
+  }
+
+  html[data-theme="polnochnaya"] .rc-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+  }
+
+  html[data-theme="polnochnaya"] .rc-arrow {
+    display: none;
+  }
+
+  html[data-theme="polnochnaya"] .franchise-slide {
+    flex: 0 0 140px;
+    width: 140px;
+    height: 300px;
+  }
+
+  html[data-theme="polnochnaya"] .screenshot-wrapper {
+    flex-basis: min(280px, 86%);
+    width: min(280px, 86%);
+  }
+
+  html[data-theme="polnochnaya"] .anime-card:hover {
+    transform: translateY(-4px);
+  }
+
+  html[data-theme="polnochnaya"] body::before {
+    top: 52vh;
+    background-size: 90px 18px, 60px 30px;
+  }
+}
+
+@media (max-width: 640px) {
+  html[data-theme="polnochnaya"] .anime-detail {
+    padding: 0.75rem 1rem 2.5rem;
+  }
+
+  html[data-theme="polnochnaya"] .detail-header,
+  html[data-theme="polnochnaya"] .anime-description-section,
+  html[data-theme="polnochnaya"] .anime-screenshots-section,
+  html[data-theme="polnochnaya"] .franchise-section,
+  html[data-theme="polnochnaya"] .dubs-section {
+    padding: 1.3rem 1.15rem;
+  }
+
+  html[data-theme="polnochnaya"] .anime-title {
+    font-size: 1.55rem;
+  }
+
+  html[data-theme="polnochnaya"] .anime-title-en {
+    font-size: 1rem;
+  }
+
+  html[data-theme="polnochnaya"] .detail-row {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  html[data-theme="polnochnaya"] .detail-label {
+    min-width: auto;
+  }
+
+  html[data-theme="polnochnaya"] .action-buttons .btn,
+  html[data-theme="polnochnaya"] .action-buttons button {
+    flex: 1 1 140px;
+  }
+
+  html[data-theme="polnochnaya"] .watch-button {
+    width: 100%;
+  }
+
+  html[data-theme="polnochnaya"] .screenshot-nav-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  html[data-theme="polnochnaya"] .screenshot-nav-btn-left {
+    left: 0;
+  }
+
+  html[data-theme="polnochnaya"] .screenshot-nav-btn-right {
+    right: 0;
+  }
+
+  html[data-theme="polnochnaya"] .dubs-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  html[data-theme="polnochnaya"] .anime-description-full::first-letter {
+    font-size: 2.2em;
+  }
+
+  html[data-theme="polnochnaya"] .create-playlist-modal {
+    padding: 1.4rem;
+  }
+}
+
+@media (max-width: 600px) {
+  html[data-theme="polnochnaya"] .achievements-manager {
+    grid-template-columns: 1fr;
+    gap: 1.1rem;
+    min-height: auto;
+  }
+
+  html[data-theme="polnochnaya"] .am-sidebar {
+    max-height: 360px;
+  }
+
+  html[data-theme="polnochnaya"] .am-main {
+    min-height: 300px;
+    padding: 1rem;
+  }
+
+  html[data-theme="polnochnaya"] .am-sidebar-head {
+    flex-wrap: wrap;
+  }
+
+  html[data-theme="polnochnaya"] .am-search {
+    flex: 1 1 100%;
+  }
+
+  html[data-theme="polnochnaya"] .am-create-btn {
+    flex: 1 1 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  html[data-theme="polnochnaya"] .am-editor-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  html[data-theme="polnochnaya"] .am-head-actions {
+    width: 100%;
+  }
+
+  html[data-theme="polnochnaya"] .am-btn.small {
+    flex: 1 1 auto;
+    min-height: 42px;
+  }
+
+  html[data-theme="polnochnaya"] .am-row {
+    grid-template-columns: 1fr;
+  }
+
+  html[data-theme="polnochnaya"] .am-value {
+    max-width: 100%;
+  }
+
+  html[data-theme="polnochnaya"] .am-field input[type="text"],
+  html[data-theme="polnochnaya"] .am-field input[type="number"],
+  html[data-theme="polnochnaya"] .am-field textarea,
+  html[data-theme="polnochnaya"] .am-field select {
+    padding: 0.75rem 0.9rem;
+    font-size: 16px;
+  }
+
+  html[data-theme="polnochnaya"] .am-icon-grid {
+    max-height: 170px;
+  }
+}
+
+@media (max-width: 460px) {
+  html[data-theme="polnochnaya"] .av-tab {
+    padding: 0 0.95rem 0 1.7rem;
+    font-size: 0.85rem;
+  }
+
+  html[data-theme="polnochnaya"] .rc-header {
+    flex-wrap: wrap;
+  }
+
+  html[data-theme="polnochnaya"] .rc-view-all {
+    min-height: 38px;
+  }
+
+  html[data-theme="polnochnaya"] .home-hero {
+    border-width: 4px;
+  }
+
+  html[data-theme="polnochnaya"] .person-card:nth-child(3n + 1),
+  html[data-theme="polnochnaya"] .person-card:nth-child(3n + 2) {
+    transform: none;
+  }
+}
+
+@media (max-width: 380px) {
+  html[data-theme="polnochnaya"] .am-item-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  html[data-theme="polnochnaya"] .am-icon-preview {
+    width: 62px;
+    height: 62px;
+  }
+
+  html[data-theme="polnochnaya"] .am-icon-grid {
+    grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+  }
+
+  html[data-theme="polnochnaya"] .am-icon-choice {
+    height: 36px;
+  }
+}
+
+@media (hover: none) {
+  html[data-theme="polnochnaya"] .anime-card:hover,
+  html[data-theme="polnochnaya"] .playlist-card:hover,
+  html[data-theme="polnochnaya"] .result-card:hover,
+  html[data-theme="polnochnaya"] .person-card:hover,
+  html[data-theme="polnochnaya"] .franchise-slide:hover,
+  html[data-theme="polnochnaya"] .screenshot-wrapper:hover {
+    transform: none;
+  }
+
+  html[data-theme="polnochnaya"] .rc-arrow {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="polnochnaya"]::before,
+  html[data-theme="polnochnaya"]::after,
+  html[data-theme="polnochnaya"] body::before,
+  html[data-theme="polnochnaya"] body::after,
+  html[data-theme="polnochnaya"] .anime-view::before,
+  html[data-theme="polnochnaya"] .anime-detail::before,
+  html[data-theme="polnochnaya"] .home-page::before,
+  html[data-theme="polnochnaya"] .people-page::before,
+  html[data-theme="polnochnaya"] .playlists-page::before,
+  html[data-theme="polnochnaya"] .collection-page::before,
+  html[data-theme="polnochnaya"] .add-anime-page::before {
+    animation: none;
+  }
+
+  html[data-theme="polnochnaya"] *,
+  html[data-theme="polnochnaya"] *::before,
+  html[data-theme="polnochnaya"] *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

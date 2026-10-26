@@ -167,6 +167,8 @@ export const chat = {
   title: "Клуб полуночников",
   description: "Обсуждаем новые серии без спойлеров.",
   avatar: poster,
+  avatar_url: poster,
+  other_user: user,
   members_count: 24,
   unread_count: 3,
   is_owner: true,

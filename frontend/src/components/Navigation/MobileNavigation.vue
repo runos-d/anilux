@@ -464,14 +464,7 @@ onUnmounted(() => {
   font-family: var(--font-display);
   font-size: var(--text-lg);
   font-weight: 700;
-  background: linear-gradient(
-    135deg,
-    var(--text-primary) 0%,
-    var(--accent-bright) 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #fff;
   text-decoration: none;
   margin-left: var(--space-2);
 }

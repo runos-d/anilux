@@ -12,7 +12,7 @@ from django.core.exceptions import ValidationError
 from apps.anime.infrastructure.models.anime import Anime, Genre, Franchise, CatalogVisibility, CatalogHideRule
 from apps.social.infrastructure.models.social import Post, Group
 from apps.playlists.infrastructure.models.playlists import Playlist, PlaylistItem
-from .models import SEO_PATH_MAX_LENGTH, SiteSeoSettings, SeoAlias, SeoCollection, SeoOverride
+from .models import SEO_PATH_MAX_LENGTH, SiteSeoSettings, SeoAlias, SeoCollection, SeoOverride, SeoHub
 from .service import anime_path, franchise_path, build_page, clean_text
 from .navigation import site_navigation
 from .tasks import refresh_hubs
@@ -334,11 +334,22 @@ class SeoTests(TestCase):
                      '/anime/year/2025?page=0', '/anime/year/2025?page=x', '/anime/year/2025?page=2&page=3',
                      '/anime/99999999-absent', anime_path(self.anime) + '?page=2']:
             self.assertEqual(self.get(path).status_code, 404, path)
+        html = self.get('/unknown/does-not-exist').content.decode()
+        self.assertNotIn('rel="canonical"', html)
+        self.assertNotIn('property="og:url"', html)
+        self.assertEqual(self.payload('/unknown/does-not-exist')['schema'], [])
 
     def test_canonical_and_redirects(self):
         response = self.get('/anime/' + self.anime.slug + '/?page=1&utm_source=x')
         self.assertEqual(response.status_code, 301)
-        self.assertEqual(response['Location'], 'https://catalog.example.org' + anime_path(self.anime) + '?utm_source=x')
+        self.assertEqual(response['Location'], 'https://catalog.example.org' + anime_path(self.anime))
+        response = self.get('/anime/calendar?page=1&utm_source=x')
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response['Location'], 'https://catalog.example.org/anime?section=calendar')
+        response = self.get('/anime/status/released?page=2')
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response['Location'], 'https://catalog.example.org/anime/status/finished?page=2')
+        self.assertEqual(self.get('/unknown/does-not-exist/?page=1').status_code, 404)
         self.assertEqual(self.get('/anime?utm_source=x').status_code, 200)
         self.assertEqual(self.payload('/anime?utm_source=x')['canonical'], 'https://catalog.example.org/anime')
         self.assertEqual(self.payload('/anime?search=romance')['robots'], 'noindex,follow')
@@ -431,6 +442,9 @@ class SeoTests(TestCase):
         self.assertRaises(ValidationError, config.full_clean)
 
     def test_sitemap_xml_live_visibility_threshold_and_lastmod(self):
+        SeoHub.objects.all().delete()
+        self.assertEqual(self.get('/sitemap-hubs-1.xml').status_code, 404)
+        self.assertNotIn('sitemap-hubs-1.xml', self.get('/sitemap.xml').content.decode())
         refresh_hubs()
         response = self.get('/sitemap.xml')
         root = ElementTree.fromstring(response.content)
@@ -458,11 +472,14 @@ class SeoTests(TestCase):
         self.assertNotIn('<loc>', self.get('/sitemap.xml').content.decode())
 
     def test_metadata_matches_html_and_api(self):
+        Anime.objects.filter(pk=self.anime.pk).update(poster_url='https://cdn.example.org/poster.jpg')
         data = self.payload(anime_path(self.anime))
         html = self.get(anime_path(self.anime)).content.decode()
         self.assertIn('<title>' + data['title'] + '</title>', html)
         self.assertIn(data['contentHtml'], html)
         self.assertIn(data['canonical'], html)
+        self.assertIn('property="og:image:alt"', html)
+        self.assertIn('name="twitter:image:alt"', html)
         item = self.payload('/anime/year/2025')['items'][0]
         self.assertEqual(item['id'], self.anime.pk)
         self.assertEqual(item['type'], 'tv')
@@ -501,6 +518,7 @@ class SeoTests(TestCase):
         Anime.objects.filter(pk=fifth.pk).update(is_available=False)
         self.assertNotIn(b'/anime/genre/small', self.get('/sitemap-hubs-1.xml').content)
 
+    @patch('apps.seo.service.feature_flags.FEATURE_DUBS_ENABLED', True)
     def test_other_existing_public_routes_have_real_status_and_content(self):
         from apps.dubs.infrastructure.models.dubs import Person
         from apps.anime.infrastructure.models.anime import AnimeAnnouncement
@@ -515,3 +533,26 @@ class SeoTests(TestCase):
         self.assertEqual(response['X-Robots-Tag'], 'noindex,follow')
         CatalogHideRule.objects.create(rule_type='title', value='Публичный анонс')
         self.assertEqual(self.get('/announcements/public-announcement').status_code, 404)
+
+    @patch('apps.seo.service.feature_flags.FEATURE_DUBS_ENABLED', False)
+    def test_disabled_people_detail_matches_frontend_404(self):
+        from apps.dubs.infrastructure.models.dubs import Person
+        person = Person.objects.create(name='Скрытая персона', description='Не должна иметь SEO shell')
+        self.assertEqual(self.get(f'/people/{person.pk}').status_code, 404)
+
+    def test_auth_callback_routes_are_real_noindex_documents(self):
+        for path in ['/confirm-email?token=secret', '/reset-password?token=secret', '/oauth/callback?code=secret']:
+            response = self.get(path)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response['X-Robots-Tag'], 'noindex,follow')
+            self.assertNotIn('secret', response.content.decode())
+
+    def test_home_schema_has_stable_site_identity_without_fabricated_contacts(self):
+        schema = self.payload('/')['schema']
+        website = next(item for item in schema if item['@type'] == 'WebSite')
+        organization = next(item for item in schema if item['@type'] == 'Organization')
+        self.assertEqual(website['@id'], 'https://catalog.example.org/#website')
+        self.assertEqual(website['publisher'], {'@id': 'https://catalog.example.org/#organization'})
+        self.assertEqual(organization['logo']['url'], 'https://catalog.example.org/pwa/icon-512.png')
+        self.assertNotIn('email', organization)
+        self.assertNotIn('sameAs', organization)

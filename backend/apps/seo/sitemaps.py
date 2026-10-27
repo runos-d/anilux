@@ -45,7 +45,8 @@ def sitemap(request, section=None, number=1):
         root = Element('sitemapindex', xmlns=NS)
         if enabled:
             for name, size in SECTIONS.items():
-                for page in range(1, max(1, math.ceil(candidate_count(query(name)) / size)) + 1):
+                count = candidate_count(query(name))
+                for page in range(1, math.ceil(count / size) + 1):
                     entry = SubElement(root, 'sitemap')
                     SubElement(entry, 'loc').text = f'{origin}/sitemap-{name}-{page}.xml'
         return xml(root)
@@ -56,7 +57,8 @@ def sitemap(request, section=None, number=1):
         return xml(root)
     size = SECTIONS[section]
     qs = query(section)
-    if number > max(1, math.ceil(candidate_count(qs) / size)):
+    pages = math.ceil(candidate_count(qs) / size)
+    if pages == 0 or number > pages:
         return uncached(HttpResponse(status=404))
     overrides = {row.path: row for row in SeoOverride.objects.all()}
     for obj in qs[(number - 1) * size:number * size]:

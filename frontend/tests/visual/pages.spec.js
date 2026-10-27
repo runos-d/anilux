@@ -22,6 +22,7 @@ const pages = [
   ["anime-recommendations", "/anime?section=recommendations"],
   ["anime-currently-watching", "/anime?section=currently_watching"],
   ["anime-browse", "/anime/browse"],
+  ["anime-franchises", "/anime/franchises"],
   ["anime-year", "/anime/year/2024"],
   ["anime-genre", "/anime/genre/drama"],
   ["anime-type", "/anime/type/tv"],
@@ -93,6 +94,10 @@ for (const [name, path] of pages) {
       await waitForVisualReady(page);
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       await assertStableSurface(page, name);
+      const wordmarks = page.locator(".logo-text:visible, .mobile-logo:visible");
+      if (await wordmarks.count()) {
+        await expect(wordmarks.first(), `${name}: AniLux wordmark changed from white`).toHaveCSS("color", "rgb(255, 255, 255)");
+      }
       await captureSurface(page, `page--${name}--${theme}`);
       await page.setViewportSize({ width: 1440, height: 1000 });
       await capturePaletteAudit(page, `page--${name}--${theme}`, theme);
@@ -100,4 +105,14 @@ for (const [name, path] of pages) {
       expect(consoleErrors, `${name}: console errors`).toEqual([]);
     });
   }
+}
+
+for (const theme of themes) {
+  test(`AniLux mobile wordmark stays white · ${theme}`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await installVisualSession(page, theme);
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+    await waitForVisualReady(page);
+    await expect(page.locator(".mobile-logo:visible")).toHaveCSS("color", "rgb(255, 255, 255)");
+  });
 }

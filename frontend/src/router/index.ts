@@ -162,6 +162,7 @@ const router = createRouter({
       props: (route) => ({ presetYear: Number(route.params.year), presetSeason: route.params.season }),
     },
     { path: '/anime/browse', component: () => import('@/components/page/anime/SeoCollectionView.vue') },
+    { path: '/anime/franchises', name: 'anime-franchises', component: () => import('@/components/page/anime/SeoCollectionView.vue') },
     { path: '/anime/collection/:slug', component: () => import('@/components/page/anime/SeoCollectionView.vue') },
     { path: '/anime/:slug([0-9]+)-:label', name: 'anime-canonical', component: AnimeDetailView,
       props: route => ({ slug: route.params.slug }) },

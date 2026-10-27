@@ -79,7 +79,13 @@ class ChatFileCollectionTests(TestCase):
             with self.subTest(name=name), self.assertRaises(CommandError):
                 safe_path(self.root, name)
         external = Path(self.directory.name) / 'outside.bin'; external.write_bytes(b'outside')
-        link = self.root / 'attachments' / 'link.bin'; link.symlink_to(external)
+        link = self.root / 'attachments' / 'link.bin'
+        try:
+            link.symlink_to(external)
+        except OSError as exc:
+            if getattr(exc, 'winerror', None) == 1314:
+                self.skipTest('Windows symlink privilege is unavailable')
+            raise
         with self.assertRaises(CommandError):
             safe_path(self.root, 'attachments/link.bin')
         result = self.command('--apply', '--writers-stopped')

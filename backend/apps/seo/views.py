@@ -3,7 +3,7 @@ import re
 from dataclasses import asdict
 from functools import lru_cache
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from django.conf import settings
 from django.http import HttpResponse, HttpResponsePermanentRedirect, JsonResponse, QueryDict
@@ -51,19 +51,34 @@ def projection(request, path, query):
         return build_page(request, '/__not_found__', QueryDict())
 
 
+def normalized_redirect_target(path, query, redirect=''):
+    """Build one-hop redirects without duplicate or tracking-only query URLs."""
+    parsed = urlsplit(redirect or path)
+    pairs = parse_qsl(parsed.query, keep_blank_values=True)
+    pairs.extend((key, value) for key, values in query.lists() for value in values)
+    cleaned = []
+    seen = set()
+    for key, value in pairs:
+        if key == 'page' and value == '1':
+            continue
+        if key.startswith('utm_') or key in {'gclid', 'yclid'}:
+            continue
+        if key not in seen:
+            cleaned.append((key, value))
+            seen.add(key)
+    return urlunsplit(('', '', parsed.path, urlencode(cleaned, doseq=True), ''))
+
+
 @require_safe
 def page_html(request, path=''):
     path = '/' + path
     normalized = re.sub('/+', '/', path).rstrip('/') or '/'
     page = projection(request, normalized, request.GET)
     _, origin, enabled, _ = site_config(request)
-    target = page.redirect or (normalized + ('?' + request.GET.urlencode() if request.GET else ''))
-    if request.GET.get('page') == '1':
-        query = request.GET.copy()
-        query.pop('page', None)
-        target = (page.redirect or normalized).split('?')[0] + ('?' + query.urlencode() if query else '')
+    target = normalized_redirect_target(normalized, request.GET, page.redirect)
     foreign_origin = enabled and (request.get_host() != urlsplit(origin).netloc or not request.is_secure())
-    if page.redirect or path != normalized or foreign_origin or request.GET.get('page') == '1':
+    normalizable = page.status == 200 or bool(page.redirect)
+    if page.redirect or (normalizable and (path != normalized or foreign_origin or request.GET.get('page') == '1')):
         return uncached(HttpResponsePermanentRedirect((origin if enabled else '') + target))
     nonce = getattr(request, 'csp_nonce', '')
     head = render_to_string('seo/head.html', {'page': page, 'json_ld': safe_json(page.schema), 'csp_nonce': nonce})

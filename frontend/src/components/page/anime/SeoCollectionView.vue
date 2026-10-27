@@ -16,7 +16,7 @@
         :anime-list="animeList" :loading="loading" :error="null"
         :page="page.number || 1" :total-pages="page.pages || 1" :total-count="page.count || 0"
         :filters="filters" :page-size="24" :emit-on-mount="false" :sync-filters="true"
-        :show-shuffle="true" :is-shuffled="route.query.shuffle === 'true'" :group-franchises="false"
+        :show-shuffle="!isFranchiseDirectory" :is-shuffled="route.query.shuffle === 'true'" :group-franchises="isFranchiseDirectory"
         @filter-change="changeFilters" @page-change="changePage" @refresh="refreshSeo(route.fullPath, true)"
         @shuffle="shuffle" @unshuffle="unshuffle" @anime-click="openAnime" @watch-anime="watchAnime" />
       <CollectionLinks v-if="isBrowsePage" :links="directoryLinks" variant="directory" />
@@ -36,6 +36,7 @@ import type { Anime } from '@/types';
 import { cachedCatalogFacets, loadCatalogFacets } from '@/lib/catalogFacets';
 const route = useRoute(), router = useRouter();
 const isBrowsePage = computed(() => route.path === '/anime/browse');
+const isFranchiseDirectory = computed(() => route.path === '/anime/franchises');
 const page = shallowRef<SeoData | null>(isBrowsePage.value ? {
   title: 'Подборки аниме', description: '', path: '/anime/browse', status: 200, related: [],
 } : null);
@@ -87,7 +88,14 @@ const filters = computed<FilterState>(() => {
   if (route.query.show_only_franchises === 'true') result.show_only_franchises = true;
   return result as FilterState;
 });
-const animeList = computed(() => (page.value?.items || []).map(item => ({
+const animeList = computed(() => (page.value?.items || []).map(item => isFranchiseDirectory.value ? ({
+  ...item,
+  name: item.name,
+  poster_image_url: item.image,
+  year_start: item.year,
+  all_genres: item.genres,
+  parts_count: (item as Record<string, unknown>).parts_count,
+}) : ({
   id: item.id, slug: item.slug, title_ru: item.name, title_en: '', status: item.status || '', year: item.year,
   poster_image_url: item.image, type: item.type, score: item.score, episodes: item.episodes, genres: item.genres,
 })) as Anime[]);

@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "indexable_static": [
+    "", "/anime", "/anime/browse", "/anime/franchises", "/contacts", "/ideas", "/license", "/privacy", "/terms"
+  ],
+  "indexable_when_public_and_substantial": [
+    "/@:nickname", "/anime/:slug([0-9]+)-:label", "/anime/collection/:slug",
+    "/anime/genre/:genre", "/anime/season/:year/:season", "/anime/status/:status",
+    "/anime/type/:kind", "/anime/year/:year", "/franchise/:slug", "/playlist/:id", "/post/:id"
+  ],
+  "noindex": [
+    "/achievements", "/add-anime", "/admin", "/admin/complaints", "/admin/franchises",
+    "/admin/kodik-import", "/anime/:slug/watch", "/announcements/:slug", "/app", "/chats",
+    "/chats/:code([0-9]{8})", "/chats/:id([0-9]+)/topic/:slug",
+    "/chats/:id([0-9a-fA-F-]{36})", "/chats/:id([0-9a-fA-F-]{36})/topic/:slug",
+    "/chats/:slug?", "/chats/create-group", "/chats/groups",
+    "/chats/invite/:token([a-zA-Z0-9_-]{10,})", "/confirm-email", "/donate", "/excerpts",
+    "/excerpts/:id", "/excerpts/s/:token", "/feed", "/history", "/library", "/login",
+    "/moderation", "/news", "/notifications", "/notifications/settings", "/oauth/callback",
+    "/people", "/people/:id", "/playlist/shared/:token", "/playlists", "/playlists/:id/edit",
+    "/playlists/create", "/profile", "/public-playlists", "/register", "/reset-password",
+    "/roulette", "/settings", "/stats"
+  ],
+  "canonical_redirect": [
+    "/anime/:slug", "/anime/announcements", "/anime/calendar", "/anime/franchise/:slug",
+    "/anime/ongoings", "/anime/watching", "/my-playlists", "/profile/:id",
+    "/profile/@:nickname", "/subscription"
+  ],
+  "not_found_in_production": ["/:pathMatch(.*)*", "/__visual__/modals"],
+  "query_policy": {
+    "canonical": ["page"],
+    "tracking": ["utm_*", "gclid", "yclid"],
+    "noindex": [
+      "directory_page", "excluded_library_statuses", "episodes_from", "episodes_to", "genre_logic",
+      "genres", "ordering", "page_size", "score_from", "score_to", "search", "section",
+      "show_only_franchises", "shuffle", "shuffle_seed", "status", "type", "year_from", "year_to"
+    ]
+  }
+}

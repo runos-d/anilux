@@ -24,6 +24,7 @@ from apps.social.infrastructure.models.social import Post
 from apps.playlists.infrastructure.models.playlists import Playlist
 from .models import SEO_PATH_MAX_LENGTH, SiteSeoSettings, SeoCollection, SeoOverride, SeoAlias
 from .navigation import site_navigation
+from config import feature_flags
 
 PAGE_SIZE = 24
 MIN_TITLES = 5
@@ -395,6 +396,7 @@ def resolve(path, number=1, query=None, user=None):
         page.text = ('Находите аниме для просмотра по жанру, году и формату. В каталоге собраны новые серии, '
                      'полнометражные фильмы и франшизы с частями в правильном порядке.')
         page.items = [card(a) for a in qs[:12]]
+        page.modified = qs.aggregate(value=Max('updated_at'))['value']
     elif path == '/anime/browse':
         page.kind, page.name, page.indexable = 'collection', 'Подборки аниме', True
         year_counts, genre_counts, season_counts = Counter(), Counter(), Counter()
@@ -456,6 +458,10 @@ def resolve(path, number=1, query=None, user=None):
                 continue
         page.count = len(page.related)
         page.page_size = max(page.count, 1)
+        page.modified = max(filter(None, [
+            qs.aggregate(value=Max('updated_at'))['value'],
+            SeoCollection.objects.filter(enabled=True).aggregate(value=Max('updated_at'))['value'],
+        ]), default=None)
         page.text = ('Выберите готовый раздел каталога: аниме по жанрам, годам, сезонам, форматам и статусам. '
                      'Каждая ссылка ведёт на отдельную подборку без случайных сочетаний фильтров.')
     elif path == '/anime/franchises':
@@ -555,6 +561,8 @@ def resolve(path, number=1, query=None, user=None):
         page.text = (f'Франшиза «{franchise.name}» объединяет {part_phrase(page.count)}{span}. '
                      f'Ниже части расположены по порядку; в подборке есть {formats.lower() if formats else "разные форматы"}.')
         page.modified = selected.order_by('-updated_at').values_list('updated_at', flat=True).first()
+    elif path in {'/anime/ongoings', '/anime/announcements', '/anime/calendar', '/anime/watching'}:
+        page.redirect = '/anime?section=' + {'/anime/ongoings': 'ongoings', '/anime/announcements': 'announcements', '/anime/calendar': 'calendar', '/anime/watching': 'currently_watching'}[path]
     elif match := re.fullmatch(r'/anime/([^/]+)(/watch)?', path):
         token, watch = match.groups()
         canonical_id = re.fullmatch(r'(\d+)-.+', token)
@@ -600,6 +608,7 @@ def resolve(path, number=1, query=None, user=None):
             page.indexable = False
             page.path += '/watch'
             page.canonical = anime_path(anime)
+            page.schema = []
     elif match := re.fullmatch(r'/(?:profile/)?@([^/]+)|/profile/(\d+)', path):
         nickname, pk = match.groups()
         users = get_user_model().objects.filter(is_active=True)
@@ -638,14 +647,14 @@ def resolve(path, number=1, query=None, user=None):
         page.indexable = (page.status == 200 and page.count >= MIN_PLAYLIST_ITEMS and
                           len(page.text) >= MIN_PLAYLIST_DESCRIPTION_LENGTH)
         page.related = [{'path': profile_path(playlist.user), 'name': 'Автор плейлиста'}]
-    elif path in {'/anime/ongoings', '/anime/announcements', '/anime/calendar', '/anime/watching'}:
-        page.redirect = '/anime?section=' + {'/anime/ongoings': 'ongoings', '/anime/announcements': 'announcements', '/anime/calendar': 'calendar', '/anime/watching': 'currently_watching'}[path]
     elif path == '/subscription':
         page.redirect = '/donate'
     elif path in {'/public-playlists', '/my-playlists'}:
         page.path = '/playlists'
         page.redirect = '/playlists?tab=public' if path == '/public-playlists' else '/playlists'
     elif match := re.fullmatch(r'/people/([^/]+)', path):
+        if not feature_flags.FEATURE_DUBS_ENABLED:
+            return error_page(path)
         from apps.dubs.infrastructure.models.dubs import Person
         try:
             person = Person.objects.filter(pk=match[1]).first()
@@ -686,12 +695,15 @@ def resolve(path, number=1, query=None, user=None):
     elif document := next((item for item in site_navigation()['documents'] if item['path'] == path), None):
         page.kind, page.name, page.text = 'information', document['name'], document['text']
         page.indexable = document.get('published', False)
-    elif path in {'/login', '/register', '/app', '/donate', '/add-anime', '/people', '/profile', '/feed', '/news', '/roulette',
+    elif path in {'/login', '/register', '/confirm-email', '/reset-password', '/oauth/callback',
+                  '/app', '/donate', '/add-anime', '/people', '/profile', '/feed', '/news', '/roulette',
                   '/chats', '/chats/groups', '/chats/create-group', '/playlists', '/playlists/create',
                   '/my-playlists', '/public-playlists', '/library', '/history', '/stats', '/notifications',
-                  '/notifications/settings', '/settings', '/support', '/achievements', '/excerpts'}:
+                  '/notifications/settings', '/settings', '/achievements', '/excerpts'}:
         page.name = {
             '/login': 'Вход', '/register': 'Регистрация', '/app': 'Приложение AniLux',
+            '/confirm-email': 'Подтверждение почты', '/reset-password': 'Восстановление пароля',
+            '/oauth/callback': 'Вход через внешний сервис',
             '/donate': 'Поддержать проект', '/add-anime': 'Добавить аниме', '/people': 'Люди',
             '/profile': 'Мой профиль', '/feed': 'Лента сообщества', '/news': 'Новости',
             '/chats': 'Чаты', '/chats/groups': 'Группы', '/chats/create-group': 'Создать группу',
@@ -713,7 +725,7 @@ def resolve(path, number=1, query=None, user=None):
             page.name = {'public': 'Публичные плейлисты аниме', 'my': 'Мои плейлисты', 'favorites': 'Избранные плейлисты'}[query['tab']]
             page.text = ('Публичные плейлисты аниме от сообщества AniLux. Выбирайте подборки по темам и находите новые истории.'
                          if query['tab'] == 'public' else f'{page.name} в AniLux. Сохраняйте аниме и управляйте своими подборками.')
-    elif re.fullmatch(r'/(?:profile|admin(?:/[^?]*)?|moderation|feed|news|chats(?:/[^?]*)?|playlists(?:/[^?]*)?|my-playlists|public-playlists|library|history|stats|notifications(?:/[^?]*)?|settings|support|achievements|excerpts(?:/[^?]*)?|playlist/shared/[^/]+)', path):
+    elif re.fullmatch(r'/(?:profile|admin(?:/[^?]*)?|moderation|feed|news|chats(?:/[^?]*)?|playlists(?:/[^?]*)?|my-playlists|public-playlists|library|history|stats|notifications(?:/[^?]*)?|settings|achievements|excerpts(?:/[^?]*)?|playlist/shared/[^/]+)', path):
         page.name = ('Управление сайтом' if path.startswith('/admin') or path == '/moderation' else
                      'Чат' if path.startswith('/chats/') else
                      'Отрывок аниме' if path.startswith('/excerpts/') else
@@ -743,7 +755,8 @@ def build_page(request, path, query):
         page = error_page(path)
     else:
         page = resolve(path, int(raw_page), query, getattr(request, "user", None))
-    if page.number == 1 and raw_page != '1' and page.kind not in {'catalog', 'collection', 'franchise_directory', 'franchise', 'playlist'}:
+    if (page.number == 1 and raw_page != '1' and not page.redirect and
+            page.kind not in {'catalog', 'collection', 'franchise_directory', 'franchise', 'playlist'}):
         page = error_page(path)
     if page.status == 404:
         alias = SeoAlias.objects.filter(path=path).first()
@@ -826,7 +839,7 @@ def build_page(request, path, query):
     page.indexable = bool(page.indexable and enabled and not extras and not (override and override.noindex) and page.status == 200)
     page.robots = 'index,follow' if page.indexable else 'noindex,follow'
     if page.status != 200:
-        page.schema, page.items, page.related, page.image, page.text = [], [], [], '', ''
+        page.schema, page.items, page.related, page.image, page.text, page.canonical = [], [], [], '', '', ''
     if page.kind == 'utility' and re.search(r'/(?:shared|invite|s)/', path):
         page.path = '/login'
         page.first_url = page.previous_url = page.next_url = ''
@@ -854,7 +867,16 @@ def build_page(request, path, query):
                     'itemListElement': [{'@type': 'ListItem', 'position': (page.number - 1) * page.page_size + i,
                                          'name': item['name'], 'url': origin + item['path']} for i, item in enumerate(page.items, 1)]}})
         if page.kind == 'home':
-            page.schema.append({'@type': 'WebSite', 'name': site})
+            organization_id = origin + '/#organization'
+            page.schema.extend([
+                {'@type': 'WebSite', '@id': origin + '/#website', 'name': site,
+                 'url': origin + '/', 'inLanguage': 'ru-RU',
+                 'publisher': {'@id': organization_id}},
+                {'@type': 'Organization', '@id': organization_id, 'name': site,
+                 'url': origin + '/',
+                 'logo': {'@type': 'ImageObject', 'url': origin + '/pwa/icon-512.png',
+                          'width': 512, 'height': 512}},
+            ])
         if page.kind == 'catalog':
             page.schema.append({'@type': 'CollectionPage', 'name': page.h1, 'description': page.description})
         if page.kind == 'information':
@@ -864,7 +886,9 @@ def build_page(request, path, query):
             {'@type': 'ListItem', 'position': i, 'name': crumb['name'], 'item': origin + crumb['path']}
             for i, crumb in enumerate(page.crumbs, 1)]})
         for i, schema in enumerate(page.schema):
-            schema.update({'@context': 'https://schema.org', '@id': page.canonical + f'#schema-{i}', 'url': page.canonical})
+            schema['@context'] = 'https://schema.org'
+            schema.setdefault('@id', page.canonical + f'#schema-{i}')
+            schema.setdefault('url', page.canonical)
             if page.image and schema['@type'] in {'Movie', 'TVSeries', 'Article'}:
                 schema['image'] = page.image
             if schema.get('author'):

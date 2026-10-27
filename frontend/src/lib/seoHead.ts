@@ -37,6 +37,8 @@ function meta(attribute: 'name' | 'property', key: string, value?: string) {
 }
 
 export function applySeoHead(data: SeoData) {
+  const titles = [...document.head.querySelectorAll('title')];
+  titles.slice(1).forEach((item) => item.remove());
   document.title = data.title;
   document.documentElement.lang = 'ru';
   meta('name', 'description', data.description);
@@ -48,11 +50,13 @@ export function applySeoHead(data: SeoData) {
   const image = data.image || data.ogImage;
   const properties = { 'og:title': data.title, 'og:description': data.description,
     'og:url': data.canonical, 'og:type': data.kind === 'post' ? 'article' : 'website',
-    'og:site_name': data.site, 'og:locale': 'ru_RU', 'og:image': image };
+    'og:site_name': data.site, 'og:locale': 'ru_RU', 'og:image': image,
+    'og:image:alt': image ? data.title : undefined };
   Object.entries(properties).forEach(([key, value]) => meta('property', key, value));
   meta('name', 'twitter:card', image ? 'summary_large_image' : 'summary');
   meta('name', 'twitter:title', data.title); meta('name', 'twitter:description', data.description);
   meta('name', 'twitter:image', image);
+  meta('name', 'twitter:image:alt', image ? data.title : undefined);
   document.querySelectorAll('script[data-seo-jsonld]').forEach(item => item.remove());
   const schema = data.schema || (Array.isArray(data.jsonLd) ? data.jsonLd : data.jsonLd ? [data.jsonLd] : []);
   if (schema.length) {

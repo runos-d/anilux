@@ -13,6 +13,7 @@ describe('useSeo', () => {
     document.head.querySelectorAll('meta[property^="og:"]').forEach((el) => el.remove());
     document.head.querySelectorAll('meta[name^="twitter:"]').forEach((el) => el.remove());
     document.head.querySelectorAll('link[rel="canonical"]').forEach((el) => el.remove());
+    document.head.querySelectorAll('script[data-seo-jsonld]').forEach((el) => el.remove());
   });
 
   it('uses the authenticated catalog client for library exclusions', async () => {
@@ -48,11 +49,13 @@ describe('useSeo', () => {
   it('removes the preceding image and JSON-LD and deduplicates tags', () => {
     useSeo({ title: 'A', description: 'A', ogImage: '/poster.jpg', jsonLd: { '@type': 'TVSeries' } });
     const duplicate = document.createElement('meta'); duplicate.name = 'description'; document.head.append(duplicate);
+    const duplicateTitle = document.createElement('title'); duplicateTitle.textContent = 'duplicate'; document.head.append(duplicateTitle);
     useSeo({ title: 'B', description: 'B' });
     expect(document.querySelector('meta[property="og:image"]')).toBeNull();
     expect(document.querySelector('meta[name="twitter:image"]')).toBeNull();
     expect(document.querySelector('script[data-seo-jsonld]')).toBeNull();
     expect(document.querySelectorAll('meta[name="description"]')).toHaveLength(1);
+    expect(document.querySelectorAll('title')).toHaveLength(1);
     expect(document.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe('noindex,follow');
   });
 
@@ -94,6 +97,8 @@ describe('useSeo', () => {
     expect(document.querySelector('meta[property="og:title"]')?.getAttribute('content')).toBe('Test anime -смотреть онлайн');
     expect(document.querySelector('meta[property="og:description"]')?.getAttribute('content')).toBe('Смотрите Test anime онлайн и в хорошем качестве.');
     expect(document.querySelector('meta[property="og:image"]')?.getAttribute('content')).toBe('https://example.com/poster.jpg');
+    expect(document.querySelector('meta[property="og:image:alt"]')?.getAttribute('content')).toBe('Test anime -смотреть онлайн');
     expect(document.querySelector('meta[name="twitter:card"]')?.getAttribute('content')).toBe('summary_large_image');
+    expect(document.querySelector('meta[name="twitter:image:alt"]')?.getAttribute('content')).toBe('Test anime -смотреть онлайн');
   });
 });

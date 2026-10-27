@@ -122,7 +122,7 @@ class AdminCatalogTests(TestCase):
         self.assertTrue(hidden_anime().filter(pk=self.b.pk).exists())
         self.rule('title', 'Part')
         self.assertEqual(400, self.request('post', 'catalog-rules/', {'rule_type': 'bad', 'value': 'abc'}).status_code)
-        self.assertEqual(400, self.request('post', 'catalog-rules/', {'rule_type': 'title', 'value': 'Part'}).status_code)
+        self.assertEqual(409, self.request('post', 'catalog-rules/', {'rule_type': 'title', 'value': 'Part'}).status_code)
         self.assertEqual(400, self.request('post', 'catalog-hidden/', {'anime_id': -1}).status_code)
         self.assertEqual(400, self.request('get', 'catalog-hidden/', {'page': 'bad'}).status_code)
         self.assertEqual(['Studio'], self.request('get', 'catalog-options/').data['studios'])

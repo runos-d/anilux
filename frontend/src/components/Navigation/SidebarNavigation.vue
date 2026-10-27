@@ -389,7 +389,7 @@ onBeforeUnmount(() => {
   line-height: 1.1;
   letter-spacing: -0.025em;
   white-space: nowrap;
-  color: var(--text-primary);
+  color: #fff;
   opacity: 1;
   transition:
     opacity 220ms var(--sb-ease),

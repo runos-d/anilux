@@ -65,7 +65,7 @@ import { logoSvg } from '@/assets/logoSvg';
   align-items: center;
   gap: var(--space-2);
   margin: 0 0 var(--space-2);
-  color: var(--text-primary);
+  color: #fff;
   font-family: var(--font-display);
   font-size: var(--text-xl);
   font-weight: 650;

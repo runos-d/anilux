@@ -1,0 +1,2 @@
+# Optional migration worker only; do not add S3 dependencies to every API process.
+boto3>=1.40,<2

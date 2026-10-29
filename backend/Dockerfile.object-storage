@@ -1,0 +1,6 @@
+ARG BACKEND_IMAGE=animecore-scalability-backend:lab
+FROM ${BACKEND_IMAGE}
+USER root
+COPY requirements-object-storage.lock /tmp/requirements-object-storage.lock
+RUN pip install --no-cache-dir --require-hashes -r /tmp/requirements-object-storage.lock
+USER appuser

@@ -55,3 +55,4 @@ F0053,Холодные рекомендации не пересчитывают 
 F0054,Приватные chat и post файлы передаются без полной ASGI буферизации,"media, performance, access-control, verification",active
 F0055,Рейтинговый курсор удерживает ограниченное окно ID с актуальной видимостью,"posts, performance, api-contracts, access-control, verification",active
 F0056,Добавлены отдельные task routes и изолированные прототипы RabbitMQ и Centrifugo,"realtime, performance, verification, release",active
+F0057,Миграция в S3 подготавливает проверенную копию без переключения live paths,"media, data-integrity, verification, release",active

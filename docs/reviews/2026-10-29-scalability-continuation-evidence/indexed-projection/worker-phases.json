@@ -1,0 +1,542 @@
+[
+  {
+    "event": "chat.outbox.published",
+    "event_id": 360,
+    "recipients": 60,
+    "age_seconds": 0.264064,
+    "task_seconds": 0.07244559799437411,
+    "room_seconds": 0.007038166004349478,
+    "user_fanout_seconds": 0.007726311989245005
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 361,
+    "recipients": 60,
+    "age_seconds": 0.086916,
+    "task_seconds": 0.036594525998225436,
+    "room_seconds": 0.005447960997116752,
+    "user_fanout_seconds": 0.007434993007336743
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 362,
+    "recipients": 60,
+    "age_seconds": 0.160258,
+    "task_seconds": 0.05766022400348447,
+    "room_seconds": 0.008752779991482385,
+    "user_fanout_seconds": 0.00843796000117436
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 363,
+    "recipients": 60,
+    "age_seconds": 0.071681,
+    "task_seconds": 0.048338705993955955,
+    "room_seconds": 0.005515765995369293,
+    "user_fanout_seconds": 0.0088704880035948
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 364,
+    "recipients": 60,
+    "age_seconds": 0.031975,
+    "task_seconds": 0.02725410700077191,
+    "room_seconds": 0.002943094994407147,
+    "user_fanout_seconds": 0.0042096790130017325
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 365,
+    "recipients": 60,
+    "age_seconds": 0.087257,
+    "task_seconds": 0.04747764799685683,
+    "room_seconds": 0.004511999009991996,
+    "user_fanout_seconds": 0.009985261989641003
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 366,
+    "recipients": 60,
+    "age_seconds": 0.040727,
+    "task_seconds": 0.029323244001716375,
+    "room_seconds": 0.0041583760030334815,
+    "user_fanout_seconds": 0.005066436002380215
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 367,
+    "recipients": 60,
+    "age_seconds": 0.047253,
+    "task_seconds": 0.039099592991988175,
+    "room_seconds": 0.0045593030081363395,
+    "user_fanout_seconds": 0.006325918991933577
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 368,
+    "recipients": 60,
+    "age_seconds": 0.028232,
+    "task_seconds": 0.026501257001655176,
+    "room_seconds": 0.002856388993677683,
+    "user_fanout_seconds": 0.0035462360101519153
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 369,
+    "recipients": 60,
+    "age_seconds": 0.077623,
+    "task_seconds": 0.031176422999124043,
+    "room_seconds": 0.004167270992184058,
+    "user_fanout_seconds": 0.0046586020034737885
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 370,
+    "recipients": 60,
+    "age_seconds": 0.03026,
+    "task_seconds": 0.024080262999632396,
+    "room_seconds": 0.0029578920075437054,
+    "user_fanout_seconds": 0.00378804600040894
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 371,
+    "recipients": 60,
+    "age_seconds": 0.069164,
+    "task_seconds": 0.03313394999713637,
+    "room_seconds": 0.0037577440089080483,
+    "user_fanout_seconds": 0.005835578995174728
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 372,
+    "recipients": 60,
+    "age_seconds": 0.030052,
+    "task_seconds": 0.024245174005045556,
+    "room_seconds": 0.00290488799510058,
+    "user_fanout_seconds": 0.004010660995845683
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 373,
+    "recipients": 60,
+    "age_seconds": 0.086948,
+    "task_seconds": 0.03528609000204597,
+    "room_seconds": 0.00376114399114158,
+    "user_fanout_seconds": 0.005780976003734395
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 374,
+    "recipients": 60,
+    "age_seconds": 0.055431,
+    "task_seconds": 0.0504194719978841,
+    "room_seconds": 0.005907084007048979,
+    "user_fanout_seconds": 0.008768468993366696
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 375,
+    "recipients": 60,
+    "age_seconds": 0.086505,
+    "task_seconds": 0.03534139398834668,
+    "room_seconds": 0.00441298600344453,
+    "user_fanout_seconds": 0.005721670997445472
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 376,
+    "recipients": 60,
+    "age_seconds": 0.076629,
+    "task_seconds": 0.028099922987166792,
+    "room_seconds": 0.0036508369958028197,
+    "user_fanout_seconds": 0.0047289070062106475
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 377,
+    "recipients": 60,
+    "age_seconds": 0.067417,
+    "task_seconds": 0.027265388998785056,
+    "room_seconds": 0.0032349120010621846,
+    "user_fanout_seconds": 0.004498095004237257
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 378,
+    "recipients": 60,
+    "age_seconds": 0.072986,
+    "task_seconds": 0.062246282992418855,
+    "room_seconds": 0.005096933993627317,
+    "user_fanout_seconds": 0.009478622014285065
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 379,
+    "recipients": 60,
+    "age_seconds": 0.075599,
+    "task_seconds": 0.026444135000929236,
+    "room_seconds": 0.0038149500032886863,
+    "user_fanout_seconds": 0.004045164998387918
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 380,
+    "recipients": 60,
+    "age_seconds": 0.082372,
+    "task_seconds": 0.028209551004692912,
+    "room_seconds": 0.003685242001665756,
+    "user_fanout_seconds": 0.005086033997940831
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 381,
+    "recipients": 60,
+    "age_seconds": 0.094774,
+    "task_seconds": 0.05818881701270584,
+    "room_seconds": 0.004685907988459803,
+    "user_fanout_seconds": 0.009794542012969032
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 382,
+    "recipients": 60,
+    "age_seconds": 0.058935,
+    "task_seconds": 0.04903751699021086,
+    "room_seconds": 0.006527128993184306,
+    "user_fanout_seconds": 0.007698005007114261
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 383,
+    "recipients": 60,
+    "age_seconds": 0.09231,
+    "task_seconds": 0.043632262997562066,
+    "room_seconds": 0.004908321992843412,
+    "user_fanout_seconds": 0.0074949920090148225
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 384,
+    "recipients": 60,
+    "age_seconds": 0.090306,
+    "task_seconds": 0.03742475599574391,
+    "room_seconds": 0.00451329599309247,
+    "user_fanout_seconds": 0.0066513360070530325
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 385,
+    "recipients": 60,
+    "age_seconds": 0.044229,
+    "task_seconds": 0.029194240996730514,
+    "room_seconds": 0.0038348550006048754,
+    "user_fanout_seconds": 0.0050306350021855906
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 386,
+    "recipients": 60,
+    "age_seconds": 0.157344,
+    "task_seconds": 0.049020060992916115,
+    "room_seconds": 0.005119340989040211,
+    "user_fanout_seconds": 0.012354922000668012
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 387,
+    "recipients": 60,
+    "age_seconds": 0.073657,
+    "task_seconds": 0.030152705003274605,
+    "room_seconds": 0.0038242540031205863,
+    "user_fanout_seconds": 0.00539625900273677
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 388,
+    "recipients": 60,
+    "age_seconds": 0.049819,
+    "task_seconds": 0.02924344499479048,
+    "room_seconds": 0.0036611429968615994,
+    "user_fanout_seconds": 0.005957996007055044
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 389,
+    "recipients": 60,
+    "age_seconds": 0.082088,
+    "task_seconds": 0.031213075999403372,
+    "room_seconds": 0.004332289012381807,
+    "user_fanout_seconds": 0.005409359000623226
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 390,
+    "recipients": 60,
+    "age_seconds": 0.091648,
+    "task_seconds": 0.028670007013715804,
+    "room_seconds": 0.0037651500024367124,
+    "user_fanout_seconds": 0.005267050990369171
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 391,
+    "recipients": 60,
+    "age_seconds": 0.077158,
+    "task_seconds": 0.02655476600921247,
+    "room_seconds": 0.0029788989922963083,
+    "user_fanout_seconds": 0.0038339550083037466
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 392,
+    "recipients": 60,
+    "age_seconds": 0.072388,
+    "task_seconds": 0.036875652003800496,
+    "room_seconds": 0.0038230539939831942,
+    "user_fanout_seconds": 0.007694612009800039
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 393,
+    "recipients": 60,
+    "age_seconds": 0.048482,
+    "task_seconds": 0.036788458994124085,
+    "room_seconds": 0.004488300008233637,
+    "user_fanout_seconds": 0.0065298359986627474
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 394,
+    "recipients": 60,
+    "age_seconds": 0.037895,
+    "task_seconds": 0.03595050299190916,
+    "room_seconds": 0.0039371629973175,
+    "user_fanout_seconds": 0.005779586004791781
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 395,
+    "recipients": 60,
+    "age_seconds": 0.05542,
+    "task_seconds": 0.037390299010439776,
+    "room_seconds": 0.006355225006700493,
+    "user_fanout_seconds": 0.006337222992442548
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 396,
+    "recipients": 60,
+    "age_seconds": 0.034559,
+    "task_seconds": 0.0267726890015183,
+    "room_seconds": 0.004040970001369715,
+    "user_fanout_seconds": 0.004106373991817236
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 397,
+    "recipients": 60,
+    "age_seconds": 0.067158,
+    "task_seconds": 0.048004008989664726,
+    "room_seconds": 0.007406495002214797,
+    "user_fanout_seconds": 0.011428063997300342
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 398,
+    "recipients": 60,
+    "age_seconds": 0.043202,
+    "task_seconds": 0.033096612998633645,
+    "room_seconds": 0.004671111993957311,
+    "user_fanout_seconds": 0.006090007009333931
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 399,
+    "recipients": 60,
+    "age_seconds": 0.040006,
+    "task_seconds": 0.051416237009107135,
+    "room_seconds": 0.0033819260133896023,
+    "user_fanout_seconds": 0.0071853799890959635
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 400,
+    "recipients": 60,
+    "age_seconds": 0.085452,
+    "task_seconds": 0.02868941800261382,
+    "room_seconds": 0.0038264559989329427,
+    "user_fanout_seconds": 0.005554470990318805
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 401,
+    "recipients": 60,
+    "age_seconds": 0.069652,
+    "task_seconds": 0.032990288993460126,
+    "room_seconds": 0.0041183730063494295,
+    "user_fanout_seconds": 0.006081503990571946
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 402,
+    "recipients": 60,
+    "age_seconds": 0.06111,
+    "task_seconds": 0.027482723991852254,
+    "room_seconds": 0.0032073129987111315,
+    "user_fanout_seconds": 0.006039701009285636
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 403,
+    "recipients": 60,
+    "age_seconds": 0.037138,
+    "task_seconds": 0.035506557003827766,
+    "room_seconds": 0.003184311994118616,
+    "user_fanout_seconds": 0.007298683995031752
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 404,
+    "recipients": 60,
+    "age_seconds": 0.031648,
+    "task_seconds": 0.030162302005919628,
+    "room_seconds": 0.0030979059956735,
+    "user_fanout_seconds": 0.00595929499831982
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 405,
+    "recipients": 60,
+    "age_seconds": 0.029844,
+    "task_seconds": 0.027198905998375267,
+    "room_seconds": 0.0030836040095891804,
+    "user_fanout_seconds": 0.004011466997326352
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 406,
+    "recipients": 60,
+    "age_seconds": 0.053823,
+    "task_seconds": 0.03296328800206538,
+    "room_seconds": 0.00401916699775029,
+    "user_fanout_seconds": 0.0049496280116727576
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 407,
+    "recipients": 60,
+    "age_seconds": 0.064879,
+    "task_seconds": 0.04559352601063438,
+    "room_seconds": 0.007454295002389699,
+    "user_fanout_seconds": 0.00721617900126148
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 408,
+    "recipients": 60,
+    "age_seconds": 0.052813,
+    "task_seconds": 0.033270509011344984,
+    "room_seconds": 0.004817419991013594,
+    "user_fanout_seconds": 0.006063602006179281
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 409,
+    "recipients": 60,
+    "age_seconds": 0.062375,
+    "task_seconds": 0.039321713004028425,
+    "room_seconds": 0.005312752997269854,
+    "user_fanout_seconds": 0.009824753011344
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 410,
+    "recipients": 60,
+    "age_seconds": 0.086055,
+    "task_seconds": 0.03537745100038592,
+    "room_seconds": 0.005178744992008433,
+    "user_fanout_seconds": 0.004838321008719504
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 411,
+    "recipients": 60,
+    "age_seconds": 0.079275,
+    "task_seconds": 0.03309559900662862,
+    "room_seconds": 0.0042441819969099015,
+    "user_fanout_seconds": 0.005065735997050069
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 412,
+    "recipients": 60,
+    "age_seconds": 0.081944,
+    "task_seconds": 0.029714474992942996,
+    "room_seconds": 0.002944295003544539,
+    "user_fanout_seconds": 0.004241282003931701
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 413,
+    "recipients": 60,
+    "age_seconds": 0.042849,
+    "task_seconds": 0.03396715699636843,
+    "room_seconds": 0.004068569993251003,
+    "user_fanout_seconds": 0.006318220010143705
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 414,
+    "recipients": 60,
+    "age_seconds": 0.045637,
+    "task_seconds": 0.038503157993545756,
+    "room_seconds": 0.004201278992695734,
+    "user_fanout_seconds": 0.007633007000549696
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 415,
+    "recipients": 60,
+    "age_seconds": 0.060631,
+    "task_seconds": 0.053265339010977186,
+    "room_seconds": 0.00574898200284224,
+    "user_fanout_seconds": 0.01062300599005539
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 416,
+    "recipients": 60,
+    "age_seconds": 0.077268,
+    "task_seconds": 0.04319337000197265,
+    "room_seconds": 0.0069286600046325475,
+    "user_fanout_seconds": 0.007475596998119727
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 417,
+    "recipients": 60,
+    "age_seconds": 0.079505,
+    "task_seconds": 0.027402317995438352,
+    "room_seconds": 0.0034351280046394095,
+    "user_fanout_seconds": 0.003962561997468583
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 418,
+    "recipients": 60,
+    "age_seconds": 0.038402,
+    "task_seconds": 0.030420518000028096,
+    "room_seconds": 0.004415393006638624,
+    "user_fanout_seconds": 0.004503097996348515
+  },
+  {
+    "event": "chat.outbox.published",
+    "event_id": 419,
+    "recipients": 60,
+    "age_seconds": 0.047366,
+    "task_seconds": 0.04165446299884934,
+    "room_seconds": 0.004543300994555466,
+    "user_fanout_seconds": 0.006596138002350926
+  }
+]

@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "capacity_certified": false,
+  "profile": "mixed-chat-http-smoke",
+  "users": 120,
+  "sockets": 240,
+  "fixture_room_size": 60,
+  "connected_users_per_room": [
+    60,
+    60
+  ],
+  "seconds": 60,
+  "offered_http_rps": 10,
+  "http_expected": 600,
+  "load_started_at_unix": 1793297303.9626417,
+  "load_finished_at_unix": 1793297363.963867,
+  "http_offered": 600,
+  "http_completed": 600,
+  "statuses": {
+    "200": 600
+  },
+  "generator_dropped": 0,
+  "durable_sends": 60,
+  "acks": 60,
+  "expected_deliveries": 7200,
+  "unique_deliveries": 7200,
+  "duplicates": 0,
+  "unexpected_recipients": 0,
+  "frame_errors": 0,
+  "max_received_frame_bytes": 66500,
+  "response_frame_budget_bytes": 1048576,
+  "http_ms": {
+    "p95": 150,
+    "p99": 196
+  },
+  "delivery_ms": {
+    "p95": 598,
+    "p99": 791
+  },
+  "delivery_by_socket_ms": {
+    "global": {
+      "count": 3600,
+      "p95": 557,
+      "p99": 758
+    },
+    "chat": {
+      "count": 3600,
+      "p95": 658,
+      "p99": 970
+    }
+  },
+  "generator": {
+    "schedule_delay_p99_ms": 6,
+    "cpu_seconds": 3.5210319,
+    "max_rss_kib": 53292
+  },
+  "passed_smoke": true
+}

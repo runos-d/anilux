@@ -41,6 +41,8 @@
 
 Медиа продолжены независимо: `inventory_media_page --describe` и bounded private FileField pages с keyset/watermark/status и 0..64MiB hashing/page. Четыре regression tests PASS: границы/cursor/new writes, hash budget, missing/invalid paths, exclusive manifest/checkout/symlink protection и отсутствие SQL в describe. Это подготовка migration inventory; JSON/exports/orphans, dual-read/write, live S3/CDN остаются открыты.
 
+- SQL продолжение: social.0039 покрывает unread scan; plain projections читают только viewer IDs, rich получает текущие accounts. 75 regression tests PASS (29,775с), MySQL EXPLAIN покрывающий, drift отсутствует. 120/4 API/60с повтор: HTTP 150/196мс, chat 598/791мс, 7200/7200; p95 500мс открыт. Точный unread всё ещё зависит от длины истории; это не готовая асинхронная счётчиковая проекция.
+
 ## Следующая работа
 
 1. Разделить CPU/DB connection setup/query/serializer/executor wait в post-publication pipeline на текущем профиле 120/4 API. Снизить chat p95/p99 до согласованного SLO, сохраняя все свежие D0031 checks; не заменять их JWT-only или TTL cache.

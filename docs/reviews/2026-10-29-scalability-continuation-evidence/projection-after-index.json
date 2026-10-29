@@ -1,0 +1,486 @@
+{
+  "records": 60,
+  "projected": 60,
+  "query_ms": [
+    0.26451800658833236,
+    12.873476996901445,
+    2.886596994358115,
+    6.402436993084848,
+    0.8619590080343187,
+    0.9419640118721873,
+    0.7791530078975484,
+    44.603938004001975
+  ],
+  "explain": [
+    [
+      [
+        1,
+        "SIMPLE",
+        "users_user",
+        null,
+        "ALL",
+        "PRIMARY",
+        null,
+        null,
+        null,
+        120,
+        5.0,
+        "Using where"
+      ]
+    ],
+    [
+      [
+        1,
+        "SIMPLE",
+        "social_chatevent",
+        null,
+        "const",
+        "PRIMARY",
+        "PRIMARY",
+        "8",
+        "const",
+        1,
+        100.0,
+        null
+      ],
+      [
+        1,
+        "SIMPLE",
+        "social_conversation",
+        null,
+        "const",
+        "PRIMARY",
+        "PRIMARY",
+        "8",
+        "const",
+        1,
+        100.0,
+        null
+      ],
+      [
+        1,
+        "SIMPLE",
+        "social_privatechat",
+        null,
+        "const",
+        "PRIMARY",
+        null,
+        null,
+        null,
+        1,
+        100.0,
+        "Impossible ON condition"
+      ],
+      [
+        1,
+        "SIMPLE",
+        "social_groupchat",
+        null,
+        "const",
+        "PRIMARY",
+        "PRIMARY",
+        "8",
+        "const",
+        1,
+        100.0,
+        null
+      ]
+    ],
+    [
+      [
+        1,
+        "SIMPLE",
+        "social_message",
+        null,
+        "const",
+        "PRIMARY,message_conversation_seq_unique,message_command_unique,social_mess_sender__12caae_idx,message_unread_scan",
+        "PRIMARY",
+        "8",
+        "const",
+        1,
+        100.0,
+        null
+      ],
+      [
+        1,
+        "SIMPLE",
+        "social_groupchat",
+        null,
+        "const",
+        "PRIMARY",
+        "PRIMARY",
+        "8",
+        "const",
+        1,
+        100.0,
+        null
+      ],
+      [
+        1,
+        "SIMPLE",
+        "social_privatechat",
+        null,
+        "const",
+        "PRIMARY",
+        null,
+        null,
+        null,
+        1,
+        100.0,
+        "Impossible ON condition"
+      ],
+      [
+        1,
+        "SIMPLE",
+        "users_user",
+        null,
+        "const",
+        "PRIMARY",
+        "PRIMARY",
+        "8",
+        "const",
+        1,
+        100.0,
+        null
+      ],
+      [
+        1,
+        "SIMPLE",
+        "T6",
+        null,
+        "const",
+        "PRIMARY",
+        null,
+        null,
+        null,
+        1,
+        100.0,
+        "Impossible ON condition"
+      ]
+    ],
+    [
+      [
+        1,
+        "SIMPLE",
+        "social_messagereadstatus",
+        null,
+        "ref",
+        "social_messagereadstatus_message_id_user_id_f7fea21c_uniq",
+        "social_messagereadstatus_message_id_user_id_f7fea21c_uniq",
+        "8",
+        "const",
+        1,
+        100.0,
+        null
+      ]
+    ],
+    [
+      [
+        1,
+        "SIMPLE",
+        "social_attachment",
+        null,
+        "ref",
+        "social_atta_message_8d56ba_idx",
+        "social_atta_message_8d56ba_idx",
+        "8",
+        "const",
+        1,
+        100.0,
+        null
+      ]
+    ],
+    [
+      [
+        1,
+        "SIMPLE",
+        "social_messageattachment",
+        null,
+        "ref",
+        "social_mess_message_d66f47_idx",
+        "social_mess_message_d66f47_idx",
+        "8",
+        "const",
+        1,
+        100.0,
+        "Using filesort"
+      ]
+    ],
+    [
+      [
+        1,
+        "PRIMARY",
+        "users_user",
+        null,
+        "ALL",
+        "PRIMARY",
+        null,
+        null,
+        null,
+        120,
+        5.0,
+        "Using where"
+      ],
+      [
+        1,
+        "PRIMARY",
+        "<subquery7>",
+        null,
+        "eq_ref",
+        "<auto_distinct_key>",
+        "<auto_distinct_key>",
+        "9",
+        "scalability_lab.users_user.id",
+        1,
+        100.0,
+        "Using where; Not exists"
+      ],
+      [
+        7,
+        "MATERIALIZED",
+        "U0",
+        null,
+        "ref",
+        "social_chatban_chat_id_user_id_ef7d201e_uniq,social_chatban_user_id_6c67d3d7_fk_users_user_id,social_chat_chat_id_883dd6_idx,social_chat_until_d_2fab5c_idx",
+        "social_chatban_chat_id_user_id_ef7d201e_uniq",
+        "8",
+        "const",
+        1,
+        100.0,
+        "Using where"
+      ],
+      [
+        8,
+        "DEPENDENT SUBQUERY",
+        "U0",
+        null,
+        "eq_ref",
+        "social_chatmember_user_id_chat_id_38f8436c_uniq,social_chatmember_chat_id_7ab04c60_fk,social_chat_user_id_325a71_idx",
+        "social_chatmember_user_id_chat_id_38f8436c_uniq",
+        "16",
+        "scalability_lab.users_user.id,const",
+        1,
+        100.0,
+        null
+      ],
+      [
+        6,
+        "DEPENDENT SUBQUERY",
+        "U0",
+        null,
+        "eq_ref",
+        "social_chatmember_user_id_chat_id_38f8436c_uniq,social_chatmember_chat_id_7ab04c60_fk,social_chat_user_id_325a71_idx",
+        "social_chatmember_user_id_chat_id_38f8436c_uniq",
+        "16",
+        "scalability_lab.users_user.id,const",
+        1,
+        100.0,
+        null
+      ],
+      [
+        3,
+        "DEPENDENT SUBQUERY",
+        "V0",
+        null,
+        "ref",
+        "message_conversation_seq_unique,message_command_unique,social_message_seq_2211a35d,message_unread_scan",
+        "message_unread_scan",
+        "9",
+        "const,const",
+        357,
+        30.0,
+        "Using where; Using index"
+      ],
+      [
+        3,
+        "DEPENDENT SUBQUERY",
+        "<subquery5>",
+        null,
+        "eq_ref",
+        "<auto_distinct_key>",
+        "<auto_distinct_key>",
+        "18",
+        "scalability_lab.users_user.id,scalability_lab.V0.id",
+        1,
+        100.0,
+        "Using where; Not exists"
+      ],
+      [
+        5,
+        "MATERIALIZED",
+        "U1",
+        null,
+        "ref",
+        "social_messagereadstatus_message_id_user_id_f7fea21c_uniq,social_reads_user_msg_idx",
+        "social_reads_user_msg_idx",
+        "8",
+        "scalability_lab.users_user.id",
+        1,
+        100.0,
+        "Using index"
+      ],
+      [
+        4,
+        "DEPENDENT SUBQUERY",
+        "U0",
+        null,
+        "eq_ref",
+        "conversation_user_unique,social_conversationuserstate_user_id_4746bec3_fk_users_user_id",
+        "conversation_user_unique",
+        "16",
+        "const,scalability_lab.users_user.id",
+        1,
+        100.0,
+        null
+      ],
+      [
+        2,
+        "DEPENDENT SUBQUERY",
+        "U0",
+        null,
+        "eq_ref",
+        "conversation_user_unique,social_conversationuserstate_user_id_4746bec3_fk_users_user_id",
+        "conversation_user_unique",
+        "16",
+        "const,scalability_lab.users_user.id",
+        1,
+        100.0,
+        null
+      ]
+    ]
+  ],
+  "profile": [
+    {
+      "function": "/app/apps/social/application/live_projection.py:129:project_records",
+      "calls": 1,
+      "self_ms": 0.379925,
+      "cum_ms": 118.77309100000001
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/django/db/models/query.py:371:__iter__",
+      "calls": 14,
+      "self_ms": 0.0223,
+      "cum_ms": 106.640963
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/django/db/models/query.py:1952:_fetch_all",
+      "calls": 20,
+      "self_ms": 0.180308,
+      "cum_ms": 106.62466300000001
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/django/db/models/sql/compiler.py:1593:execute_sql",
+      "calls": 7,
+      "self_ms": 0.11960900000000001,
+      "cum_ms": 95.925836
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/django/db/backends/utils.py:78:execute",
+      "calls": 8,
+      "self_ms": 0.023,
+      "cum_ms": 70.09037400000001
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/django/db/backends/utils.py:88:_execute_with_wrappers",
+      "calls": 8,
+      "self_ms": 0.048204000000000004,
+      "cum_ms": 70.067374
+    },
+    {
+      "function": "/app/core/telemetry.py:161:sql_timing",
+      "calls": 8,
+      "self_ms": 0.091909,
+      "cum_ms": 70.01917
+    },
+    {
+      "function": "/probe.py:11:timing",
+      "calls": 8,
+      "self_ms": 0.099003,
+      "cum_ms": 69.907361
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/pymysql/cursors.py:150:execute",
+      "calls": 9,
+      "self_ms": 0.032404,
+      "cum_ms": 69.86586
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/django/db/backends/utils.py:94:_execute",
+      "calls": 8,
+      "self_ms": 0.045603000000000005,
+      "cum_ms": 69.58534100000001
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/django/db/backends/mysql/base.py:73:execute",
+      "calls": 8,
+      "self_ms": 0.012302,
+      "cum_ms": 69.53403800000001
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/pymysql/cursors.py:332:_query",
+      "calls": 9,
+      "self_ms": 0.033100000000000004,
+      "cum_ms": 69.393227
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/pymysql/connections.py:575:query",
+      "calls": 9,
+      "self_ms": 0.045905,
+      "cum_ms": 69.330623
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/pymysql/connections.py:851:_read_query_result",
+      "calls": 9,
+      "self_ms": 0.038002,
+      "cum_ms": 68.121639
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/pymysql/connections.py:1288:read",
+      "calls": 9,
+      "self_ms": 0.052302,
+      "cum_ms": 68.06783700000001
+    },
+    {
+      "function": "/app/apps/social/application/live_projection.py:79:plain_projections",
+      "calls": 1,
+      "self_ms": 0.538533,
+      "cum_ms": 58.14596
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/pymysql/connections.py:763:_read_packet",
+      "calls": 477,
+      "self_ms": 1.703912,
+      "cum_ms": 56.747562
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/django/db/models/query.py:87:__iter__",
+      "calls": 68,
+      "self_ms": 0.256621,
+      "cum_ms": 56.212332
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/django/db/models/sql/compiler.py:1563:results_iter",
+      "calls": 7,
+      "self_ms": 0.052602,
+      "cum_ms": 50.188119
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/pymysql/connections.py:813:_read_bytes",
+      "calls": 954,
+      "self_ms": 0.625146,
+      "cum_ms": 49.476274000000004
+    },
+    {
+      "function": "~:0:<method 'read' of '_io.BufferedReader' objects>",
+      "calls": 954,
+      "self_ms": 0.41452900000000004,
+      "cum_ms": 48.766322
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/django/db/models/query.py:203:__iter__",
+      "calls": 61,
+      "self_ms": 0.058304,
+      "cum_ms": 48.585911
+    }
+  ]
+}

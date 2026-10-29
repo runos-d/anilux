@@ -782,6 +782,7 @@ class Message(UUIDv8Model):
             models.Index(fields=['chat', 'seq']),
             models.Index(fields=['private_chat', 'seq']),
             models.Index(fields=['sender', 'created_at']),
+            models.Index(fields=['conversation', 'is_deleted', 'seq', 'sender', 'created_at'], name='message_unread_scan'),
             models.Index(fields=['chat', 'topic', 'created_at']),
             models.Index(
                 fields=['private_chat', 'created_at'],

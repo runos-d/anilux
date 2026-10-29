@@ -76,9 +76,9 @@ def plain_message(message):
         and not message.attachments.all() and not message.content_attachments.all())
 
 
-def plain_projections(event, message, users):
+def plain_projections(event, message, user_ids):
     chat = event.conversation.chat
-    candidates = User.objects.filter(pk__in={user.pk for user in users}, is_active=True)
+    candidates = User.objects.filter(pk__in=user_ids, is_active=True)
     state = ConversationUserState.objects.filter(conversation_id=event.conversation_id, user_id=OuterRef('pk'))
     candidates = candidates.annotate(projection_cleared=Coalesce(Subquery(state.values('cleared_through_seq')[:1]),
         Value(0), output_field=PositiveBigIntegerField()))
@@ -127,21 +127,25 @@ def plain_projections(event, message, users):
 
 
 def project_records(records):
-    users = {user.pk: user for user in User.objects.filter(pk__in={row.user_id for row in records}, is_active=True)}
+    # Plain DTOs only need viewer IDs. Loading complete accounts also decodes
+    # every profile/preferences JSON column for each delivery batch.
+    active_ids = set(User.objects.filter(pk__in={row.user_id for row in records}, is_active=True)
+                     .values_list('pk', flat=True))
     events = {event.pk: event for event in ChatEvent.objects.select_related(
         'conversation__private_chat', 'conversation__group_chat').filter(pk__in={row.event_id for row in records})}
     output = {row: None for row in records}
     for event_id, event in events.items():
-        wanted = {row.user_id for row in records if row.event_id == event_id} & set(event.recipients) & users.keys()
+        wanted = {row.user_id for row in records if row.event_id == event_id} & set(event.recipients) & active_ids
         message = None
         if event.kind == 'new_message' and event.conversation_id:
             message = Message.objects.select_related('sender', 'private_chat', 'chat', 'pinned_by').prefetch_related(
                 'read_statuses', 'attachments', 'content_attachments').filter(pk=(event.payload.get('message') or {}).get('id'),
                     conversation_id=event.conversation_id).first()
         if wanted and plain_message(message):
-            projected = plain_projections(event, message, [users[uid] for uid in wanted])
+            projected = plain_projections(event, message, wanted)
         else:
-            projected = {uid: service.event_for_user(event, users[uid]) for uid in wanted}
+            users = User.objects.filter(pk__in=wanted, is_active=True)
+            projected = {user.pk: service.event_for_user(event, user) for user in users}
         for uid in wanted:
             output[Projection(event_id, uid)] = projected.get(uid)
     return output

@@ -7,6 +7,7 @@ from datetime import timedelta
 from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
+from core.test_helpers import stream_body
 from django.test.utils import CaptureQueriesContext
 from django.db import connection
 from django.utils import timezone
@@ -82,7 +83,7 @@ class ChatExtensionsTests(TestCase):
         signed = private_file_url(attachment.file, request)
         response = anonymous.get(signed)
         self.assertEqual(200, response.status_code)
-        self.assertEqual(b'0123456789', b''.join(response.streaming_content))
+        self.assertEqual(b'0123456789', stream_body(response))
         self.assertEqual('private, no-store', response['Cache-Control'])
         for prefix in ('/media/', '/data/media/'):
             self.assertEqual(404, anonymous.get(prefix + attachment.file.name).status_code)
@@ -96,9 +97,9 @@ class ChatExtensionsTests(TestCase):
         path = chat_private_storage.url(attachment.file.name)
         response = self.client.get(path, HTTP_RANGE='bytes=2-4')
         self.assertEqual(206, response.status_code)
-        self.assertEqual(b'234', b''.join(response.streaming_content))
+        self.assertEqual(b'234', stream_body(response))
         response = self.client.get(path, HTTP_RANGE='bytes=-2')
-        self.assertEqual(b'89', b''.join(response.streaming_content))
+        self.assertEqual(b'89', stream_body(response))
         self.assertEqual(416, self.client.get(path, HTTP_RANGE='bytes=99-').status_code)
         self.assertEqual(403, self.client.get(path + '?ticket=wrong').status_code)
         self.client.force_authenticate(self.b)
@@ -121,7 +122,7 @@ class ChatExtensionsTests(TestCase):
         path = chat_private_storage.url(job.media.name)
         response = self.client.get(path)
         self.assertEqual(200, response.status_code)
-        self.assertEqual(b'planned', b''.join(response.streaming_content))
+        self.assertEqual(b'planned', stream_body(response))
         self.client.force_authenticate(self.b)
         self.assertEqual(404, self.client.get(path).status_code)
         self.assertEqual(404, self.client.get('/media/' + job.media.name).status_code)
@@ -528,7 +529,7 @@ class ChatExtensionsTests(TestCase):
         self.assertEqual(403, APIClient().get(expired).status_code)
         response = self.client.get(expired)
         self.assertEqual(200, response.status_code)
-        self.assertEqual(b'0123456789', b''.join(response.streaming_content))
+        self.assertEqual(b'0123456789', stream_body(response))
         self.client.force_authenticate(self.b)
         self.assertEqual(403, self.client.get(expired).status_code)
 

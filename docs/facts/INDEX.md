@@ -52,3 +52,4 @@ F0050,Исправлены узкие места повторного ревью
 F0051,Подготовка к 6000 активных пользователей пока не прошла смешанную нагрузку,"performance, realtime, verification",active
 F0052,Добавлен изолированный production-build стенд и ограниченная telemetry,"performance, verification, environment",active
 F0053,Холодные рекомендации не пересчитывают персональную библиотеку в HTTP,"performance, catalog, data-integrity, verification",active
+F0054,Приватные chat и post файлы передаются без полной ASGI буферизации,"media, performance, access-control, verification",active

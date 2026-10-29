@@ -2,6 +2,7 @@ import subprocess
 import sys
 from unittest.mock import patch
 from django.test import TestCase, SimpleTestCase
+from core.test_helpers import stream_body
 from rest_framework.test import APIClient
 from apps.anime.models import Anime, Franchise
 from apps.social.application.tests import make_user
@@ -102,7 +103,7 @@ class ChatVideoCacheTests(TestCase):
         client = APIClient()
         first = client.get(url, HTTP_RANGE='bytes=0-4')
         self.assertEqual(206, first.status_code)
-        self.assertEqual(b'video', b''.join(first.streaming_content))
+        self.assertEqual(b'video', stream_body(first))
         etag = first['ETag']
         self.assertEqual('private, no-cache, must-revalidate', first['Cache-Control'])
         response = client.get(url, HTTP_IF_NONE_MATCH=etag)

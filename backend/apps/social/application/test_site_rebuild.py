@@ -3,6 +3,7 @@ from io import BytesIO
 from unittest.mock import patch
 
 from django.test import TestCase
+from core.test_helpers import stream_body
 from PIL import Image
 from rest_framework.test import APIClient
 
@@ -271,7 +272,7 @@ class SiteRebuildTests(TestCase):
         url = response.data['media_files'][0]['url'].replace('http://testserver', '')
         result = self.client.get(url, HTTP_RANGE='bytes=0-9')
         self.assertEqual(result.status_code, 206)
-        self.assertEqual(len(b''.join(result.streaming_content)), 10)
+        self.assertEqual(len(stream_body(result)), 10)
         self.assertEqual(self.client.head(url).status_code, 200)
         self.assertEqual(self.client.get(url, HTTP_RANGE='bytes=999999-').status_code, 416)
         post = Post.objects.get(pk=pk)
@@ -432,7 +433,7 @@ class SiteRebuildTests(TestCase):
         response = self.client.patch(f'/api/social/posts/{post.pk}/', {'visibility':'private', 'version':1}, format='json')
         self.assertEqual(200, response.status_code, response.data)
         event = PostEvent.objects.get(post=post, kind='post_updated')
-        with patch('core.online_status.online_status.get_online_users', return_value=[{'user_id': self.reader.pk}]), \
+        with patch('core.online_status.online_status.get_online_ids', return_value=[self.reader.pk]), \
              patch('core.redis_client.redis_pubsub_manager._get_redis_client') as redis:
             deliver_post_event(str(event.pk))
             packet = json.loads(redis.return_value.pipeline.return_value.publish.call_args_list[0].args[1])

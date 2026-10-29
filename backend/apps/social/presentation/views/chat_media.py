@@ -1,11 +1,10 @@
 import mimetypes
 import hashlib
-import re
 from pathlib import Path, PurePosixPath
 
 from django.conf import settings
 from django.core import signing
-from django.http import FileResponse, StreamingHttpResponse, HttpResponse
+from django.http import HttpResponse
 from django.utils.http import content_disposition_header
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -16,6 +15,7 @@ from apps.social.infrastructure.models.social import Message, Attachment
 from apps.social.infrastructure.models.social_chat import ScheduledMessage
 from apps.social.infrastructure.chat_storage import chat_private_storage
 from apps.social.application import conversations as service
+from core.file_delivery import private_file_response
 
 
 def public_chat_file_denied(request, path=None):
@@ -68,52 +68,22 @@ def chat_media(request, name):
             continue
     if not permitted or not chat_private_storage.exists(name):
         raise NotFound('Файл недоступен')
-    file = chat_private_storage.open(name, 'rb')
-    size = file.size
+    physical = Path(chat_private_storage.path(name))
+    stat = physical.stat()
+    size = stat.st_size
     mime = mimetypes.guess_type(name)[0] or 'application/octet-stream'
     cache_control = 'private, no-store'
     etag = None
     if mime.startswith('video/'):
-        stat = Path(chat_private_storage.path(name)).stat()
         etag = '"' + hashlib.sha256(f'{name}:{size}:{stat.st_mtime_ns}'.encode()).hexdigest() + '"'
         cache_control = 'private, no-cache, must-revalidate'
         if etag in request.headers.get('If-None-Match', '').split(', ') or request.headers.get('If-None-Match') == '*':
-            file.close()
             return HttpResponse(status=304, headers={'ETag': etag, 'Cache-Control': cache_control, 'Accept-Ranges': 'bytes'})
     range_header = request.headers.get('Range')
     if etag and request.headers.get('If-Range') and request.headers['If-Range'] != etag:
         range_header = None
-    if range_header:
-        match = re.fullmatch(r'bytes=(\d*)-(\d*)', range_header)
-        if not match or not any(match.groups()) or not size:
-            file.close()
-            return HttpResponse(status=416, headers={'Content-Range': f'bytes */{size}'})
-        start, end = match.groups()
-        start, end = (int(start), min(int(end), size - 1) if end else size - 1) if start else (max(0, size - int(end)), size - 1)
-        if start >= size or end < start:
-            file.close()
-            return HttpResponse(status=416, headers={'Content-Range': f'bytes */{size}'})
-        file.seek(start)
-
-        def chunks():
-            remaining = end - start + 1
-            try:
-                while remaining:
-                    chunk = file.read(min(65536, remaining))
-                    if not chunk:
-                        break
-                    remaining -= len(chunk)
-                    yield chunk
-            finally:
-                file.close()
-
-        response = StreamingHttpResponse(chunks(), status=206, content_type=mime)
-        response['Content-Range'] = f'bytes {start}-{end}/{size}'
-        response['Content-Length'] = end - start + 1
-        response._resource_closers.append(file.close)
-    else:
-        response = FileResponse(file, content_type=mime)
-        response['Content-Length'] = size
+    response = private_file_response(physical, method=request.method, range_header=range_header,
+                                     size=size, content_type=mime, headers={})
     response['Content-Disposition'] = content_disposition_header(bool(request.query_params.get('download')) or mime in ('text/html', 'image/svg+xml'), path.name)
     response['Accept-Ranges'] = 'bytes'
     response['Cache-Control'] = cache_control

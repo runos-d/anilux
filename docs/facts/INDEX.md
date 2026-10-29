@@ -50,3 +50,4 @@ F0048,JWT отзывается вместе с серверной сессией
 F0049,Повторное ревью производительности 28 октября 2026,"performance, verification",active
 F0050,Исправлены узкие места повторного ревью и первая навигация Vite,"performance, frontend, realtime, verification, release",active
 F0051,Подготовка к 6000 активных пользователей пока не прошла смешанную нагрузку,"performance, realtime, verification",active
+F0052,Добавлен изолированный production-build стенд и ограниченная telemetry,"performance, verification, environment",active

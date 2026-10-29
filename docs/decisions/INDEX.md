@@ -29,3 +29,4 @@ D0029,Первая версия закрывает необязательные 
 D0030,Внешняя аналитика требует явного согласия и не использует идентификацию пользователя,"frontend, integrations, access-control, data-integrity, api-contracts",active
 D0031,Пакетировать текущие WS-проверки без кеширования решений доступа,"realtime, access-control, performance, api-contracts",active
 D0032,Переиспользовать неизменяемый TLS context MySQL без кеширования соединений,"performance, data-integrity, verification",active
+D0033,Ограниченные технические метрики включаются отдельно от продуктовой аналитики,"performance, verification, access-control",active

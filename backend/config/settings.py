@@ -112,6 +112,11 @@ MIDDLEWARE = [
     "config.middleware.SecurityResponseHeadersMiddleware",
 ]
 
+# Technical telemetry has no product analytics identifiers or request contents.
+OPERATIONAL_METRICS_ENABLED = env_flag('OPERATIONAL_METRICS_ENABLED', default=False)
+OPERATIONAL_METRICS_TOKEN = os.environ.get('OPERATIONAL_METRICS_TOKEN', '')
+OPERATIONAL_TRACE_SAMPLE_RATE = float(os.environ.get('OPERATIONAL_TRACE_SAMPLE_RATE', '0'))
+
 if DEBUG:
     MIDDLEWARE.append("config.middleware.AuthDebugMiddleware")
 
@@ -330,10 +335,11 @@ def redis_uri(database):
 CACHES = {
     'default': {
         'BACKEND': 'core.cache_backend.CircuitRedisCache',
-        'LOCATION': redis_uri(REDIS_DB + 1),
+        'LOCATION': os.environ.get('CACHE_REDIS_URL') or redis_uri(REDIS_DB + 1),
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            'PASSWORD': REDIS_PASSWORD if REDIS_PASSWORD else None,
+            **({} if os.environ.get('CACHE_REDIS_URL') else {'PASSWORD': REDIS_PASSWORD or None}),
+            'CONNECTION_POOL_KWARGS': {'max_connections': max(1, min(256, int(os.environ.get('CACHE_REDIS_MAX_CONNECTIONS', '32'))))},
             'SOCKET_CONNECT_TIMEOUT': 0.3,
             'SOCKET_TIMEOUT': 0.5,
             'RETRY_ON_TIMEOUT': False,
@@ -349,7 +355,7 @@ CHANNEL_LAYERS = {
         "CONFIG": {
             "group_expiry": max(120, int(os.environ.get('WS_GROUP_EXPIRY', '300'))),
             "hosts": [{
-                "address": redis_uri(0),
+                "address": os.environ.get('CHANNEL_REDIS_URL') or redis_uri(0),
                 "socket_timeout": 1,
                 "socket_connect_timeout": 1,
             }],
@@ -499,6 +505,7 @@ LOGGING = {
         },
     },
     "loggers": {
+        "core.telemetry": {"handlers": ["console"], "level": "INFO", "propagate": False},
         "django": {"handlers": ["console"], "level": "INFO"},
         "config.middleware": {"handlers": ["console"], "level": "DEBUG"},
         "apps.anime": {"handlers": ["console"], "level": "INFO"},

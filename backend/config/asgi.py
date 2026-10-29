@@ -5,6 +5,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 from django.conf import settings
 from core.asgi_limits import BoundedApplication
+from core.telemetry import OperationalTelemetry
 
 from config.ws_middleware import WebSocketCORSMiddleware
 
@@ -27,3 +28,5 @@ application = ProtocolTypeRouter({
     ),
 })
 application = BoundedApplication(application, settings.ASGI_HTTP_CONCURRENCY, settings.ASGI_WEBSOCKET_CONNECTIONS, settings.ASGI_WEBSOCKET_HANDSHAKES)
+application = OperationalTelemetry(application, enabled=settings.OPERATIONAL_METRICS_ENABLED,
+    token=settings.OPERATIONAL_METRICS_TOKEN, sample_rate=settings.OPERATIONAL_TRACE_SAMPLE_RATE)

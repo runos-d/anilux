@@ -160,7 +160,9 @@ class ConversationConsumer(AsyncJsonWebsocketConsumer):
             await self.send_json({'action': 'pong'})
             return
         try:
-            result = await self.execute(data)
+            from core.telemetry import ws_operation
+            with ws_operation('command'):
+                result = await self.execute(data)
             if result:
                 await self.send_json(result)
             elif action in ('get_messages', 'set_topic'):

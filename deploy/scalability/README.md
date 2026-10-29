@@ -73,6 +73,8 @@ Opt-in histogram `site_ws_phase_seconds` имеет только фиксиро�
 
 ## Reconnect/replay и более длинная проверка
 
+Для границы до публикации `operation="command",phase="work"` измеряет async ожидание execute, sync DB/транзакцию и on-commit публикацию (SQL/connection вложены с тем же operation). Mixed result отдельно сохраняет `ack_ms`: время от отправки команды генератором до ACK. Это позволяет отличать задержку команды/commit/producer от дальнейшей доставки; ACK не доказывает получение всеми адресатами.
+
 ```sh
 python tests/scalability/run_probe.py --profile reconnect-rich-replay
 python tests/scalability/run_probe.py --profile mixed-chat-http-smoke --users 120 --rate 10 --seconds 300 --soak

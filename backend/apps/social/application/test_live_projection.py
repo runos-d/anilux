@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from apps.users.infrastructure.models.users import User
-from apps.social.infrastructure.models.social import GroupChat, PrivateChat, ChatMember, Message, MessageAttachment, Post
+from apps.social.infrastructure.models.social import GroupChat, PrivateChat, ChatMember, Message, MessageAttachment, MessageReadStatus, Post
 from apps.social.infrastructure.models.social_chat import ChatBan
 from apps.social.infrastructure.models.conversation import ChatEvent, ConversationUserState
 from apps.social.application import conversations as service
@@ -30,7 +30,7 @@ class LiveProjectionTests(TestCase):
         self.assertEqual(project_records(set(expected)), expected)
         return expected
 
-    def test_sixteen_current_plain_projections_use_seven_queries(self):
+    def test_sixteen_current_plain_projections_have_a_bounded_query_budget(self):
         event, _ = self.event()
         expected = self.assert_matches(event, self.users)
         with self.assertNumQueries(7):
@@ -103,3 +103,31 @@ class LiveProjectionTests(TestCase):
         post=Post.objects.create(author=self.a,text='Private post',visibility='private',status='published')
         MessageAttachment.objects.create(message=message,content_type='post',object_id=post.pk)
         self.assert_matches(event,[self.a,self.b])
+
+    def test_current_counts_cover_other_senders_self_receipts_and_different_clear_bounds(self):
+        messages = [service.send_message(self.group, self.users[i % 3], {'text': f'Count {i}'})[0]
+                    for i in range(10)]
+        event = ChatEvent.objects.select_related('conversation__group_chat', 'conversation__private_chat').get(
+            kind='new_message', payload__message__id=messages[-1].pk)
+        MessageReadStatus.objects.bulk_create([MessageReadStatus(message=message, user=user)
+            for user in self.users[:4] for message in messages[:5]])
+        for user in self.users[4:8]:
+            ConversationUserState.objects.create(conversation=event.conversation, user=user,
+                                                cleared_through_seq=messages[2].seq)
+        self.assert_matches(event, self.users)
+        # More than four distinct windows falls back to bounded correlated SQL.
+        for index, user in enumerate(self.users[8:13]):
+            ConversationUserState.objects.create(conversation=event.conversation, user=user,
+                                                cleared_through_seq=messages[index].seq)
+        self.assert_matches(event, self.users)
+
+    def test_current_counts_respect_hidden_history_join_dates(self):
+        self.group.history_visible = False
+        self.group.save(update_fields=['history_visible'])
+        event, message = self.event()
+        ChatMember.objects.filter(chat=self.group, user__in=self.users[2:]).update(
+            joined_at=message.created_at-timedelta(seconds=1))
+        ChatMember.objects.filter(chat=self.group, user=self.b).update(
+            joined_at=message.created_at+timedelta(seconds=1))
+        MessageReadStatus.objects.create(message=message, user=self.c)
+        self.assert_matches(event, self.users)

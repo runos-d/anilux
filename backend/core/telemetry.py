@@ -22,7 +22,7 @@ DOMAINS = frozenset(('anime', 'users', 'social', 'playlists', 'notifications',
 TRACEPARENT = re.compile(r'^00-([0-9a-f]{32})-([0-9a-f]{16})-[0-9a-f]{2}$')
 current_domain = ContextVar('operational_domain', default='other')
 current_ws_operation = ContextVar('operational_ws_operation', default=None)
-WS_OPERATIONS = frozenset(('session', 'chat_acl', 'projection', 'room', 'global'))
+WS_OPERATIONS = frozenset(('session', 'chat_acl', 'projection', 'room', 'global', 'command'))
 WS_PHASES = frozenset(('batch_wait', 'executor_wait', 'work', 'connection', 'sql',
                        'prepare', 'serialize', 'send', 'publication_to_handler'))
 
@@ -127,6 +127,16 @@ def ws_phase(operation, phase):
     finally:
         if started is not None:
             process_registry.observe_ws_phase(operation, phase, time.monotonic() - started)
+
+
+@contextmanager
+def ws_operation(operation):
+    token = current_ws_operation.set(operation)
+    try:
+        with ws_phase(operation, 'work'):
+            yield
+    finally:
+        current_ws_operation.reset(token)
 
 
 async def measured_database_call(function, operation, *args):

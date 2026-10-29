@@ -12,3 +12,5 @@ Transport telemetry включается env-флагом, process-local histogr
 SQL wrapper сохраняет только count/duration/errors, без текста/params; один wrapper на переоткрываемый connection object. WS batch observation имеет конечные session/ACL/projection labels и не переиспользует решения между проверками. Outbox phase logs различают публикацию в transport и клиентскую доставку.
 
 Post-publication histogram разделяет transport/consumer wait, batch wait, executor, connection setup, SQL, DTO preparation, serialization и ASGI send. Только фиксированные labels, без IDs/payload; внутренний timestamp не отправляется клиенту. Вложенные spans не суммируются; wall-clock между hosts требует синхронизации. Client latency остаётся отдельным критерием.
+
+Command work включает execute, DB transaction и on-commit producer; SQL/connection имеют фиксированный command label. Generator публикует отдельный ACK histogram, чтобы не приписывать pre-publication хвост reader-у. Неуспешные end-to-end эксперименты сохраняются даже при улучшении SQL microprobe; неподтверждённые reader изменения откатываются.

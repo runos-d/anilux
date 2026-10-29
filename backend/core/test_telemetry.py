@@ -103,6 +103,22 @@ class TelemetryTests(IsolatedAsyncioTestCase):
             observe_publication({'_published_at': time.time() - .1}, 'room')
         self.assertEqual(registry.ws_phases[('room', 'publication_to_handler')][0], 1)
 
+    @override_settings(OPERATIONAL_METRICS_ENABLED=True)
+    def test_command_context_restores_parent_when_operation_fails(self):
+        from core.telemetry import current_ws_operation, ws_operation
+        registry = Registry()
+        token = current_ws_operation.set('projection')
+        try:
+            with patch('core.telemetry.process_registry', registry):
+                with self.assertRaises(RuntimeError), ws_operation('command'):
+                    self.assertEqual(current_ws_operation.get(), 'command')
+                    raise RuntimeError('private command')
+            self.assertEqual(current_ws_operation.get(), 'projection')
+        finally:
+            current_ws_operation.reset(token)
+        self.assertEqual(registry.ws_phases[('command', 'work')][0], 1)
+        self.assertNotIn(b'private', registry.render())
+
     def test_sql_wrapper_is_attached_once_and_never_retains_private_sql(self):
         from types import SimpleNamespace
         from core.telemetry import instrument_connection, sql_timing, process_registry

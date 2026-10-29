@@ -50,3 +50,5 @@
 3. Продолжить открытые реализации этапов 3/5/6 из таблицы. Без внешних host/storage провести только локальные совместимые изменения; S3/CDN, DB/broker HA и большие load stages принять на отдельной инфраструктуре.
 
 Проверено дополнительно: функциональные reconnect/5 offline messages/4 rich replies/idempotent duplicate/current edit-delete replay/cross-room denial. Генератор теперь допускает bounded 1..1800с только с `--soak`, отдельно отражает предложенный SLO, проваливает duplicates/closures. Длительный acceptance ещё требует выполненного прогона; mass reconnect/большие rich rooms остаются открыты.
+
+Дальнейшие grouped unread ORM/raw SQL experiments снижали microprobe SQL, но не полный mixed профиль: p95 2,28–3,05с, высокий ACK/CPU tails. Они сохранены и **откачены**; retained reader/индекс `a34ba3b`. Добавлены command phase/ACK p95/p99 и equivalence разных отправителей/receipts/clear/join. На возвращённом коде 19 checks PASS (13,295с). Причина оставшегося end-to-end хвоста ещё не доказана; p95 ≤500мс не заявлен.

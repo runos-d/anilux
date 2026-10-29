@@ -1,0 +1,5 @@
+{
+  "retained": false,
+  "reason": "Lower SQL microprobe cost did not improve the complete mixed profile. Reverted grouped reader; retained covering index/current explicit ACL path. CPU/ACK tails remain unresolved; host/history/process placement vary.",
+  "security_equivalence_checks_passed": true
+}

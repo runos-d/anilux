@@ -1,0 +1,216 @@
+{
+  "capacity_certified": false,
+  "phase_intervals_are_nested": true,
+  "sampled_seconds": 57.28960943222046,
+  "api_replicas": 4,
+  "phases": [
+    {
+      "operation": "chat_acl",
+      "phase": "batch_wait",
+      "observations": 3419,
+      "mean_ms": 33.95666954188603,
+      "p95_bucket_upper_ms": 100.0,
+      "p99_bucket_upper_ms": 100.0
+    },
+    {
+      "operation": "chat_acl",
+      "phase": "connection",
+      "observations": 113,
+      "mean_ms": 56.719811487581325,
+      "p95_bucket_upper_ms": 250.0,
+      "p99_bucket_upper_ms": 500.0
+    },
+    {
+      "operation": "chat_acl",
+      "phase": "executor_wait",
+      "observations": 114,
+      "mean_ms": 3.1870868332222466,
+      "p95_bucket_upper_ms": 25.0,
+      "p99_bucket_upper_ms": 25.0
+    },
+    {
+      "operation": "chat_acl",
+      "phase": "sql",
+      "observations": 564,
+      "mean_ms": 7.294570477412071,
+      "p95_bucket_upper_ms": 25.0,
+      "p99_bucket_upper_ms": 100.0
+    },
+    {
+      "operation": "chat_acl",
+      "phase": "work",
+      "observations": 113,
+      "mean_ms": 93.99372589322677,
+      "p95_bucket_upper_ms": 500.0,
+      "p99_bucket_upper_ms": 1000.0
+    },
+    {
+      "operation": "command",
+      "phase": "connection",
+      "observations": 56,
+      "mean_ms": 39.793565928318586,
+      "p95_bucket_upper_ms": 250.0,
+      "p99_bucket_upper_ms": 250.0
+    },
+    {
+      "operation": "command",
+      "phase": "sql",
+      "observations": 2356,
+      "mean_ms": 4.416230002086653,
+      "p95_bucket_upper_ms": 25.0,
+      "p99_bucket_upper_ms": 50.0
+    },
+    {
+      "operation": "command",
+      "phase": "work",
+      "observations": 57,
+      "mean_ms": 392.3366914565569,
+      "p95_bucket_upper_ms": 1000.0,
+      "p99_bucket_upper_ms": 2500.0
+    },
+    {
+      "operation": "global",
+      "phase": "publication_to_handler",
+      "observations": 3420,
+      "mean_ms": 54.17163595121506,
+      "p95_bucket_upper_ms": 250.0,
+      "p99_bucket_upper_ms": 500.0
+    },
+    {
+      "operation": "global",
+      "phase": "send",
+      "observations": 3360,
+      "mean_ms": 0.16698681173303545,
+      "p95_bucket_upper_ms": 10.0,
+      "p99_bucket_upper_ms": 10.0
+    },
+    {
+      "operation": "global",
+      "phase": "serialize",
+      "observations": 3360,
+      "mean_ms": 0.07378575787914174,
+      "p95_bucket_upper_ms": 10.0,
+      "p99_bucket_upper_ms": 10.0
+    },
+    {
+      "operation": "projection",
+      "phase": "batch_wait",
+      "observations": 6780,
+      "mean_ms": 52.0033381549937,
+      "p95_bucket_upper_ms": 250.0,
+      "p99_bucket_upper_ms": 500.0
+    },
+    {
+      "operation": "projection",
+      "phase": "connection",
+      "observations": 202,
+      "mean_ms": 33.000103163413044,
+      "p95_bucket_upper_ms": 250.0,
+      "p99_bucket_upper_ms": 250.0
+    },
+    {
+      "operation": "projection",
+      "phase": "executor_wait",
+      "observations": 203,
+      "mean_ms": 2.6234653156154373,
+      "p95_bucket_upper_ms": 10.0,
+      "p99_bucket_upper_ms": 25.0
+    },
+    {
+      "operation": "projection",
+      "phase": "prepare",
+      "observations": 218,
+      "mean_ms": 2.094891481822433,
+      "p95_bucket_upper_ms": 10.0,
+      "p99_bucket_upper_ms": 25.0
+    },
+    {
+      "operation": "projection",
+      "phase": "serialize",
+      "observations": 218,
+      "mean_ms": 1.6975083339392258,
+      "p95_bucket_upper_ms": 10.0,
+      "p99_bucket_upper_ms": 25.0
+    },
+    {
+      "operation": "projection",
+      "phase": "sql",
+      "observations": 1917,
+      "mean_ms": 4.9419477016829125,
+      "p95_bucket_upper_ms": 25.0,
+      "p99_bucket_upper_ms": 50.0
+    },
+    {
+      "operation": "projection",
+      "phase": "work",
+      "observations": 201,
+      "mean_ms": 135.82765534313094,
+      "p95_bucket_upper_ms": 500.0,
+      "p99_bucket_upper_ms": 500.0
+    },
+    {
+      "operation": "room",
+      "phase": "publication_to_handler",
+      "observations": 3419,
+      "mean_ms": 104.6310777237416,
+      "p95_bucket_upper_ms": 500.0,
+      "p99_bucket_upper_ms": 1000.0
+    },
+    {
+      "operation": "room",
+      "phase": "send",
+      "observations": 3359,
+      "mean_ms": 0.4429456296700033,
+      "p95_bucket_upper_ms": 10.0,
+      "p99_bucket_upper_ms": 10.0
+    },
+    {
+      "operation": "room",
+      "phase": "serialize",
+      "observations": 3705,
+      "mean_ms": 0.07935025148419224,
+      "p95_bucket_upper_ms": 10.0,
+      "p99_bucket_upper_ms": 10.0
+    },
+    {
+      "operation": "session",
+      "phase": "batch_wait",
+      "observations": 7958,
+      "mean_ms": 24.056989736241576,
+      "p95_bucket_upper_ms": 100.0,
+      "p99_bucket_upper_ms": 250.0
+    },
+    {
+      "operation": "session",
+      "phase": "connection",
+      "observations": 925,
+      "mean_ms": 28.589626508277235,
+      "p95_bucket_upper_ms": 250.0,
+      "p99_bucket_upper_ms": 250.0
+    },
+    {
+      "operation": "session",
+      "phase": "executor_wait",
+      "observations": 927,
+      "mean_ms": 1.7647357975464804,
+      "p95_bucket_upper_ms": 10.0,
+      "p99_bucket_upper_ms": 25.0
+    },
+    {
+      "operation": "session",
+      "phase": "sql",
+      "observations": 2763,
+      "mean_ms": 3.2262807100062174,
+      "p95_bucket_upper_ms": 25.0,
+      "p99_bucket_upper_ms": 25.0
+    },
+    {
+      "operation": "session",
+      "phase": "work",
+      "observations": 925,
+      "mean_ms": 46.401964830001816,
+      "p95_bucket_upper_ms": 250.0,
+      "p99_bucket_upper_ms": 250.0
+    }
+  ]
+}

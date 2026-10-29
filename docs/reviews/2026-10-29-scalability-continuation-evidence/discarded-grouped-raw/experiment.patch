@@ -1,0 +1,100 @@
+diff --git a/backend/apps/social/application/live_projection.py b/backend/apps/social/application/live_projection.py
+index 3192f24..d66df7a 100644
+--- a/backend/apps/social/application/live_projection.py
++++ b/backend/apps/social/application/live_projection.py
+@@ -9,13 +9,14 @@ from dataclasses import dataclass
+ from weakref import WeakKeyDictionary
+ 
+ from channels.db import database_sync_to_async
++from django.db import connection
+ from django.db.models import Count, Exists, OuterRef, PositiveBigIntegerField, Q, Subquery, Value
+ from django.db.models.functions import Coalesce
+ from django.utils import timezone
+ 
+ from apps.social.application import conversations as service
+ from apps.social.infrastructure.models.conversation import ChatEvent, ConversationUserState
+-from apps.social.infrastructure.models.social import ChatMember, GroupChat, PrivateChat, Message
++from apps.social.infrastructure.models.social import ChatMember, GroupChat, PrivateChat, Message, MessageReadStatus
+ from apps.social.infrastructure.models.social_chat import ChatBan
+ from apps.users.infrastructure.models.users import User
+ from core.socket_auth import SocketAuthBatcher
+@@ -76,6 +77,48 @@ def plain_message(message):
+         and not message.attachments.all() and not message.content_attachments.all())
+ 
+ 
++def grouped_unread(conversation_id, rows, hidden_history):
++    """Scan common visibility windows once, instead of once per viewer.
++
++    Each UNION statement sees message totals and receipts in the same SQL
++    snapshot. Output is bounded by viewer IDs + one bucket for other senders.
++    Many different clear/join bounds retain the general correlated reader.
++    """
++    groups = {}
++    for row in rows:
++        key = (row['projection_cleared'], row.get('projection_joined') if hidden_history else None)
++        groups.setdefault(key, []).append(row['pk'])
++    if len(groups) > 4:
++        return None
++    output = {}
++    for (cleared, joined), viewers in groups.items():
++        # This fixed parameterized query avoids repeated ORM UNION compilation
++        # in every fanout batch. Only model table identifiers enter SQL text;
++        # viewer IDs/bounds are parameters from the current primary ACL query.
++        messages = connection.ops.quote_name(Message._meta.db_table)
++        receipts = connection.ops.quote_name(MessageReadStatus._meta.db_table)
++        placeholders = ','.join(['%s'] * len(viewers))
++        scope = 'm.conversation_id=%s AND m.is_deleted=%s AND m.seq>%s'
++        bounds = [conversation_id, False, cleared]
++        if joined is not None:
++            scope += ' AND m.created_at>=%s'
++            bounds.append(connection.ops.adapt_datetimefield_value(joined))
++        sql = f'''SELECT CASE WHEN m.sender_id IN ({placeholders}) THEN m.sender_id ELSE 0 END AS who,
++                          COUNT(*), 0 FROM {messages} m WHERE {scope} GROUP BY who
++                  UNION ALL SELECT r.user_id, COUNT(*), 1 FROM {receipts} r
++                  JOIN {messages} m ON m.id=r.message_id
++                  WHERE r.user_id IN ({placeholders}) AND {scope} AND m.sender_id<>r.user_id
++                  GROUP BY r.user_id'''
++        by_sender, by_reader = {}, {}
++        with connection.cursor() as cursor:
++            cursor.execute(sql, [*viewers, *bounds, *viewers, *bounds])
++            for uid, count, source in cursor.fetchall():
++                (by_sender if source == 0 else by_reader)[uid] = count
++        total = sum(by_sender.values())
++        output.update({uid: total - by_sender.get(uid, 0) - by_reader.get(uid, 0) for uid in viewers})
++    return output
++
++
+ def plain_projections(event, message, user_ids):
+     chat = event.conversation.chat
+     candidates = User.objects.filter(pk__in=user_ids, is_active=True)
+@@ -95,16 +138,23 @@ def plain_projections(event, message, user_ids):
+         candidates = candidates.filter(membership)
+     else:
+         candidates = candidates.filter(pk__in=(chat.user1_id, chat.user2_id))
+-    unread = Message.objects.filter(conversation_id=event.conversation_id, is_deleted=False,
+-        seq__gt=OuterRef('projection_cleared')).exclude(sender_id=OuterRef('pk')).exclude(read_statuses__user_id=OuterRef('pk'))
+     if isinstance(chat, GroupChat) and not chat.history_visible:
+         candidates = candidates.filter(projection_joined__isnull=False)
+-        unread = unread.filter(created_at__gte=OuterRef('projection_joined'))
+-    unread = unread.order_by().values('conversation_id').annotate(total=Count('pk')).values('total')[:1]
+-    columns = ['pk', 'projection_cleared', 'projection_unread']
+-    if isinstance(chat, GroupChat):
++    columns = ['pk', 'projection_cleared']
++    if isinstance(chat, GroupChat) and not chat.history_visible:
+         columns.append('projection_joined')
+-    rows = list(candidates.annotate(projection_unread=Subquery(unread)).values(*columns))
++    rows = list(candidates.values(*columns))
++    counts = grouped_unread(event.conversation_id, rows, isinstance(chat, GroupChat) and not chat.history_visible)
++    if counts is None:
++        unread = Message.objects.filter(conversation_id=event.conversation_id, is_deleted=False,
++            seq__gt=OuterRef('projection_cleared')).exclude(sender_id=OuterRef('pk')).exclude(read_statuses__user_id=OuterRef('pk'))
++        if isinstance(chat, GroupChat) and not chat.history_visible:
++            unread = unread.filter(created_at__gte=OuterRef('projection_joined'))
++        unread = unread.order_by().values('conversation_id').annotate(total=Count('pk')).values('total')[:1]
++        rows = list(candidates.annotate(projection_unread=Subquery(unread)).values(*columns, 'projection_unread'))
++    else:
++        for row in rows:
++            row['projection_unread'] = counts[row['pk']]
+     with ws_phase('projection', 'prepare'):
+         common = plain_payload(message)
+         readers = {receipt.user_id for receipt in message.read_statuses.all()}

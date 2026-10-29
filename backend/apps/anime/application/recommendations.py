@@ -185,20 +185,28 @@ def read(user, sections=None):
     data = safe_cache_get(f'recommendations:snapshot:v{ALGORITHM_VERSION}:{key}:{snapshot.revision}:{snapshot.catalog_revision}')
     if data is None:
         data = snapshot.data
-    if snapshot.algorithm_version != ALGORITHM_VERSION:
+    if snapshot.algorithm_version != ALGORITHM_VERSION or (key != 'public' and snapshot.dirty):
         data = None
     if snapshot.algorithm_version != ALGORITHM_VERSION or snapshot.dirty or snapshot.catalog_revision != safe_cache_get('catalog:revision', 0) or not snapshot.generated_at or snapshot.generated_at < timezone.now() - timedelta(minutes=15):
         queue_refresh(key)
     if not data:
         public = RecommendationSnapshot.objects.filter(key='public').first()
-        data = public.data if public and public.algorithm_version == ALGORITHM_VERSION and public.data and key == 'public' else build(user if key != 'public' else None)
-    excluded = set(UserLibrary.objects.filter(user=user, status__in=('hidden', 'started', 'completed', 'dropped'))
+        # A cold personal read must never materialize the user's entire library.
+        # Shared fallback has no personal reasons; the worker builds those later.
+        data = public.data if public and public.algorithm_version == ALGORITHM_VERSION and public.data else build(None)
+    candidates = {row['id'] for section in wanted for row in data.get(section, [])[:24]}
+    excluded = set(UserLibrary.objects.filter(user=user, anime_id__in=candidates,
+                   status__in=('hidden', 'started', 'completed', 'dropped'))
                    .values_list('anime_id', flat=True)) if key != 'public' else set()
     from .catalog_visibility import hidden_anime
-    excluded.update(hidden_anime().values_list('pk', flat=True))
+    excluded.update(hidden_anime().filter(pk__in=candidates).values_list('pk', flat=True))
+    # Decisions about current catalog visibility cannot rely on a stale snapshot.
+    available = set(Anime.objects.filter(pk__in=candidates, is_available=True, has_cyrillic=True)
+                    .values_list('pk', flat=True))
+    excluded.update(candidates - available)
     movie_ids = {row['id'] for row in data.get('movies', [])} if 'movies' in wanted else set()
     valid_movies = set(Anime.objects.filter(pk__in=movie_ids, kind='movie', episodes=1).values_list('pk', flat=True))
-    return {**{section: [row for row in data.get(section, []) if row['id'] not in excluded
+    return {**{section: [row for row in data.get(section, [])[:24] if row['id'] not in excluded
                          and (section != 'movies' or row['id'] in valid_movies)] for section in wanted},
             'user_genres': data.get('user_genres', []), 'has_personalization': data.get('has_personalization', False)}
 
@@ -220,7 +228,9 @@ def invalidate_catalog():
     from apps.seo.signals import schedule_hubs
     schedule_hubs()
     from django.core.cache import cache
-    RecommendationSnapshot.objects.all().update(dirty=True)
+    # A running worker may have read the previous catalog. Increment the same
+    # revision it checks under lock so that it cannot overwrite invalidation.
+    RecommendationSnapshot.objects.all().update(dirty=True, revision=F('revision')+1)
     try:
         cache.delete('recommendations:candidates:v1')
         cache.delete('recommendations:snapshot:public')

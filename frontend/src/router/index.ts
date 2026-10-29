@@ -1,5 +1,5 @@
 import { refreshSeo } from "@/composables/useSeo";
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory, START_LOCATION } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { cancelAllRequests } from "@/api/client";
 import { queryClient } from '@/lib/queryClient';
@@ -15,6 +15,7 @@ const AnimeWatchView = () => import("@/components/page/anime/AnimeWatchView.vue"
 const OwnProfileView = () => import("@/components/page/profile/OwnProfileView.vue")
 const UserProfileView = () => import("@/components/page/profile/UserProfileView.vue")
 const FeedView = () => import("@/components/page/feed/FeedView.vue")
+export const mainRouteLoaders = { '/anime': AnimeView, '/feed': FeedView };
 const PostDetailView = () => import("@/components/page/feed/PostDetailView.vue")
 const ChatsView = () => import("@/components/page/chats/ChatsView.vue")
 const PlaylistsView = () => import("@/components/page/playlists/PlaylistsView.vue")
@@ -441,7 +442,7 @@ const router = createRouter({
 router.afterEach((to) => { void refreshSeo(to.fullPath); });
 
 router.beforeEach(async (to, from, next) => {
-  if (to.path !== from.path) {
+  if (from !== START_LOCATION && to.path !== from.path) {
     cancelAllRequests();
     cancelInitialReads();
     void queryClient.cancelQueries();

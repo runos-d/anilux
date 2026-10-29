@@ -2,7 +2,7 @@ import { queryClient } from '@/lib/queryClient';
 import { afterInitialContent } from '@/lib/initialContent';
 import { ref, computed, onMounted, onActivated, onDeactivated, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import animeApi from "@/api/anime";
+import animeApi, { animeListRequestParams } from "@/api/anime";
 import type { Anime } from "@/types";
 import type { CalendarData } from "@/api/anime";
 import { useCachedReads } from './useCachedReads';
@@ -244,7 +244,7 @@ export function useAnimeSections(options?: { catalogPreset?: CatalogFilters }) {
     const request = ++ongoingsRequest;
     try {
       const f = ongoingsFilters.value;
-      const response = await animeApi.list({
+      const params = {
         page,
         page_size: f.page_size || 50,
         ordering: f.ordering || "-score",
@@ -264,7 +264,8 @@ export function useAnimeSections(options?: { catalogPreset?: CatalogFilters }) {
         excluded_library_statuses: f.excluded_library_statuses,
         show_only_franchises: f.show_only_franchises,
         group_franchises: !!f.show_only_franchises,
-      });
+      };
+      const response = await read(['ongoings', animeListRequestParams(params)], signal => animeApi.list(params, signal), () => {}, !f.excluded_library_statuses?.length);
       if (request !== ongoingsRequest) return;
       const data = response.results || [];
       ongoings.value = data;
@@ -386,29 +387,9 @@ export function useAnimeSections(options?: { catalogPreset?: CatalogFilters }) {
 
   const catalogGroupFranchises = ref(queryClient.getQueryData<{group_franchises: boolean}>(['read', 'public', 'catalog-settings'])?.group_franchises ?? true);
 
-  const withRetry = async <T>(
-    fn: () => Promise<T>,
-    retries = 2,
-    delayMs = 400,
-  ): Promise<T> => {
-    let lastError: unknown;
-    for (let attempt = 0; attempt <= retries; attempt++) {
-      try {
-        return await fn();
-      } catch (err) {
-        if (isRequestCancelled(err)) throw err;
-        lastError = err;
-        if (attempt < retries) {
-          await new Promise((resolve) => setTimeout(resolve, delayMs * (attempt + 1)));
-        }
-      }
-    }
-    throw lastError;
-  };
-
   const fetchCatalogSettings = async () => {
     try {
-      await read(['catalog-settings'], () => withRetry(() => animeApi.getCatalogSettings(), 2, 300), data => {
+      await read(['catalog-settings'], () => animeApi.getCatalogSettings(), data => {
         const changed = catalogGroupFranchises.value !== (data.group_franchises !== false);
         catalogGroupFranchises.value = data.group_franchises !== false;
         if (changed && active && route.path === screenPath && currentSection.value === 'catalog') void fetchCatalog(1);
@@ -443,9 +424,7 @@ export function useAnimeSections(options?: { catalogPreset?: CatalogFilters }) {
         catalogTotalCount.value = response.count || 0;
         catalogPage.value = page;
       };
-      const response = await read(['catalog', page, { ...f }, catalogShuffle.value, groupFranchisesForRequest], signal => withRetry(
-        () =>
-          animeApi.list({
+      const params = {
             page,
             page_size: f.page_size || 50,
             ordering: f.ordering || "-score",
@@ -466,10 +445,8 @@ export function useAnimeSections(options?: { catalogPreset?: CatalogFilters }) {
             excluded_library_statuses: f.excluded_library_statuses,
             show_only_franchises: f.show_only_franchises,
             group_franchises: groupFranchisesForRequest,
-          }, signal),
-        2,
-        400,
-      ), apply, !f.excluded_library_statuses?.length);
+          };
+      const response = await read(['catalog', animeListRequestParams(params)], signal => animeApi.list(params, signal), apply, !f.excluded_library_statuses?.length);
       if (request !== catalogRequest) return;
       catalogAnime.value = response.results || [];
       if (page === 1)
@@ -594,7 +571,7 @@ export function useAnimeSections(options?: { catalogPreset?: CatalogFilters }) {
 
 onMounted(async () => {
       afterInitialContent(() => { if (active && route.path === screenPath && currentSection.value === 'catalog') void fetchCatalogSettings(); });
-      
+
       const searchQuery = route.query.search as string;
       if (searchQuery) {
         currentSection.value = "catalog";
@@ -602,7 +579,7 @@ onMounted(async () => {
         fetchCatalog(1, catalogFilters.value);
         return;
       }
-      
+
       const sectionParam = route.query.section as string;
       if (sectionParam && animeSections.includes(sectionParam as AnimeSection)) {
         currentSection.value = sectionParam as AnimeSection;
@@ -665,23 +642,6 @@ onMounted(async () => {
     },
   );
 
-  watch(
-    () => route.query.search,
-    (newSearch) => {
-      if (!active || route.path !== screenPath) return;
-      const searchQuery = newSearch as string;
-      if (currentSection.value === "catalog") {
-        if (searchQuery) {
-          catalogFilters.value = { ...catalogFilters.value, search: searchQuery };
-        } else {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { search, ...rest } = catalogFilters.value;
-          catalogFilters.value = rest;
-        }
-        fetchCatalog(1, catalogFilters.value);
-      }
-    },
-  );
 
   const enableCatalogShuffle = () => {
     catalogShuffle.value = true;

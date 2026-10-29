@@ -1,3 +1,4 @@
+import { preparedDownload } from '@/api/backgroundWork';
 /**
  * useThemeDownloader
  *
@@ -116,7 +117,7 @@ export function useThemeDownloader() {
       if (translationId) clipParams.translation_id = String(translationId);
       if (isAudio) clipParams.format = "audio";
 
-      const response = await apiClient.get(`/anime/${animeId}/clip/`, {
+      const response = await preparedDownload(`/anime/${animeId}/clip/`, {
         params: clipParams,
         responseType: "blob",
         timeout: 360_000,
@@ -213,7 +214,7 @@ export function useThemeDownloader() {
 
       currentState.value.progress = 20;
 
-      const response = await apiClient.get(`/anime/${animeId}/clip/`, {
+      const response = await preparedDownload(`/anime/${animeId}/clip/`, {
         params,
         responseType: "blob",
         timeout: 360_000,
@@ -308,7 +309,7 @@ export function useThemeDownloader() {
       if (translationId) clipParams.translation_id = String(translationId);
       if (isAudio) clipParams.format = "audio";
 
-      const response = await apiClient.get(`/anime/${animeId}/clip/`, {
+      const response = await preparedDownload(`/anime/${animeId}/clip/`, {
         params: clipParams,
         responseType: "blob",
         timeout: 0,

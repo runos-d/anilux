@@ -1,5 +1,5 @@
 ﻿<template>
-  <div class="cp-wrap">
+  <form class="cp-wrap" @submit.prevent="submit">
     <transition name="toast">
       <div v-if="toast.visible" :class="['toast', toast.type]">
         {{ toast.message }}
@@ -14,7 +14,7 @@
         Все остальные сессии завершены. На других устройствах нужно войти
         заново.
       </p>
-      <button class="btn-primary" @click="resetForm">Понятно</button>
+      <button type="button" class="btn-primary" @click="resetForm">Понятно</button>
     </div>
 
     <template v-else>
@@ -23,6 +23,7 @@
         <div class="pw-field">
           <input
             v-model="form.old_password"
+            autocomplete="current-password"
             :type="show.old ? 'text' : 'password'"
             placeholder="Введите текущий пароль"
             class="input"
@@ -45,6 +46,7 @@
         <div class="pw-field">
           <input
             v-model="form.new_password"
+            autocomplete="new-password"
             :type="show.new ? 'text' : 'password'"
             placeholder="Новый пароль (мин. 8 символов)"
             class="input"
@@ -87,6 +89,7 @@
         <div class="pw-field">
           <input
             v-model="form.confirm_password"
+            autocomplete="new-password"
             :type="show.confirm ? 'text' : 'password'"
             placeholder="Повторите новый пароль"
             class="input"
@@ -117,18 +120,18 @@
       <div class="actions">
         <button
           class="btn-save"
-          @click="submit"
+          type="submit"
           :disabled="!canSubmit || saving"
         >
-          {{ saving ? '<SakuraIcon name="hourglass" /> Сохранение...' :
-          '<SakuraIcon name="save" /> Изменить пароль' }}
+          <SakuraIcon :name="saving ? 'hourglass' : 'save'" />
+          {{ saving ? 'Сохранение...' : 'Изменить пароль' }}
         </button>
-        <button class="btn-reset" @click="resetForm" :disabled="saving">
+        <button type="button" class="btn-reset" @click="resetForm" :disabled="saving">
           ↺ Очистить
         </button>
       </div>
     </template>
-  </div>
+  </form>
 </template>
 
 <script setup lang="ts">

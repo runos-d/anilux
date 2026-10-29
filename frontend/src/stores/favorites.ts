@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { useAuthStore } from '@/stores/auth';
 import playlistsApi from '@/api/playlists';
 
-type FavoriteMessage = { ids?: unknown };
+type FavoriteMessage = { ids?: unknown; owner?: number };
 
 const favoriteChannel = typeof BroadcastChannel !== 'undefined'
   ? new BroadcastChannel('anime_favorites')
@@ -54,7 +55,7 @@ export const useFavoritesStore = defineStore('favorites', () => {
     for (const animeId of animeIds) {
       if (localOverrides.get(animeId) === value) localOverrides.delete(animeId);
     }
-    favoriteChannel?.postMessage({ ids: [...ids.value] });
+    favoriteChannel?.postMessage({ ids: [...ids.value], owner: useAuthStore().user?.id });
   }
 
   async function add(id: number) {
@@ -101,6 +102,7 @@ export const useFavoritesStore = defineStore('favorites', () => {
   }
 
   async function ensureLoaded(force = false) {
+    if (!useAuthStore().isAuthenticated) return;
     if (loaded.value && !force) return;
     if (!loadPromise) {
       const requestGeneration = generation;
@@ -127,7 +129,7 @@ export const useFavoritesStore = defineStore('favorites', () => {
   }
 
   favoriteChannel?.addEventListener('message', (event: MessageEvent<FavoriteMessage>) => {
-    if (!Array.isArray(event.data?.ids)) return;
+    if (!useAuthStore().isAuthenticated || event.data?.owner !== useAuthStore().user?.id || !Array.isArray(event.data?.ids)) return;
     syncFromIds(event.data.ids.filter((id): id is number => Number.isInteger(id)));
   });
 

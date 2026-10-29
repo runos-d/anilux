@@ -20,7 +20,7 @@ let wrappers: ReturnType<typeof mount>[] = [];
 
 async function subscriber() {
   const { useOnlineStatus } = await import('./useOnlineStatus');
-  const wrapper = mount(defineComponent({ setup: useOnlineStatus, template: '<div />' }));
+  const wrapper = mount(defineComponent({ setup: useOnlineStatus, template: '<div>{{ isUserOnline(1) }} {{ isUserOnline(2) }}</div>' }));
   wrappers.push(wrapper);
   return wrapper;
 }
@@ -39,14 +39,15 @@ describe('shared online status', () => {
   });
 
   it('shares polling across components, reconciles TTL expiry and stops after unmount', async () => {
-    let resolve!: (value: { data: { results: { id: number }[] } }) => void;
+    let resolve!: (value: { data: { results: { id: number; is_online: boolean }[] } }) => void;
     get.mockReturnValueOnce(new Promise(done => { resolve = done; }));
     await subscriber(); await subscriber();
+    await vi.advanceTimersByTimeAsync(150);
     expect(get).toHaveBeenCalledTimes(1);
-    resolve({ data: { results: [{ id: 1 }] } }); await flushPromises();
+    resolve({ data: { results: [{ id: 1, is_online: true }] } }); await flushPromises();
     expect(store.onlineUsers.get(1)?.is_online).toBe(true);
     get.mockResolvedValue({ data: { results: [] } });
-    await vi.advanceTimersByTimeAsync(15000); await flushPromises();
+    await vi.advanceTimersByTimeAsync(60000); await flushPromises();
     expect(get).toHaveBeenCalledTimes(2);
     expect(store.onlineUsers.get(1)?.is_online).toBe(false);
     wrappers.forEach(wrapper => wrapper.unmount()); wrappers = [];
@@ -55,14 +56,18 @@ describe('shared online status', () => {
   });
 
   it('rejects a late snapshot after changing accounts and clears the previous presence map', async () => {
-    let resolve!: (value: { data: { results: { id: number }[] } }) => void;
+    let resolve!: (value: { data: { results: { id: number; is_online: boolean }[] } }) => void;
     get.mockReturnValueOnce(new Promise(done => { resolve = done; }));
     await subscriber();
+    await vi.advanceTimersByTimeAsync(150);
     store.onlineUsers.set(1, { is_online: true });
-    get.mockResolvedValue({ data: { results: [{ id: 2 }] } });
+    get.mockResolvedValue({ data: { results: [{ id: 2, is_online: true }] } });
     store.user = { id: 10 }; await flushPromises();
-    resolve({ data: { results: [{ id: 3 }] } }); await flushPromises();
-    expect([...store.onlineUsers.keys()]).toEqual([2]);
+    await vi.advanceTimersByTimeAsync(150);
+    resolve({ data: { results: [{ id: 3, is_online: true }] } }); await flushPromises();
+    expect(store.onlineUsers.get(2)?.is_online).toBe(true);
+    expect(store.onlineUsers.has(3)).toBe(false);
+    expect(store.onlineUsers.get(1)?.is_online).toBe(false);
     store.isAuthenticated = false; store.user = null; await flushPromises();
     expect(store.onlineUsers.size).toBe(0);
   });

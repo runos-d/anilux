@@ -5,10 +5,14 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 import autoprefixer from 'autoprefixer'
 import tailwindcss from 'tailwindcss'
 import { VitePWA } from 'vite-plugin-pwa'
+import { developmentProxyTarget, isLocalApi } from './src/lib/localApi'
 
 const ROOT_ENV_DIR = fileURLToPath(new URL('..', import.meta.url))
 const env = loadEnv('', ROOT_ENV_DIR, 'VITE_')
 const publicBrand = env.VITE_PROJECT_BRAND_NAME?.trim() || 'AniLux'
+const configuredApi = env.VITE_API_URL || 'http://127.0.0.1:8000/api'
+const proxyTarget = developmentProxyTarget(configuredApi)
+const proxyChangeOrigin = !isLocalApi(configuredApi)
 
 export default defineConfig({
   envDir: ROOT_ENV_DIR,
@@ -96,23 +100,33 @@ export default defineConfig({
     },
   },
   server: {
+    warmup: {
+      clientFiles: [
+        './src/main.ts',
+        './src/components/page/other/HomeView.vue',
+        './src/components/page/feed/FeedView.vue',
+        './src/components/page/anime/AnimeView.vue',
+        './src/components/page/anime/CatalogView.vue',
+        './src/components/page/anime/RecommendationsView.vue',
+      ],
+    },
     proxy: {
       '/data/': {
-        target: (env.VITE_API_URL || 'http://localhost:8000/api').replace(/\/api$/, '').replace(/^https/, 'http'),
-        changeOrigin: true,
+        target: proxyTarget,
+        changeOrigin: proxyChangeOrigin,
       },
       '/media/': {
-        target: (env.VITE_API_URL || 'http://localhost:8000/api').replace(/\/api$/, '').replace(/^https/, 'http'),
-        changeOrigin: true,
+        target: proxyTarget,
+        changeOrigin: proxyChangeOrigin,
       },
       '/api/': {
-        target: (env.VITE_API_URL || 'http://localhost:8000/api').replace(/\/api$/, '').replace(/^https/, 'http'),
-        changeOrigin: true,
+        target: proxyTarget,
+        changeOrigin: proxyChangeOrigin,
       },
       '/ws/': {
-        target: (env.VITE_API_URL || 'http://localhost:8000/api').replace(/\/api$/, '').replace(/^https/, 'http'),
+        target: proxyTarget,
         ws: true,
-        changeOrigin: true,
+        changeOrigin: proxyChangeOrigin,
       },
     },
     allowedHosts: ['microb.taile52c1f.ts.net', 'localhost', '100.76.10.74', '127.0.0.1'],

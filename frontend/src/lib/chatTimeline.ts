@@ -62,6 +62,12 @@ export interface SocketLike {
   close(): void;
 }
 
+export function webSocketProtocols(token: string): string[] {
+  const protocols = ['animecore.v2'];
+  if (token) protocols.push(`auth.${token.length <= 4096 && /^[A-Za-z0-9_.-]+$/.test(token) ? token : 'invalid'}`);
+  return protocols;
+}
+
 /** Owns exactly one generation of a socket and cancels all retries on stop. */
 export class ChatConnection {
   private socket: SocketLike | null = null;
@@ -73,25 +79,27 @@ export class ChatConnection {
 
   constructor(private options: {
     url: () => string;
+    protocols?: () => string[];
     message: (data: Record<string, unknown>) => void;
     state: (connected: boolean) => void;
     opened?: () => void;
+    heartbeat?: () => Record<string, unknown>;
     denied?: (code: number) => void;
-    createSocket?: (url: string) => SocketLike;
+    createSocket?: (url: string, protocols?: string[]) => SocketLike;
   }) {}
 
   start() {
     if (this.socket?.readyState === 0 || this.socket?.readyState === 1) return;
     this.stopped = false;
     const generation = ++this.generation;
-    const socket = (this.options.createSocket ?? (url => new WebSocket(url)))(this.options.url());
+    const socket = (this.options.createSocket ?? ((url, protocols) => new WebSocket(url, protocols)))(this.options.url(), this.options.protocols?.());
     this.socket = socket;
     const active = () => !this.stopped && generation === this.generation && this.socket === socket;
     socket.onopen = () => {
       if (!active()) return;
       this.attempts = 0;
       this.options.state(true);
-      this.heartbeat = setInterval(() => this.send({ action: 'ping' }), 25000);
+      this.heartbeat = setInterval(() => this.send(this.options.heartbeat?.() ?? { action: 'ping' }), 25000);
       this.options.opened?.();
     };
     socket.onmessage = event => {
@@ -108,7 +116,8 @@ export class ChatConnection {
         this.options.denied?.(event.code);
         return;
       }
-      this.retry = setTimeout(() => this.start(), Math.min(30000, 500 * 2 ** this.attempts++) + Math.random() * 500);
+      const ceiling = Math.min(30000, 1000 * 2 ** this.attempts++);
+      this.retry = setTimeout(() => this.start(), 500 + Math.random() * (ceiling - 500));
     };
     socket.onerror = () => { /* close determines whether to retry */ };
   }

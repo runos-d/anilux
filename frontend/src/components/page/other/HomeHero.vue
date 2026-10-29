@@ -154,7 +154,7 @@ const goToAnime = () => {
 const goToWatch = () => {
   const a = currentAnime.value;
   if (!a) return;
-  const episode = resolveEpisodes(a) || 1;
+  const episode = 1;
   router.push(`/anime/${a.slug || a.anime_id}/watch?episode=${episode}`);
 };
 
@@ -172,21 +172,17 @@ const animeDetails = ref<Record<number, Anime>>({});
 
 const currentAnime = computed(() => props.animeList[currentIndex.value]!);
 
+const pendingDetails = new Set<number>();
 const fetchAnimeDescriptions = async () => {
-  const ids = props.animeList.map(a => a.anime_id);
-  const uniqueIds = [...new Set(ids)];
-
-  await Promise.all(
-    uniqueIds.map(async (id) => {
-      try {
-        const details = await animeApi.get(id);
-        animeDetails.value[id] = details;
-      } catch (e) {
-        console.warn(`Failed to fetch details for anime ${id}:`, e);
-      }
-    })
-  );
-  if (currentAnime.value) updateBackground(currentAnime.value);
+  const item = currentAnime.value;
+  const id = item?.anime_id;
+  if (!id || animeDetails.value[id] || pendingDetails.has(id) || (item as unknown as { description?: string }).description) return;
+  pendingDetails.add(id);
+  try {
+    animeDetails.value[id] = await animeApi.get(id);
+    if (currentAnime.value?.anime_id === id) updateBackground(currentAnime.value);
+  } catch { /* The home projection remains usable without an extended description. */ }
+  finally { pendingDetails.delete(id); }
 };
 
 
@@ -399,7 +395,7 @@ const updateBackground = (anime: RecommendationItem) => {
 watch(
   () => currentAnime.value,
   (anime) => {
-    if (anime) updateBackground(anime);
+    if (anime) { updateBackground(anime); void fetchAnimeDescriptions(); }
   }
 );
 

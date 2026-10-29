@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { ChatConnection, mergeMessages, type SocketLike, type TimelineMessage } from './chatTimeline';
+import { ChatConnection, mergeMessages, webSocketProtocols, type SocketLike, type TimelineMessage } from './chatTimeline';
 
 const message = (id: number, key: string, seq = 0, version = 1): TimelineMessage => ({ id, client_message_id: key, seq, version, created_at: '2026-10-09T10:00:00Z' });
 
@@ -29,6 +29,15 @@ describe('message reconciliation', () => {
 
 describe('connection lifecycle', () => {
   afterEach(() => vi.useRealTimers());
+  it('passes bearer credentials through subprotocols without changing the URL', () => {
+    const socket: SocketLike = {readyState:0,onopen:null,onmessage:null,onclose:null,onerror:null,close:vi.fn(),send:vi.fn()};
+    const createSocket=vi.fn(()=>socket);
+    const connection=new ChatConnection({url:()=> 'ws://test/ws/global/',protocols:()=>webSocketProtocols('test.jwt.value'),message:vi.fn(),state:vi.fn(),createSocket});
+    connection.start();
+    expect(createSocket).toHaveBeenCalledWith('ws://test/ws/global/',['animecore.v2','auth.test.jwt.value']);
+    expect(webSocketProtocols('invalid token')).toEqual(['animecore.v2','auth.invalid']);
+    connection.stop();
+  });
   it('deduplicates CONNECTING and prevents old close events from reconnecting after stop', () => {
     vi.useFakeTimers();
     const sockets: SocketLike[] = [];
@@ -48,4 +57,12 @@ describe('connection lifecycle', () => {
     connection.stop();
     expect(vi.getTimerCount()).toBe(0);
   });
+});
+
+it('includes visibility in global heartbeat frames without changing conversation pings', () => {
+  vi.useFakeTimers();
+  const socket: SocketLike={readyState:1,onopen:null,onmessage:null,onclose:null,onerror:null,send:vi.fn(),close:vi.fn()};
+  const connection=new ChatConnection({url:()=> 'ws://test',message:vi.fn(),state:vi.fn(),createSocket:()=>socket,heartbeat:()=>({action:'ping',is_active:false})});
+  connection.start(); socket.onopen!(new Event('open')); vi.advanceTimersByTime(25_000);
+  expect(socket.send).toHaveBeenCalledWith(JSON.stringify({action:'ping',is_active:false})); connection.stop(); vi.useRealTimers();
 });

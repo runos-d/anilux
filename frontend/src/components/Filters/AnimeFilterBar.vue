@@ -465,6 +465,7 @@
 import SakuraIcon from "@/components/icons/SakuraIcon.vue";
 import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { cachedCatalogFacets, loadCatalogFacets } from "@/lib/catalogFacets";
+import { reportTechnicalError } from "@/analytics";
 
 interface Props {
   showStatus?: boolean;
@@ -510,7 +511,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-  change: [filters: FilterState];
+  change: [filters: FilterState, userInitiated?: boolean];
   shuffle: [];
   unshuffle: [];
   refresh: [];
@@ -698,8 +699,8 @@ onMounted(async () => {
     const facets = await loadCatalogFacets();
     allGenres.value = facets.genres;
     TYPE_OPTIONS.value = toTypeOptions(facets.types.length ? facets.types : Object.keys(TYPE_LABELS));
-  } catch (e) {
-    console.warn("Failed to load catalog facets:", e);
+  } catch {
+    reportTechnicalError("catalog.facets_failed", "/route/anime-catalog");
   } finally {
     genresLoading.value = false;
     typesLoading.value = false;
@@ -901,7 +902,7 @@ const resetAll = () => {
   emitChange();
 };
 
-const emitChange = () => {
+const emitChange = (userInitiated = true) => {
   if (syncingFilters) return;
   const filters: FilterState = {
     search: search.value ? normalizeSearchQuery(search.value) : undefined,
@@ -923,7 +924,7 @@ const emitChange = () => {
       ? excludedLibraryStatuses.value
       : undefined,
   };
-  emit("change", filters);
+  emit("change", filters, userInitiated);
 };
 
 watch(
@@ -940,7 +941,7 @@ watch(
   () => emitChange(),
 );
 
-onMounted(() => { if (props.emitOnMount) emitChange(); });
+onMounted(() => { if (props.emitOnMount) emitChange(false); });
 </script>
 
 <style scoped>

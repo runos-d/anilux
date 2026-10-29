@@ -377,7 +377,7 @@
             @open-sync="showSyncModal = true"
           />
         </div>
-<!-- 
+<!--
         <div class="actions-card">
           <button
             @click="toggleFavorite"
@@ -406,7 +406,7 @@
     </div>
 
     <hr style="width: 95%; border: none; height: 1px; background-color: #23162c; margin: 0 auto;">
-    
+
     <div
       v-if="franchise && franchise.entries?.length > 0"
       ref="franchiseSectionRef"
@@ -464,11 +464,13 @@
 </template>
 
 <script setup lang="ts">
+import { preparedDownload } from '@/api/backgroundWork';
+
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
 import { seoPage } from '@/composables/useSeo';
 import { useRoute, RouterLink } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
-import apiClient from "@/api/client";
+import apiClient, { isRequestCancelled } from "@/api/client";
 import { normalizeKodikPlayerLink } from "@/config/kodik";
 import ExcerptCapture from "@/components/excerpts/ExcerptCapture.vue";
 import KodikPlayer from "@/components/Players/KodikPlayer.vue";
@@ -489,6 +491,7 @@ import { useThemeDownloader } from "@/composables/useThemeDownloader";
 import { getMediaUrl } from "@/api/client";
 import { useProgressSync } from "@/composables/useProgressSync";
 import { useWatchProgressStore } from "@/stores/watchProgress";
+import { event as analyticsEvent, reportTechnicalError } from "@/analytics";
 import type {
   EpisodeProgressItem,
   EpisodeTarget,
@@ -510,6 +513,7 @@ import {
 
 interface WatchAnime {
   id: number;
+  kodik_link?: string;
   slug?: string;
   name?: string;
   title_ru?: string;
@@ -678,7 +682,7 @@ const handleDownloadEpisode = async () => {
     if (selectedTranslation.value?.id)
       params.translation_id = String(selectedTranslation.value.id);
 
-    const response = await apiClient.get(`/anime/${id}/clip/`, {
+    const response = await preparedDownload(`/anime/${id}/clip/`, {
       params,
       responseType: "blob",
       timeout: 0,
@@ -1184,9 +1188,10 @@ const syncEpRefs = () => {
   syncResumePosition();
 };
 
-const loadFranchise = async (franchiseId: number) => {
+const loadFranchise = async (franchiseId: number, signal?: AbortSignal, current = () => true) => {
   try {
-    const response = await apiClient.get(`/anime/franchises/${franchiseId}/`);
+    const response = await apiClient.get(`/anime/franchises/${franchiseId}/`, { signal });
+    if (!current() || signal?.aborted) return;
     franchise.value = {
       id: response.data.id,
       slug: response.data.slug,
@@ -1196,8 +1201,9 @@ const loadFranchise = async (franchiseId: number) => {
           Number(a.franchise_order || 0) - Number(b.franchise_order || 0),
       ),
     };
-  } catch (e) {
-    console.error("Ошибка загрузки франшизы:", e);
+  } catch {
+    if (!current() || signal?.aborted) return;
+    reportTechnicalError("watch.franchise_failed", "/route/anime-watch");
     franchise.value = null;
   }
 };
@@ -1224,7 +1230,7 @@ const getKindText = (kind: string) =>
 
 const getStatusText = (status: string | null) => {
   if (!status) return status;
-  
+
   return {
     'ongoing': 'Онгоинг',
     'finished': 'Завершён',
@@ -1257,7 +1263,18 @@ const getTranslationAvatar = (
   return getTranslationAvatarUrl(translation.name);
 };
 
+let loadGeneration = 0;
+let loadController: AbortController | undefined;
+let watchDisposed = false;
+let firstVisitTimer: ReturnType<typeof setTimeout> | undefined;
 const loadAnime = async () => {
+  const version = ++loadGeneration;
+  loadController?.abort();
+  const controller = new AbortController(); loadController = controller;
+  const signal = controller.signal;
+  const current = () => !watchDisposed && !signal.aborted && version === loadGeneration;
+  clearTimeout(firstVisitTimer);
+
   try {
     loading.value = true;
     error.value = "";
@@ -1272,11 +1289,15 @@ const loadAnime = async () => {
     currentTime.value = 0;
     duration.value = 0;
     resumePosition.value = 0;
+    epProgress?.dispose();
     epProgress = null;
+    animeTab.value?.stop();
+    animeTab.value = null;
     suppressSelectionReload = true;
 
     const animeId = props.slug;
-    const response = await apiClient.get(`/anime/${animeId}/`);
+    const response = await apiClient.get(`/anime/${animeId}/`, { signal });
+    if (!current()) return;
     anime.value = response.data;
     const episodeFromQuery = route.query.episode;
     const parsedEpisode = episodeFromQuery
@@ -1293,9 +1314,10 @@ const loadAnime = async () => {
         : null;
     if (requestedEpisode) autoplay.value = true;
 
-    await checkLibraryStatus();
-    await checkIsFavorite();
-    await loadTranslations();
+    epProgress = useEpisodeProgress(anime.value!.id);
+    const progress = epProgress;
+    await Promise.all([checkLibraryStatus(signal, current), checkIsFavorite(), loadTranslations(signal, current), progress.loadProgress()]);
+    if (!current()) return;
     const requestedTranslation = translations.value.find(item => String(item.id) === String(route.query.translation));
     if (requestedTranslation) {
       await selectTranslation(requestedTranslation, {
@@ -1304,9 +1326,8 @@ const loadAnime = async () => {
       });
     }
 
-    epProgress = useEpisodeProgress(anime.value!.id);
-    epProgress.setEpisodeGroups(episodeGroups.value);
-    await epProgress.loadProgress();
+    if (!current()) return;
+    epProgress!.setEpisodeGroups(episodeGroups.value);
 
     const preferredSeason = defaultPlaybackSeason(requestedSeason);
     let initialTarget: EpisodeTarget;
@@ -1358,8 +1379,10 @@ const loadAnime = async () => {
     suppressSelectionReload = false;
 
     await loadKodikPlayer();
+    if (!current()) return;
     if (playerMode.value === "own" && !useCustomPlayer.value) {
       await loadOwnPlayer();
+      if (!current()) return;
     }
     loadWatchProgress();
 
@@ -1372,7 +1395,8 @@ const loadAnime = async () => {
       syncEpRefs();
 
       if (anime.value.franchise_id) {
-        await loadFranchise(anime.value.franchise_id);
+        await loadFranchise(anime.value.franchise_id, signal, current);
+        if (!current()) return;
       }
 
 if (
@@ -1381,18 +1405,18 @@ if (
   epProgress.progressPercent.value === 0 &&
   !route.query.episode
 ) {
-  setTimeout(() => showFirstVisitToast(), 800);
+  firstVisitTimer = setTimeout(() => { if (current()) showFirstVisitToast(); }, 800);
 }
     }
 
     await nextTick();
     setupPlayerHeightSync();
-  } catch (err: unknown) {
-    console.error("Ошибка загрузки аниме:", err);
+  } catch (failure) {
+    if (!current() || isRequestCancelled(failure)) return;
+    reportTechnicalError("watch.anime_failed", "/route/anime-watch");
     error.value = "Не удалось загрузить аниме";
   } finally {
-    suppressSelectionReload = false;
-    loading.value = false;
+    if (current()) { suppressSelectionReload = false; loading.value = false; }
   }
 };
 
@@ -1408,18 +1432,12 @@ const showFirstVisitToast = () => {
   });
 };
 
-const checkLibraryStatus = async () => {
+const checkLibraryStatus = async (signal?: AbortSignal, current = () => true) => {
   if (!authStore.isAuthenticated) return;
   try {
-    const response = await apiClient.get("/users/library/");
-    const items: unknown[] = response.data.results ?? response.data;
-    if (!Array.isArray(items)) return;
-
-    const item = items.find((i: unknown) => {
-      const it = i as { anime?: number | { id?: number } };
-      const aid = typeof it.anime === "object" ? it.anime?.id : it.anime;
-      return aid === anime.value?.id;
-    });
+    const response = await apiClient.get("/users/library/check_anime/", { params: { anime_id: anime.value?.id }, signal });
+    if (!current() || signal?.aborted) return;
+    const item = response.data.in_library ? response.data.item : null;
 
     if (item) {
       const it = item as { id?: number; current_season?: number; current_episode?: number; anime_id?: number; status?: string; episodes_watched?: number; progress_percentage?: number; anime_episodes_count?: number };
@@ -1445,6 +1463,7 @@ const checkLibraryStatus = async () => {
       libraryItemId.value = null;
     }
   } catch {
+    if (!current() || signal?.aborted) return;
     isInLibrary.value = false;
   }
 };
@@ -1493,9 +1512,10 @@ const updateLibraryProgress = async (throwOnError = false) => {
   }
 };
 
-const loadTranslations = async () => {
+const loadTranslations = async (signal?: AbortSignal, current = () => true) => {
   if (!anime.value?.id) return;
-  const kind = anime.value?.kind;
+  const title = anime.value;
+  const kind = title.kind;
   allowFlat.value =
     kind === "movie" ||
     kind === "ova" ||
@@ -1503,16 +1523,15 @@ const loadTranslations = async () => {
     (anime.value?.episodes ?? 0) <= 1;
   try {
     loadingTranslations.value = true;
-    const response = await apiClient.get(
-      `/anime/${anime.value.id}/kodik_translations/`,
-    );
+    const [response, customResponse] = await Promise.all([
+      apiClient.get(`/anime/${title.id}/kodik_translations/`, { signal }),
+      apiClient.get(`/anime/${title.id}/custom_dubs/`, { signal }).catch(() => ({ data: { dubs: [] } })),
+    ]);
+    if (!current() || signal?.aborted) return;
     const kodikTranslations = response.data.translations || [];
     allowFlat.value = allowFlat.value || Boolean(response.data.allow_flat);
 
     try {
-      const customResponse = await apiClient.get(
-        `/anime/${anime.value.id}/custom_dubs/`,
-      );
       const customDubs = customResponse.data.dubs || [];
       translations.value = [
         ...kodikTranslations.map((t: Record<string, unknown>) => ({
@@ -1547,13 +1566,15 @@ const loadTranslations = async () => {
       }
     }
   } catch {
+    if (!current() || signal?.aborted) return;
     translations.value = [];
   } finally {
-    loadingTranslations.value = false;
+    if (current() && !signal?.aborted) loadingTranslations.value = false;
   }
 
-  if (!translations.value.length && anime.value) {
-    const material = await findKodikMaterialForAnime(anime.value);
+  if (current() && !signal?.aborted && !translations.value.length && title) {
+    const material = await findKodikMaterialForAnime(title);
+    if (!current() || signal?.aborted) return;
     const fallbackTranslations = extractKodikTranslations(material);
     if (fallbackTranslations.length) {
       translations.value = fallbackTranslations.map((translation) => ({
@@ -1572,20 +1593,17 @@ const loadTranslations = async () => {
 const loadKodikPlayer = async () => {
   if (!anime.value?.id) return;
   try {
-    const response = await apiClient.get(
-      `/anime/${anime.value.id}/kodik_player/`,
-    );
+    const response = { data: anime.value };
     const translationLink =
       !selectedTranslation.value?.is_custom &&
       selectedTranslation.value?.kodik_link
         ? selectedTranslation.value.kodik_link
         : null;
     kodikLink.value = normalizeKodikPlayerLink(
-      translationLink || response.data.kodik_link,
+      translationLink || response.data.kodik_link || '',
     );
-    if (response.data.last_episode) currentEpisode.value = 1;
   } catch (err: unknown) {
-    console.error("[AnimeWatch] Error loading kodik player:", err);
+    reportTechnicalError("watch.player_failed", "/route/anime-watch");
     const httpErr = err as { response?: { status?: number } };
     if (httpErr.response?.status === 404)
       error.value = "Видео для этого аниме не найдено";
@@ -1951,6 +1969,9 @@ const selectEpisodeTarget = (target: EpisodeTarget) => {
   if (seasonChanged) currentSeason.value = resolved.season;
   if (episodeChanged) currentEpisode.value = resolved.episode;
   if (seasonChanged || episodeChanged) {
+    analyticsEvent("episode_selected", {
+      selection: seasonChanged ? "season" : "episode",
+    });
     resetEpisodeRuntime();
     animeTab.value?.setEpisode(resolved.episode);
     syncResumePosition();
@@ -2067,6 +2088,7 @@ const onPlayerReady = () => {
 const onVideoStarted = () => {};
 const onPlay = () => {
   isPlaying.value = true;
+  analyticsEvent("playback_started", { source: "watch" });
   animeTab.value?.setPlayerActive(true, currentEpisode.value);
 };
 
@@ -2345,7 +2367,7 @@ const loadWatchProgress = () => {
     };
     return;
   }
-  const saved = localStorage.getItem(`anime_progress_${animeId}`);
+  const saved = localStorage.getItem(`anime_progress_${authStore.user?.id ?? "guest"}_${animeId}`);
   if (saved) {
     try {
       watchProgress.value = JSON.parse(saved);
@@ -2359,7 +2381,7 @@ const saveWatchProgress = async () => {
   const animeId = anime.value?.id;
   if (!animeId) return;
   localStorage.setItem(
-    `anime_progress_${animeId}`,
+    `anime_progress_${authStore.user?.id ?? "guest"}_${animeId}`,
     JSON.stringify(watchProgress.value),
   );
   if (!authStore.isAuthenticated) return;
@@ -2449,7 +2471,9 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+  watchDisposed = true; loadGeneration++; ownLoadVersion++; loadController?.abort(); clearTimeout(firstVisitTimer);
   systemPip.dispose();
+  epProgress?.dispose();
   document.removeEventListener("fullscreenchange", syncMainFullscreen);
   animeTab.value?.stop();
   window.removeEventListener("scroll", checkScrollPosition);

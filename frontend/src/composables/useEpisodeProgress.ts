@@ -67,6 +67,9 @@ export function useEpisodeProgress(animeId: number) {
     episodes.value = newMap;
   };
 
+  let disposed = false;
+  const accountId = auth.user?.id;
+  const dispose = () => { disposed = true; if (saveTimer) clearTimeout(saveTimer); };
   let saveTimer: ReturnType<typeof setTimeout> | null = null;
   let lastSavedTime = 0;
   const SAVE_DEBOUNCE = 30_000;
@@ -245,7 +248,7 @@ export function useEpisodeProgress(animeId: number) {
 
     if (saveTimer) clearTimeout(saveTimer);
     saveTimer = setTimeout(async () => {
-      if (isWatched(season, episodeNum)) return;
+      if (disposed || !auth.isAuthenticated || accountId !== auth.user?.id || isWatched(season, episodeNum)) return;
       try {
         await apiClient.post(`/anime/${animeId}/episode-progress/`, {
           season_number: season,
@@ -501,6 +504,7 @@ export function useEpisodeProgress(animeId: number) {
   };
 
   return {
+    dispose,
     episodes: readonly(episodes),
     totalEpisodes: readonly(totalEpisodes),
     loading: readonly(loading),

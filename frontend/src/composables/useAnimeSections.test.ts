@@ -73,8 +73,7 @@ it('reads catalog filters from the public URL and keeps them for pagination', as
   catalogRead.mockClear();
   await sections.fetchCatalog(2);
   expect(catalogRead.mock.calls.at(-1)?.[0]).toEqual(expect.arrayContaining([
-    2,
-    expect.objectContaining({genres:['Авангард'],status:['finished','released']}),
+    expect.objectContaining({page:2,genres:'Авангард',status:'finished,released'}),
   ]));
 });
 

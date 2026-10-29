@@ -227,6 +227,7 @@
 </template>
 
 <script setup lang="ts">
+import { importCatalog } from "@/api/backgroundWork";
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import apiClient from "@/api/client";
@@ -404,13 +405,13 @@ const addAnime = async (item: SearchItem) => {
   addingSid.value = item.shikimori_id;
   addResult.value = null;
   try {
-    const { data } = await apiClient.post("/anime/kodik/user-add/", {
+    const { data } = await importCatalog({
       shikimori_id: item.shikimori_id,
       title: item.title_ru,
       download_posters: downloadPosters.value,
-    });
+    }, value => { importProgress.value = value; });
     const first = data?.results?.[0] || data;
-    showAddResult(true, first?.message || data?.message || "Готово", [
+    showAddResult(first?.ok !== false, first?.message || data?.message || "Готово", [
       { slug: first?.slug, title: first?.title || item.title_ru },
     ]);
     await loadMyRequests();
@@ -443,39 +444,11 @@ const addGroup = async (group: SearchGroup) => {
   addResult.value = null;
   importProgress.value = { total: 0, current: 0, current_title: "", percent: 0 };
   try {
-    const { data } = await apiClient.post("/anime/kodik/user-add/", {
+    const { data } = await importCatalog({
       shikimori_ids: missingIds,
       title: group.name,
       download_posters: downloadPosters.value,
-    });
-
-    if (data?.progress_token) {
-      const progressToken = data.progress_token;
-      importProgress.value = { total: 0, current: 0, current_title: "Подготовка...", percent: 0 };
-      const pollInterval = setInterval(async () => {
-        try {
-          const { data: progressData } = await apiClient.get("/anime/kodik/user-add/progress/", {
-            params: { token: progressToken },
-          });
-          importProgress.value = progressData;
-          if (progressData.current >= progressData.total) {
-            clearInterval(pollInterval);
-          }
-        } catch {
-          clearInterval(pollInterval);
-        }
-      }, 1000);
-
-      await new Promise((resolve) => {
-        const checkInterval = setInterval(() => {
-          if (importProgress.value.current >= importProgress.value.total) {
-            clearInterval(pollInterval);
-            clearInterval(checkInterval);
-            resolve(true);
-          }
-        }, 500);
-      });
-    }
+    }, value => { importProgress.value = value; });
 
     const okItems = (data?.results || []).filter(
       (r: { ok?: boolean }) => r.ok,

@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import apiClient from "@/api/client";
 import { useAuthStore } from "@/stores/auth";
+import { webSocketProtocols } from '@/lib/chatTimeline';
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -48,8 +49,8 @@ const connect = () => {
   const id = chatId.value;
   if (!id) return;
   const token = authStore.token || "";
-  const url = `${window.location.origin.replace(/^http/, "ws").replace(/^https/, "wss")}/ws/chat/${id}/?token=${token}`;
-  ws.value = new WebSocket(url);
+  const url = `${window.location.origin.replace(/^http/, "ws")}/ws/chat/${id}/`;
+  ws.value = new WebSocket(url, webSocketProtocols(token));
   ws.value.onopen = () => {};
   ws.value.onmessage = (e) => {
     try {

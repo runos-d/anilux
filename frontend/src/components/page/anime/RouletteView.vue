@@ -124,13 +124,13 @@
             class="result-poster"
           />
           <div class="result-copy">
-            <span class="result-label">Колесо выбрало</span>
+            <span class="result-label">Выпало</span>
             <h3>{{ result.title_ru }}</h3>
             <p>{{ [result.year, kindLabel(result.kind), scoreLabel(result.score)].filter(Boolean).join(" · ") }}</p>
           </div>
           <div class="result-actions">
             <button type="button" class="primary-action" @click="watchResult">
-              <SakuraIcon name="play" :size="16" /> Смотреть
+              <SakuraIcon name="play" :size="16" />
             </button>
             <button
               v-if="resultEntry?.eliminated"

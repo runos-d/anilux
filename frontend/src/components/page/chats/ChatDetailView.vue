@@ -553,7 +553,7 @@ import type { Excerpt } from "@/api/excerpts";
 import ChatContentCard from "@/components/Chats/ChatContentCard.vue";
 import type { ChatContentCardData } from "@/types/chat";
 import { useChatDraft } from "@/composables/useChatDraft";
-import { ChatConnection, mergeMessages } from "@/lib/chatTimeline";
+import { ChatConnection, mergeMessages, webSocketProtocols } from "@/lib/chatTimeline";
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
@@ -1373,7 +1373,8 @@ const connectWebSocket = () => {
   disconnectWebSocket();
   connectionKey = key;
   chatConnection = new ChatConnection({
-    url: () => `${getMediaBaseUrl().replace(/^http/, "ws")}/ws/chat/${id}/?type=${kind}${props.topicId !== undefined ? `&topic_id=${props.topicId}` : ""}&token=${encodeURIComponent(localStorage.getItem("anilux_access_token_v1") || "")}`,
+    url: () => `${getMediaBaseUrl().replace(/^http/, "ws")}/ws/chat/${id}/?type=${kind}${props.topicId !== undefined ? `&topic_id=${props.topicId}` : ""}`,
+    protocols: () => webSocketProtocols(localStorage.getItem("anilux_access_token_v1") || ""),
     state: connected => { wsConnected.value = connected; },
     denied: code => {
       if (code === 4001) {

@@ -1,11 +1,13 @@
 import { QueryClient } from "@tanstack/vue-query";
+import axios from 'axios';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 60_000,
       gcTime: 15 * 60_000,
-      retry: 2,
+      retry: (attempt, error) => attempt < 1 && axios.isAxiosError(error) && !axios.isCancel(error) &&
+        (!error.response || error.response.status >= 500),
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30_000),
       refetchOnWindowFocus: false,
       refetchOnReconnect: true,

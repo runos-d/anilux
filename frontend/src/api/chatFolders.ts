@@ -1,4 +1,15 @@
-import apiClient, { isRequestCancelled } from "./client";
+import apiClient, { isRequestCancelled, getMediaUrl as resolveMediaUrl } from "./client";
+import { queryClient } from "@/lib/queryClient";
+import { useAuthStore } from "@/stores/auth";
+
+async function readGroupChats() {
+  const data = await queryClient.fetchQuery({
+    queryKey: ["read", String(useAuthStore().user?.id ?? "guest"), "group-chats"],
+    queryFn: async ({ signal }) => (await apiClient.get("/social/group-chats/", { signal })).data,
+    staleTime: 60_000,
+  });
+  return (data.results || data) as GroupChat[];
+}
 import type {
   ChatFolder,
   CreateFolderData,
@@ -8,13 +19,7 @@ import type {
   GroupChat,
 } from "@/types/chat";
 
-const getMediaUrl = (path: string | null | undefined): string => {
-  if (!path) return "";
-  if (path.startsWith("http")) return path;
-  const rawBase = import.meta.env.VITE_API_URL;
-  const baseUrl = String(rawBase).replace(/\/api$/, "").replace(/\/$/, "");
-  return `${baseUrl}${path.startsWith("/") ? "" : "/"}${path}`;
-};
+const getMediaUrl = (path: string | null | undefined): string => resolveMediaUrl(path) || "";
 
 export const chatFoldersApi = {
   async getAll(): Promise<ChatFolder[]> {
@@ -53,8 +58,7 @@ export const chatFoldersApi = {
   async getPreview(id: number): Promise<FolderPreview> {
     if (id === -4) {
       try {
-        const response = await apiClient.get("/social/group-chats/");
-        const allChats: GroupChat[] = (response.data.results || response.data) as GroupChat[];
+        const allChats = await readGroupChats();
 
         const discussionChats = allChats.filter(
           (chat: GroupChat) => chat.anime_id || chat.anime_title,
@@ -117,8 +121,7 @@ export const chatFoldersApi = {
   async getFolderChats(id: number): Promise<Chat[]> {
     if (id === -4) {
       try {
-        const response = await apiClient.get("/social/group-chats/");
-        const allChats: GroupChat[] = (response.data.results || response.data) as GroupChat[];
+        const allChats = await readGroupChats();
 
         const discussionChats = allChats.filter(
           (chat: GroupChat) => chat.anime_id || chat.anime_title,

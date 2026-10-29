@@ -149,16 +149,7 @@ const checkLibrary = async () => {
     });
     if (res.data.in_library) {
       libraryStatus.value = res.data.status;
-      const listRes = await apiClient.get("/users/library/", {
-        params: { status: res.data.status },
-      });
-      const items = Array.isArray(listRes.data)
-        ? listRes.data
-        : (listRes.data.results ?? []);
-      const found = (
-        items as Array<{ id: number; anime?: number }>
-      ).find((i) => i.anime === Number(props.animeId));
-      if (found) libraryItemId.value = found.id;
+      libraryItemId.value = res.data.item?.id ?? null;
     }
   } catch {
   }

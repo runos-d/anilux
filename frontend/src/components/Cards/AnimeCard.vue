@@ -275,7 +275,7 @@
       </div>
     </div>
 
-    <PlaylistSelectModal
+    <PlaylistSelectModal v-if="showPlaylistModal"
       :show="showPlaylistModal"
       :anime="anime as any"
       :playlists="playlists"
@@ -325,7 +325,7 @@
       </Transition>
     </Teleport>
 
-    <ReminderModal
+    <ReminderModal v-if="showReminderModal"
       :show="showReminderModal"
       :anime="anime as any"
       @close="showReminderModal = false"
@@ -335,9 +335,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, getCurrentInstance } from "vue";
+import { defineAsyncComponent, ref, computed, watch, getCurrentInstance } from "vue";
 import { useRouter } from "vue-router";
-import { PlaylistSelectModal, ReminderModal } from "@/components/Modals";
+const PlaylistSelectModal = defineAsyncComponent(() => import("@/components/Modals/PlaylistSelectModal.vue"));
+const ReminderModal = defineAsyncComponent(() => import("@/components/Modals/ReminderModal.vue"));
 import playlistsApi from "@/api/playlists";
 import type { Playlist } from "@/types";
 import { animeDiscussionsApi } from "@/api/animeDiscussions";

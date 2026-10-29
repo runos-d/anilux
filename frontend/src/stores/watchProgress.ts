@@ -92,6 +92,7 @@ export const useWatchProgressStore = defineStore("watchProgress", () => {
     setProgress,
     getProgress,
     clearProgress,
+    reset: () => progressMap.value.clear(),
     hydrateFromEpisodeSummary,
   };
 });

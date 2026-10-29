@@ -190,7 +190,7 @@
       </div>
     </Teleport>
 
-    <PlaylistSelectModal
+    <PlaylistSelectModal v-if="showPlaylistModal"
       :show="showPlaylistModal"
       :anime="animeForModal as Anime"
       :playlists="playlists as unknown as Playlist[]"
@@ -242,7 +242,7 @@
       </Transition>
     </Teleport>
 
-    <ReminderModal
+    <ReminderModal v-if="showReminderModal"
       :show="showReminderModal"
       :anime="animeForModal as Anime"
       @close="showReminderModal = false"
@@ -252,7 +252,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { defineAsyncComponent, ref, computed, watch } from "vue";
 import { useRouter } from "vue-router";
 import {
   libraryApi,
@@ -261,7 +261,8 @@ import {
 } from "@/api/library";
 import { getMediaUrl } from "@/api/client";
 import type { Anime, Playlist } from "@/types";
-import { PlaylistSelectModal, ReminderModal } from "@/components/Modals";
+const PlaylistSelectModal = defineAsyncComponent(() => import("@/components/Modals/PlaylistSelectModal.vue"));
+const ReminderModal = defineAsyncComponent(() => import("@/components/Modals/ReminderModal.vue"));
 import playlistsApi from "@/api/playlists";
 import remindersApi from "@/api/reminders";
 import { useToast } from "@/composables/useToast";

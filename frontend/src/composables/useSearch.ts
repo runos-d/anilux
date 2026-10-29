@@ -1,4 +1,4 @@
-import { ref, computed, type ComputedRef } from "vue";
+import { ref, computed, getCurrentScope, onScopeDispose, type ComputedRef } from "vue";
 import { useRouter } from "vue-router";
 import { getMediaUrl } from "@/api/client";
 import api from "@/api";
@@ -6,7 +6,7 @@ import api from "@/api";
 function normalizeQuery(query: string): string {
   return query
     .toLowerCase()
-    .replace(/[-_:/\\|,.!?@#$%^&*(){}\[\]<>~`'"\\s]+/g, " ")
+    .replace(/[-_:/\\|,.!?@#$%^&*(){}\[\]<>~`'"\s]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -140,6 +140,15 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
   const results = ref<SearchResults>({});
 
   let searchTimeout: number | null = null;
+  let generation = 0;
+  let controller: AbortController | undefined;
+  const cancel = () => {
+    generation++;
+    controller?.abort();
+    if (searchTimeout) clearTimeout(searchTimeout);
+    isLoading.value = false;
+  };
+  if (getCurrentScope()) onScopeDispose(cancel);
 
   const showSuggestions = computed(() => {
     return (
@@ -162,6 +171,10 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
       return;
     }
 
+    const ownGeneration = ++generation;
+    controller?.abort();
+    const requestController = new AbortController();
+    controller = requestController;
     isLoading.value = true;
     const newResults: SearchResults = {};
 
@@ -178,6 +191,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
             switch (category.id) {
               case "anime":
                 const animeResponse = await api.get("/anime/", {
+                  signal: requestController.signal,
                   params: {
                     search: normalizedQuery,
                     page_size: category.limit || 50,
@@ -188,6 +202,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
 
               case "users":
                 const usersResponse = await api.get("/users/search/", {
+                  signal: requestController.signal,
                   params: {
                     search: normalizedQuery,
                     limit: category.limit || 3,
@@ -200,7 +215,8 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
                 const playlistsResponse = await api.get(
                   "/playlists/playlists/search/",
                   {
-                    params: { q: normalizedQuery, limit: category.limit || 3 },
+                    signal: requestController.signal,
+                  params: { q: normalizedQuery, limit: category.limit || 3 },
                   },
                 );
                 data = playlistsResponse.data.results || [];
@@ -208,6 +224,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
 
               case "groups":
                 const groupsResponse = await api.get("/social/groups/search/", {
+                  signal: requestController.signal,
                   params: { q: normalizedQuery, limit: category.limit || 3 },
                 });
                 data = groupsResponse.data.results || [];
@@ -218,6 +235,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
               (newResults as Record<string, unknown[]>)[category.id] = data;
             }
           } catch (error: unknown) {
+            if (requestController.signal.aborted) return;
             const axiosError = error as { response?: { data?: unknown } };
             console.error(
               `Error searching ${category.id}:`,
@@ -228,17 +246,18 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
         }),
       );
 
-      results.value = newResults;
+      if (ownGeneration === generation) results.value = newResults;
     } catch (error) {
       console.error("Search error:", error);
-      results.value = {};
+      if (ownGeneration === generation) results.value = {};
     } finally {
-      isLoading.value = false;
+      if (ownGeneration === generation) isLoading.value = false;
     }
   };
 
   const handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
+    cancel();
     searchQuery.value = target.value || "";
 
     if (searchTimeout) {
@@ -266,6 +285,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
   };
 
   const clearSearch = () => {
+    cancel();
     searchQuery.value = "";
     results.value = {};
     if (searchTimeout) {
@@ -292,7 +312,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
         router.push(`/profile/${item.id}`);
         break;
       case "playlists":
-        router.push(`/playlists/${item.id}`);
+        router.push({ name: "playlist-detail", params: { id: item.id } });
         break;
       case "groups":
         router.push(`/groups/${item.id}`);

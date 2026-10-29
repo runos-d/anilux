@@ -50,3 +50,13 @@ it('aborts a superseded filter request without cancelling the new query', async 
   expect(isRequestCancelled(cancelled)).toBe(true);
   expect(assign).toHaveBeenCalledWith('new results');
 });
+
+it('reuses fresh cached reads without another request', async () => {
+  const read = scope.run(useCachedReads)!;
+  const fetch = vi.fn().mockResolvedValue('fresh');
+  await read(['catalog'], fetch, vi.fn());
+  const assign = vi.fn();
+  await read(['catalog'], fetch, assign);
+  expect(fetch).toHaveBeenCalledTimes(1);
+  expect(assign).toHaveBeenCalledWith('fresh');
+});

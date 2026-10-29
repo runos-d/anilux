@@ -1,4 +1,5 @@
 import { computed, watch, type WatchStopHandle } from "vue";
+import { useAuthStore } from "@/stores/auth";
 import { useFavoritesStore } from "@/stores/favorites";
 import { useProgressSync } from "@/composables/useProgressSync";
 
@@ -35,7 +36,8 @@ export function useFavorite(idGetter: () => number) {
   };
 
   startWatch();
-  void checkStatus();
+  const auth = useAuthStore();
+  watch(() => auth.isAuthenticated, authenticated => { if (authenticated) void checkStatus(); }, { immediate: true });
 
   return { isFavorite, loading, error: computed(() => null), checkStatus, toggleFavorite };
 }

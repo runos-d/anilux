@@ -214,61 +214,10 @@ const toComma = (v: string[] | string | undefined): string | undefined => {
   return v || undefined;
 };
 
-export const animeApi = {
-  search: async (
-    query: string,
-    options?: SearchOptions,
-  ): Promise<SearchResults> => {
-    const params: SearchParams = {
-      search: query,
-      page_size: options?.limit || 500,
-    };
-    const response = await apiClient.get<AnimeListResponse>("/anime/", {
-      params,
-    });
-
-    return {
-      query: query,
-      results: response.data.results || [],
-      total: response.data.count || 0,
-      source: "database",
-    };
-  },
-
-  searchLegacy: async (
-    query: string,
-    options?: SearchOptions,
-  ): Promise<SearchResults> => {
-    const params: SearchParams = { q: query };
-    if (options?.limit) params.limit = options.limit;
-    const response = await apiClient.get<SearchResults>("/anime/search/", {
-      params,
-    });
-    return response.data;
-  },
-
-  searchPaginated: async (
-    query: string,
-    page = 1,
-    pageSize = 10,
-    signal?: AbortSignal,
-  ): Promise<PaginatedSearchResults> => {
-    const response = await apiClient.get<PaginatedSearchResults>("/anime/search/", {
-      params: { q: query, page, page_size: pageSize },
-      signal,
-    });
-    return response.data;
-  },
-
-  list: async (filters?: AnimeFilters, signal?: AbortSignal): Promise<AnimeListResponse> => {
+export function animeListRequestParams(filters?: AnimeFilters): ListParams {
     const params: ListParams = {};
 
-    if (!filters) {
-      const response = await apiClient.get<AnimeListResponse>("/anime/", {
-        params, signal,
-      });
-      return response.data;
-    }
+    if (!filters) return params;
 
     if (filters.page) params.page = filters.page;
     params.page_size = filters.page_size ?? 50;
@@ -327,6 +276,57 @@ export const animeApi = {
     if (excludedLibraryStatuses)
       params.excluded_library_statuses = excludedLibraryStatuses;
 
+    return params;
+}
+
+export const animeApi = {
+  search: async (
+    query: string,
+    options?: SearchOptions,
+  ): Promise<SearchResults> => {
+    const params: SearchParams = {
+      search: query,
+      page_size: options?.limit || 500,
+    };
+    const response = await apiClient.get<AnimeListResponse>("/anime/", {
+      params,
+    });
+
+    return {
+      query: query,
+      results: response.data.results || [],
+      total: response.data.count || 0,
+      source: "database",
+    };
+  },
+
+  searchLegacy: async (
+    query: string,
+    options?: SearchOptions,
+  ): Promise<SearchResults> => {
+    const params: SearchParams = { q: query };
+    if (options?.limit) params.limit = options.limit;
+    const response = await apiClient.get<SearchResults>("/anime/search/", {
+      params,
+    });
+    return response.data;
+  },
+
+  searchPaginated: async (
+    query: string,
+    page = 1,
+    pageSize = 10,
+    signal?: AbortSignal,
+  ): Promise<PaginatedSearchResults> => {
+    const response = await apiClient.get<PaginatedSearchResults>("/anime/search/", {
+      params: { q: query, page, page_size: pageSize },
+      signal,
+    });
+    return response.data;
+  },
+
+  list: async (filters?: AnimeFilters, signal?: AbortSignal): Promise<AnimeListResponse> => {
+    const params = animeListRequestParams(filters);
     const response = await apiClient.get<AnimeListResponse>("/anime/", {
       params, signal,
     });

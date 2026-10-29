@@ -102,8 +102,8 @@ const searchUserByUsername = async (
   username: string,
 ): Promise<number | null> => {
   try {
-    const response = await apiClient.get("/users/online/", {
-      params: { search: username },
+    const response = await apiClient.get("/users/search/", {
+      params: { username: username.trim() },
     });
     const users = response.data.results || response.data;
     if (users.length > 0) {

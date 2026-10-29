@@ -2,6 +2,7 @@ import { onScopeDispose } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { queryClient } from '@/lib/queryClient';
 import { publicCacheReady } from '@/lib/publicReadCache';
+const handledInvalidations = new WeakSet<object>();
 
 /** Subscribe legacy ref-based screens to the same cache used by Vue Query. */
 export function useCachedReads(visible: () => boolean = () => true) {
@@ -15,6 +16,8 @@ export function useCachedReads(visible: () => boolean = () => true) {
     if (observer.scope !== 'public' && observer.scope !== scope) return;
     if (event.action.type === 'success') observer.assign(event.query.state.data);
     if (event.action.type === 'invalidate') {
+      if (handledInvalidations.has(event)) return;
+      handledInvalidations.add(event);
       const cancelled = queryClient.cancelQueries({ queryKey:event.query.queryKey, exact:true });
       void cancelled.then(observer.refresh).catch(() => undefined);
     }
@@ -26,7 +29,9 @@ export function useCachedReads(visible: () => boolean = () => true) {
     const group = JSON.stringify(key[0]);
     if (isPublic) await publicCacheReady;
     const query = queryClient.getQueryCache().build(queryClient, { queryKey, queryFn: ({ signal }) => fn(signal) });
-    const refresh = () => queryClient.fetchQuery({ queryKey, queryFn: ({ signal }) => fn(signal), staleTime: 0 });
+    const refresh = () => disposed || !visible()
+      ? Promise.reject(new DOMException('Screen closed', 'AbortError'))
+      : queryClient.fetchQuery({ queryKey, queryFn: ({ signal }) => fn(signal), staleTime: 0 });
     for (const [hash, observer] of observers) if (observer.group === group && hash !== query.queryHash) {
       observers.delete(hash);
       await queryClient.cancelQueries({ queryKey:observer.queryKey, exact:true });
@@ -36,7 +41,7 @@ export function useCachedReads(visible: () => boolean = () => true) {
     const cached = queryClient.getQueryData<T>(queryKey);
     if (cached !== undefined) {
       assign(cached);
-      void refresh().catch(() => undefined);
+      if (query.isStaleByTime(60_000)) void refresh().catch(() => undefined);
       return cached;
     }
     return refresh();

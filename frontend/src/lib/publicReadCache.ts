@@ -2,6 +2,7 @@ import { queryClient } from './queryClient';
 
 const MAX_ENTRIES = 80;
 let lastPrune = 0;
+let publicDb: IDBDatabase | null = null;
 const MAX_AGE = 24 * 60 * 60 * 1000;
 function openCache(): Promise<IDBDatabase | null> {
   return new Promise(resolve => {
@@ -16,6 +17,7 @@ function openCache(): Promise<IDBDatabase | null> {
 export const publicCacheReady = (async () => {
   const db = await openCache();
   if (!db) return;
+  publicDb = db;
   await new Promise<void>(resolve => {
     const request = db.transaction('queries').objectStore('queries').getAll();
     request.onsuccess = () => {
@@ -55,3 +57,14 @@ export const publicCacheReady = (async () => {
     } catch { /* Private browsing may disable persistent storage. */ }
   });
 })();
+
+export async function clearPublicReadCache(): Promise<void> {
+  await publicCacheReady;
+  if (publicDb) await new Promise<void>((resolve, reject) => {
+    const transaction = publicDb!.transaction('queries', 'readwrite');
+    transaction.objectStore('queries').clear();
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error);
+  });
+  queryClient.removeQueries({ predicate: query => query.queryKey[1] === 'public' });
+}

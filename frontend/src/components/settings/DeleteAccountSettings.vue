@@ -14,9 +14,19 @@
         <strong><SakuraIcon name="warning" />️ Важно:</strong>
         <ul>
           <li>Имя пользователя освобождается для других</li>
-          <li>Есть 7 дней на восстановление после удаления</li>
+          <li>Удаление выполняется сразу и не может быть отменено</li>
+          <li>Сессии, push-подписки и подготовленные экспорты будут удалены</li>
         </ul>
       </div>
+
+      <label class="credential-field">
+        <span>Текущий пароль</span>
+        <input v-model="password" type="password" autocomplete="current-password" required />
+      </label>
+      <label v-if="requiresTwoFactor" class="credential-field">
+        <span>Код двухфакторной аутентификации</span>
+        <input v-model="twoFactorCode" inputmode="numeric" autocomplete="one-time-code" />
+      </label>
 
       <div class="final-check">
         <label class="checkbox-label">
@@ -31,7 +41,7 @@
       <div class="action-buttons">
         <button
           @click="confirmDeletion"
-          :disabled="!finalConfirmation || isDeleting"
+          :disabled="!finalConfirmation || !password || isDeleting"
           class="danger-btn"
         >
           <SakuraIcon
@@ -55,6 +65,7 @@ import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import apiClient from "@/api/client";
 import SakuraIcon from "@/components/icons/SakuraIcon.vue";
+import { clearConsent, reportTechnicalError, reset as resetAnalytics } from "@/analytics";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -62,6 +73,9 @@ const authStore = useAuthStore();
 const finalConfirmation = ref(false);
 const isDeleting = ref(false);
 const deletionError = ref("");
+const password = ref("");
+const twoFactorCode = ref("");
+const requiresTwoFactor = Boolean(authStore.user?.two_factor_enabled);
 
 const confirmDeletion = async () => {
   if (!finalConfirmation.value) return;
@@ -78,16 +92,20 @@ const confirmDeletion = async () => {
   deletionError.value = "";
 
   try {
-    await apiClient.delete("/users/me/");
-    authStore.logout();
-    router.push("/");
-    alert(
-      "Аккаунт удалён. Вы можете восстановить его в течение 7 дней, войдя в аккаунт.",
-    );
+    await apiClient.post("/users/account-deletion/", {
+      password: password.value,
+      two_factor_code: twoFactorCode.value || undefined,
+      final_confirmation: true,
+    });
+    resetAnalytics();
+    clearConsent();
+    await authStore.clearDeletedAccountSession();
+    await router.push("/");
+    alert("Аккаунт и связанные с ним данные удалены.");
   } catch (error: unknown) {
-    console.error("Error deleting account:", error);
-    const detail = (error as { response?: { data?: { detail?: string } } })
-      ?.response?.data?.detail;
+    reportTechnicalError("account.delete_failed", "/route/settings");
+    const data = (error as { response?: { data?: Record<string, string> } })?.response?.data;
+    const detail = data?.detail || data?.error || data?.two_factor_code || data?.final_confirmation;
     deletionError.value = detail || "Ошибка при удалении аккаунта";
   } finally {
     isDeleting.value = false;
@@ -168,6 +186,9 @@ const confirmDeletion = async () => {
   border-radius: 8px;
   border: 1px solid var(--border-subtle);
 }
+.credential-field { display: grid; gap: 7px; margin: 14px 0; color: var(--text-primary); }
+.credential-field input { min-height: 44px; padding: 9px 12px; color: var(--text-primary); background: var(--surface-3); border: 1px solid var(--border-subtle); border-radius: 8px; }
+.credential-field input:focus-visible { outline: 3px solid var(--danger); outline-offset: 2px; }
 
 .checkbox-label {
   display: flex;

@@ -4,6 +4,7 @@ import { uploadPostFiles, forgetPostUploads, validatePostFiles, fileIdentity } f
 import { postDraftGet, postDraftPut } from './postDrafts';
 import { usePostStore } from '@/stores/posts';
 import type { FeedPost } from '@/api/feed';
+import { event as analyticsEvent } from '@/analytics';
 
 const inFlight = new Map<string, Promise<FeedPost>>();
 
@@ -50,6 +51,10 @@ export function publishPost(owner: number | string, clientId: string, data: Form
     data.set('client_post_id', clientId);
     data.set('media_ids', JSON.stringify(ids));
     post = (await apiClient.post<FeedPost>('/social/posts/', data, { _accountId: String(owner) })).data;
+    const mediaKinds = new Set(files.map(file => file.type.startsWith('video/') ? 'video' : 'image'));
+    analyticsEvent('post_published', {
+      attachment_category: mediaKinds.size > 1 ? 'mixed' : mediaKinds.has('video') ? 'video' : mediaKinds.has('image') ? 'image' : 'none',
+    });
   }
   ensureAccount();
   await forgetPostUploads(owner, files).catch(() => undefined);

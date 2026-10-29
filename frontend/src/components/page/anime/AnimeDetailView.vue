@@ -232,7 +232,7 @@
           </div>
         </div>
 
-        <PlaylistSelectModal
+        <PlaylistSelectModal v-if="showPlaylistModal"
           :show="showPlaylistModal"
           :anime="anime as any"
           :playlists="userPlaylists"
@@ -242,7 +242,7 @@
           @create-playlist="handleCreatePlaylist"
         />
 
-        <ReminderModal
+        <ReminderModal v-if="showReminderModal"
           :show="showReminderModal"
           :anime="anime as any"
           @close="showReminderModal = false"
@@ -291,7 +291,7 @@
           </Transition>
         </Teleport>
 
-        <ImageLightbox
+        <ImageLightbox v-if="showLightbox"
           :show="showLightbox"
           :images="lightboxImages"
           :initial-index="lightboxInitialIndex"
@@ -457,10 +457,12 @@
 
 <script setup lang="ts">
 import { seoPage } from '@/composables/useSeo';
-import { ref, computed, onMounted } from 'vue'
+import { defineAsyncComponent, ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import apiClient, { getMediaUrl } from '@/api/client'
-import { PlaylistSelectModal, ImageLightbox, ReminderModal } from '@/components/Modals'
+const PlaylistSelectModal = defineAsyncComponent(() => import('@/components/Modals/PlaylistSelectModal.vue'))
+const ReminderModal = defineAsyncComponent(() => import('@/components/Modals/ReminderModal.vue'))
+const ImageLightbox = defineAsyncComponent(() => import('@/components/Modals/ImageLightbox.vue'))
 import { AddToFavoriteButton } from '@/components/Buttons'
 import playlistsApi from '@/api/playlists'
 import { getTranslationAvatarUrl } from "@/utils/translationAvatars";
@@ -559,7 +561,7 @@ const creatingPlaylist = ref(false)
 const discussLoading = ref(false)
 
 const _detailAnimeId = Number(route.params.slug) || 0
-if (_detailAnimeId) useAnimeTab(_detailAnimeId)
+if (_detailAnimeId) useAnimeTab(_detailAnimeId).start()
 
 const showLightbox = ref(false)
 const lightboxImages = ref<string[]>([])

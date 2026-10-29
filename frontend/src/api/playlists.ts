@@ -1,4 +1,5 @@
 import apiClient from "./client";
+import { event as analyticsEvent } from "@/analytics";
 import type { AxiosResponse } from "axios";
 
 export type PlaylistVisibility = "public" | "private" | "link";
@@ -216,7 +217,12 @@ const playlistsApi = {
     topics?: string[];
     items?: PlaylistSelectionItem[];
   }): Promise<AxiosResponse<Playlist>> => {
-    return apiClient.post<Playlist>("/playlists/playlists/", data);
+    return apiClient.post<Playlist>("/playlists/playlists/", data).then((response) => {
+      analyticsEvent("playlist_created", {
+        visibility: data.visibility === "link" ? "unlisted" : (data.visibility || "private"),
+      });
+      return response;
+    });
   },
 
   updateVisibility: (

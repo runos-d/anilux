@@ -27,6 +27,7 @@
     <PwaUpdateNotification />
     <NotificationToast v-if="authStore.isAuthenticated" />
     <PostWorkStatus v-if="authStore.isAuthenticated" />
+    <AnalyticsConsentBanner />
 
     <Teleport to="body">
       <FloatingPlayer
@@ -99,6 +100,7 @@ const NewYearOverlay = defineAsyncComponent(() => import('@/components/effects/N
 const HalloweenOverlay = defineAsyncComponent(() => import('@/components/effects/HalloweenOverlay.vue'));
 const LoveDayOverlay = defineAsyncComponent(() => import('@/components/effects/LoveDayOverlay.vue'));
 const CursorEffects = defineAsyncComponent(() => import('@/components/effects/cursor/CursorEffects.vue'));
+const AnalyticsConsentBanner = defineAsyncComponent(() => import('@/components/privacy/AnalyticsConsentBanner.vue'));
 
 const authStore = useAuthStore();
 const settingsStore = useSettingsStore();
@@ -209,7 +211,7 @@ watch(() => authStore.isAuthenticated, authenticated => {
       const chatExtrasStore = useChatExtrasStore();
       stopChatUnreadWatch?.();
       stopChatUnreadWatch = watch(() => chatExtrasStore.totalUnreadCount, count => { chatUnreadCount.value = count; }, { immediate: true });
-      void chatExtrasStore.loadUnreadChats(true);
+      void chatExtrasStore.loadUnreadChats();
     });
   });
   else {

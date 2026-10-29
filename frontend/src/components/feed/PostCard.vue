@@ -324,7 +324,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { defineAsyncComponent, ref, computed, watch } from "vue";
 import ExcerptCard from "@/components/excerpts/ExcerptCard.vue";
 import AttachmentStack from "./AttachmentStack.vue";
 import { postAttachments } from "@/lib/postAttachments";
@@ -333,11 +333,11 @@ import type { FeedPost, MediaFile, AnimeCard, PlaylistCard } from "@/api/feed";
 import { usePostStore } from "@/stores/posts";
 import { useAuthStore } from '@/stores/auth';
 import { getMediaUrl } from "@/api/client";
-import CommentSection from "./CommentSection.vue";
+const CommentSection = defineAsyncComponent(() => import("./CommentSection.vue"));
 import QuoteCard from "@/components/ui/QuoteCard.vue";
 import { postTitle } from '@/lib/systemUiText';
 import SakuraIcon from "@/components/icons/SakuraIcon.vue";
-import ImageLightbox from "@/components/Modals/ImageLightbox.vue";
+const ImageLightbox = defineAsyncComponent(() => import("@/components/Modals/ImageLightbox.vue"));
 import { formatPostText } from '@/lib/postText';
 
 const isIconName = (icon: string | undefined): boolean => {

@@ -96,14 +96,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onActivated, onDeactivated, watch } from "vue";
+import { defineAsyncComponent, ref, computed, onMounted, onActivated, onDeactivated, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import CatalogView from "./CatalogView.vue";
-import OngoingsView from "./OngoingsView.vue";
-import RecommendationsView from "./RecommendationsView.vue";
-import AnnouncementsView from "./AnnouncementsView.vue";
-import CurrentlyWatchingView from "./CurrentlyWatchingView.vue";
-import CalendarView from "./CalendarView.vue";
+const CatalogView = defineAsyncComponent(() => import("./CatalogView.vue"));
+const OngoingsView = defineAsyncComponent(() => import("./OngoingsView.vue"));
+const RecommendationsView = defineAsyncComponent(() => import("./RecommendationsView.vue"));
+const AnnouncementsView = defineAsyncComponent(() => import("./AnnouncementsView.vue"));
+const CurrentlyWatchingView = defineAsyncComponent(() => import("./CurrentlyWatchingView.vue"));
+const CalendarView = defineAsyncComponent(() => import("./CalendarView.vue"));
 import {
   useAnimeSections,
   type AnimeSection as SectionType,
@@ -112,6 +112,7 @@ import {
 import type { FilterState } from "@/components/Filters/AnimeFilterBar.vue";
 import apiClient from "@/api/client";
 import type { Anime } from "@/types";
+import { event as analyticsEvent } from "@/analytics";
 
 const router = useRouter();
 const route = useRoute();
@@ -235,7 +236,9 @@ watch(
   { immediate: true },
 );
 onDeactivated(() => stopCwPolling());
+let initiallyActivated = false;
 onActivated(() => {
+  if (!initiallyActivated) { initiallyActivated = true; return; }
   if (currentSection.value === 'currently_watching') { void fetchCurrentlyWatching(); startCwPolling(); }
   else refreshCurrentSection();
 });
@@ -270,7 +273,18 @@ const isIconName = (icon: string): boolean => {
 const currentCatalogFilters = computed(() => catalogFilters.value as FilterState);
 const handlePageChange = (page: number) =>
   fetchCatalog(page);
-const handleCatalogFilterChange = (filters: FilterState) => {
+const handleCatalogFilterChange = (filters: FilterState, userInitiated = true) => {
+  if (userInitiated) {
+    const activeFilterCount = Object.entries(filters).filter(([key, value]) => {
+      if (key === "ordering" || key === "page_size") return false;
+      if (Array.isArray(value)) return value.length > 0;
+      return value !== undefined && value !== null && value !== "" && value !== false;
+    }).length;
+    analyticsEvent("filter_applied", {
+      filter_group: "catalog",
+      active_filter_count: Math.min(activeFilterCount, 20),
+    });
+  }
   fetchCatalog(1, filters as CatalogFilters);
 };
 
@@ -288,15 +302,23 @@ const unshuffleCatalog = () => {
 };
 
 const goToDetail = (anime: Anime) => {
+  let target: string;
   if (anime.franchise_slug) {
-    router.push(`/franchise/${anime.franchise_slug}`);
+    target = `/franchise/${anime.franchise_slug}`;
   } else if (anime.franchise_id) {
-    router.push(`/franchise/${anime.franchise_id}`);
+    target = `/franchise/${anime.franchise_id}`;
   } else {
-    router.push(`/anime/${anime.slug || anime.id}`);
+    target = `/anime/${anime.slug || anime.id}`;
   }
+  void router.push(target).then((failure) => {
+    if (!failure) analyticsEvent("card_opened", { source: "catalog" });
+  });
 };
-const startWatching = (anime: Anime) => router.push(`/anime/${anime.slug || anime.id}/watch`);
+const startWatching = (anime: Anime) => {
+  void router.push(`/anime/${anime.slug || anime.id}/watch`).then((failure) => {
+    if (!failure) analyticsEvent("card_opened", { source: "catalog" });
+  });
+};
 </script>
 
 <style scoped>

@@ -375,6 +375,9 @@ export async function installVisualApi(page, theme) {
       love_day_enabled: false,
     });
     if (path === "/users/settings/" || path === "/settings/") return json(route, { theme, language: "ru", notifications_enabled: true, privacy: {} });
+    if (path === "/users/sessions/active/") return json(route, [{ id: 1, session_key: "visual-session", device_name: "Chrome", is_current_device: true, location: "", last_activity: "2026-10-28T10:00:00Z" }]);
+    if (path === "/users/storage-usage/") return json(route, { used: 1024, total: 1024, limit: 2147483648, media: 1024, documents: 0, audio: 0, messages: 0, cache: 0, breakdown: {} });
+    if (path === "/users/library/check_anime/") return json(route, { in_library: true, status: libraryItem.status, item: libraryItem });
     if (path === "/users/sessions/") return json(route, [{ id: 1, device: "Chrome", location: "Москва", current: true, last_activity: "2026-01-15T12:00:00Z" }]);
     if (path.includes("/users/library/statistics")) return json(route, { total: 42, completed: 28, watching: 6, planned: 8, hours_watched: 280, favorite_genres: ["Драма", "Фэнтези"] });
     if (path.includes("/users/library/wrapped")) return json(route, { year: 2025, total_anime: 42, total_episodes: 630, hours: 280, top_genres: ["Драма", "Фэнтези"], top_anime: animeList.slice(0, 3) });
@@ -448,8 +451,8 @@ export async function installVisualApi(page, theme) {
   });
 }
 
-export async function installVisualSession(page, theme) {
-  await page.addInitScript(({ currentTheme, currentUser }) => {
+export async function installVisualSession(page, theme, consentState = "denied") {
+  await page.addInitScript(({ currentTheme, currentUser, currentConsentState }) => {
     const legacyTheme = currentTheme === "light" ? "light" : "dark";
     localStorage.setItem("appearance:v1", JSON.stringify({ s: { theme: currentTheme, smoothAnimations: false, sakuraEnabled: false }, o: {} }));
     localStorage.setItem("userSettings", JSON.stringify({ theme: legacyTheme, ui_style: "modern", text_size: "medium" }));
@@ -457,6 +460,13 @@ export async function installVisualSession(page, theme) {
     localStorage.setItem("anilux_access_token_v1", "visual-access");
     localStorage.setItem("anilux_refresh_token_v1", "visual-refresh");
     localStorage.setItem("anilux_user_v1", JSON.stringify(currentUser));
+    if (currentConsentState === "unknown") localStorage.removeItem("anilux.analytics.consent");
+    else localStorage.setItem("anilux.analytics.consent", JSON.stringify({
+      state: currentConsentState,
+      policyVersion: "2026-10-27.1",
+      decidedAt: "2026-10-27T00:00:00.000Z",
+      source: "banner",
+    }));
     class VisualWebSocket {
       static OPEN = 1;
       readyState = 1;
@@ -466,6 +476,6 @@ export async function installVisualSession(page, theme) {
       close() {}
     }
     Object.defineProperty(window, "WebSocket", { value: VisualWebSocket, configurable: true });
-  }, { currentTheme: theme, currentUser: user });
+  }, { currentTheme: theme, currentUser: user, currentConsentState: consentState });
   await installVisualApi(page, theme);
 }

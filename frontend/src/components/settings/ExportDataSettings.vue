@@ -4,13 +4,13 @@
 
     <div class="settings-group info-group">
       <h3>📤 Экспорт всех данных</h3>
-      
+
       <div class="info-content">
         <p>
-          Вы можете экспортировать все свои данные в машиночитаемом формате. 
+          Вы можете экспортировать все свои данные в машиночитаемом формате.
           Это позволяет создать резервную копию или перенести данные в другой сервис.
         </p>
-        
+
         <div class="info-points">
           <div class="info-point">
             <span class="point-icon">⏱️</span>
@@ -34,7 +34,7 @@
 
     <div class="settings-group">
       <h3>☑️ Выберите, что экспортировать</h3>
-      
+
       <div class="export-items">
         <label class="export-item">
           <input type="checkbox" v-model="exportOptions.profile" />
@@ -137,7 +137,7 @@
 
     <div class="settings-group">
       <h3><SakuraIcon name="folder"/> Формат экспорта</h3>
-      
+
       <div class="format-options">
         <label class="format-option" :class="{ active: exportFormat === 'json' }">
           <input type="radio" v-model="exportFormat" value="json" />
@@ -167,60 +167,25 @@
     </div>
 
     <div class="settings-group">
-      <h3><SakuraIcon name="chart"/> Оценка размера</h3>
-      
-      <div class="size-estimate">
-        <div class="estimate-chart">
-          <div class="chart-bar">
-            <div
-              class="chart-fill"
-              :style="{ width: estimatePercent + '%' }"
-            ></div>
-          </div>
-        </div>
-        
-        <div class="estimate-details">
-          <div class="estimate-total">
-            <span class="estimate-label">Предполагаемый размер:</span>
-            <span class="estimate-value">{{ estimatedSize }}</span>
-          </div>
-          
-          <div class="estimate-breakdown">
-            <div class="breakdown-item">
-              <span class="breakdown-label">Текстовые данные:</span>
-              <span class="breakdown-value">~{{ textSize }}</span>
-            </div>
-            <div class="breakdown-item">
-              <span class="breakdown-label">Медиа файлы:</span>
-              <span class="breakdown-value">~{{ mediaSize }}</span>
-            </div>
-            <div class="breakdown-item">
-              <span class="breakdown-label">Архивирование:</span>
-              <span class="breakdown-value">-{{ compressionSize }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="settings-group">
       <h3>📋 Предыдущие экспорты</h3>
-      
+
       <div v-if="previousExports.length > 0" class="exports-list">
         <div v-for="exp in previousExports" :key="exp.id" class="export-item">
           <div class="export-info">
             <span class="export-date">{{ formatDate(exp.created_at) }}</span>
             <span class="export-format">{{ exp.format.toUpperCase() }}</span>
-            <span class="export-size">{{ exp.size }}</span>
+            <span class="export-size">{{ formatSize(exp.size) }}</span>
           </div>
           <div class="export-status">
             <span v-if="exp.status === 'ready'" class="status-ready">
               <button @click="downloadExport(exp)" class="download-btn"><SakuraIcon name="import"/> Скачать</button>
-              <span class="expiry">Истекает через {{ getExpiryDays(exp.created_at) }} дней</span>
+              <span class="expiry">Истекает через {{ getExpiryDays(exp.expires_at) }} дней</span>
             </span>
-            <span v-else-if="exp.status === 'processing'" class="status-processing">
+            <span v-else-if="exp.status === 'processing' || exp.status === 'queued'" class="status-processing">
               <SakuraIcon name="refresh"/> Обработка...
             </span>
+            <span v-else-if="exp.status === 'failed'" class="status-expired">Не удалось создать</span>
+            <span v-else-if="exp.status === 'canceled'" class="status-expired">Отменён</span>
             <span v-else class="status-expired">
               <SakuraIcon name="clock"/> Истёк
             </span>
@@ -248,10 +213,10 @@
     <div v-if="showConfirmModal" class="modal-overlay" @click="showConfirmModal = false">
       <div class="modal" @click.stop>
         <h3>Подтвердить экспорт данных?</h3>
-        
+
         <div class="modal-content">
           <p>Вы собираетесь экспортировать следующие данные:</p>
-          
+
           <div class="modal-export-list">
             <div v-for="(item, key) in exportOptions" :key="key">
               <span v-if="item" class="modal-export-item">✓ {{ getExportItemName(key) }}</span>
@@ -282,15 +247,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { reportTechnicalError } from '@/analytics'
 import * as settingsApi from '@/api/settings'
 
 interface PreviousExport {
   id: number
   created_at: string
   format: string
-  size: string
-  status: 'ready' | 'processing' | 'expired'
+  size: number | null
+  status: 'queued' | 'ready' | 'processing' | 'expired' | 'failed' | 'canceled'
   expires_at: string | null
   download_url: string | null
 }
@@ -321,12 +287,6 @@ const selectAll = computed(() => {
 const canRequestExport = computed(() => {
   return Object.values(exportOptions.value).some(v => v)
 })
-
-const estimatedSize = ref('42.5 MB')
-const textSize = ref('15.3 MB')
-const mediaSize = ref('30.2 MB')
-const compressionSize = ref('3.0 MB')
-const estimatePercent = ref(85)
 
 const toggleSelectAll = () => {
   const newValue = !selectAll.value
@@ -369,10 +329,10 @@ const confirmExport = async () => {
       format: exportFormat.value
     })
 
-    alert('Запрос на экспорт отправлен! Ссылка будет отправлена на ваш email.')
+    alert('Экспорт поставлен в очередь. Готовый архив появится в списке на этой странице.')
     await fetchExports()
-  } catch (error) {
-    console.error('Error requesting export:', error)
+  } catch {
+    reportTechnicalError('export.request_failed', '/route/settings')
     alert('Ошибка при запросе экспорта')
   } finally {
     isRequesting.value = false
@@ -385,12 +345,12 @@ const downloadExport = async (exp: PreviousExport) => {
     const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.setAttribute('download', `anilux-export-${exp.id}.${exp.format}`)
+    link.setAttribute('download', `anilux-export-${exp.id}.zip`)
     document.body.appendChild(link)
     link.click()
     link.remove()
-  } catch (error) {
-    console.error('Error downloading export:', error)
+  } catch {
+    reportTechnicalError('export.download_failed', '/route/settings')
     alert('Ошибка при скачивании')
   }
 }
@@ -399,8 +359,8 @@ const fetchExports = async () => {
   try {
     const data = await settingsApi.getDataExports()
     previousExports.value = data.exports || []
-  } catch (error) {
-    console.error('Error fetching exports:', error)
+  } catch {
+    reportTechnicalError('export.list_failed', '/route/settings')
   }
 }
 
@@ -415,18 +375,29 @@ const formatDate = (dateString: string) => {
   })
 }
 
-const getExpiryDays = (dateString: string) => {
+const formatSize = (size: number | null) => {
+  if (size == null) return '—'
+  if (size < 1024) return `${size} Б`
+  if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} КБ`
+  return `${(size / 1024 / 1024).toFixed(1)} МБ`
+}
+
+const getExpiryDays = (dateString: string | null) => {
   if (!dateString) return 0
-  const created = new Date(dateString)
-  const expiry = new Date(created.getTime() + 7 * 24 * 60 * 60 * 1000)
+  const expiry = new Date(dateString)
   const now = new Date()
   const diffDays = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
   return Math.max(0, diffDays)
 }
 
+let pollTimer: number | undefined
 onMounted(() => {
-  fetchExports()
+  void fetchExports()
+  pollTimer = window.setInterval(() => {
+    if (previousExports.value.some(exp => exp.status === 'queued' || exp.status === 'processing')) void fetchExports()
+  }, 5000)
 })
+onUnmounted(() => { if (pollTimer) window.clearInterval(pollTimer) })
 </script>
 
 <style scoped>

@@ -541,24 +541,6 @@
               </label>
             </div>
 
-            <h4 class="section-title">Контакты</h4>
-
-            <div class="toggle-group">
-              <label class="toggle-label">
-                <input type="checkbox" v-model="formData.syncContacts" />
-                <span class="toggle-slider"></span>
-                <span>Синхронизировать контакты</span>
-              </label>
-
-              <label class="toggle-label">
-                <input
-                  type="checkbox"
-                  v-model="formData.suggestFrequentContacts"
-                />
-                <span class="toggle-slider"></span>
-                <span>Предлагать частые контакты</span>
-              </label>
-            </div>
           </div>
 
           <div v-show="activeTab === 'security'" class="tab-content">
@@ -1452,8 +1434,6 @@ async function saveSettings() {
         who_can_call: formData.whoCanCall,
         who_can_add_to_groups: formData.whoCanAddToGroups,
         allow_message_forwarding: formData.allowMessageForwarding,
-        sync_contacts: formData.syncContacts,
-        suggest_frequent_contacts: formData.suggestFrequentContacts,
       },
       two_factor_settings: {
         is_enabled: formData.twoFactorEnabled,

@@ -1055,6 +1055,9 @@ onMounted(() => {
 
 <style scoped>
 .admin-dashboard {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   max-width: 1120px;
   margin: 0 auto;
   padding: 24px;
@@ -1112,7 +1115,9 @@ onMounted(() => {
   gap: 4px;
   border-bottom: 1px solid var(--border-default, #333);
   margin: 20px 0 24px;
-  overflow-x: none;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .tab-btn {

@@ -30,7 +30,34 @@ describe('useSearch', () => {
     await vi.runAllTimersAsync();
 
     expect(mocks.get).toHaveBeenCalledWith('/playlists/playlists/search/', {
+      signal: expect.any(AbortSignal),
       params: { q: 'космос', limit: 7 },
     });
   });
+  it('preserves s in English titles and uses the registered playlist detail route', async () => {
+    const search = useSearch({ debounceTime: 0 });
+    search.handleInput({ target: { value: 'Sword Art Online' } } as unknown as Event);
+    await vi.runAllTimersAsync();
+    expect(mocks.get).toHaveBeenCalledWith('/anime/', expect.objectContaining({ params: { search: 'sword art online', page_size: 50 } }));
+    search.selectItem('playlists', { id: 42 });
+    expect(mocks.push).toHaveBeenCalledWith({ name: 'playlist-detail', params: { id: 42 } });
+  });
+
+  it('discards a late reply after a newer search and after clearing input', async () => {
+    let resolveOld!: (data: unknown) => void;
+    mocks.get.mockImplementationOnce(() => new Promise(resolve => { resolveOld = resolve; }));
+    const search = useSearch({ debounceTime: 0, categories: [{ id: 'anime', name: 'Anime', icon: '', enabled: true }] });
+    search.handleInput({ target: { value: 'old' } } as unknown as Event);
+    await vi.advanceTimersByTimeAsync(0);
+    mocks.get.mockResolvedValueOnce({ data: { results: [{ id: 2 }] } });
+    search.handleInput({ target: { value: 'new' } } as unknown as Event);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(search.results.value?.anime).toEqual([{ id: 2 }]);
+    search.clearSearch();
+    resolveOld({ data: { results: [{ id: 1 }] } });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(search.results.value).toEqual({});
+    expect(search.isLoading.value).toBe(false);
+  });
+
 });

@@ -335,9 +335,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onUnmounted } from "vue";
+import { defineAsyncComponent, ref, computed, watch, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
-import { PlaylistSelectModal, ReminderModal } from "@/components/Modals";
+const PlaylistSelectModal = defineAsyncComponent(() => import("@/components/Modals/PlaylistSelectModal.vue"));
+const ReminderModal = defineAsyncComponent(() => import("@/components/Modals/ReminderModal.vue"));
 import playlistsApi, { type Playlist } from "@/api/playlists";
 import type { ReminderData } from "@/components/Modals/ReminderModal.vue";
 import remindersApi from "@/api/reminders";

@@ -42,7 +42,7 @@
               :class="{ open: showFilters }"
             />
           </button>
-          
+
           <div class="tag-filter-inline">
             <div class="tag-input-wrapper">
               <SakuraIcon name="hash" :size="14" class="tag-icon" />
@@ -59,28 +59,28 @@
               </button>
             </div>
           </div>
-          
+
           <!-- Collapsible Filters -->
           <div v-if="showFilters" class="filters-dropdown">
             <div class="filter-group">
               <label class="filter-label">Тип контента:</label>
               <div class="toggle-buttons">
-                <button 
-                  :class="['toggle-btn', { active: filters.myPosts }]" 
+                <button
+                  :class="['toggle-btn', { active: filters.myPosts }]"
                   @click="toggleFilter('myPosts')"
                 >
                   <SakuraIcon name="user" :size="14" />
                   <span>Мои посты</span>
                 </button>
-                <button 
-                  :class="['toggle-btn', { active: filters.subscriptions }]" 
+                <button
+                  :class="['toggle-btn', { active: filters.subscriptions }]"
                   @click="toggleFilter('subscriptions')"
                 >
                   <SakuraIcon name="subscriptions" :size="14" />
                   <span>Подписки</span>
                 </button>
-                <button 
-                  :class="['toggle-btn', { active: filters.withAnime }]" 
+                <button
+                  :class="['toggle-btn', { active: filters.withAnime }]"
                   @click="toggleFilter('withAnime')"
                 >
                   <SakuraIcon name="anime-tv" :size="14" />
@@ -92,26 +92,26 @@
             <div class="filter-group">
               <label class="filter-label">За период:</label>
               <div class="period-buttons">
-                <button 
-                  :class="['period-btn', { active: filters.period === 'all' }]" 
+                <button
+                  :class="['period-btn', { active: filters.period === 'all' }]"
                   @click="filters.period = 'all'; applyFilters()"
                 >
                   Всё время
                 </button>
-                <button 
-                  :class="['period-btn', { active: filters.period === 'day' }]" 
+                <button
+                  :class="['period-btn', { active: filters.period === 'day' }]"
                   @click="filters.period = 'day'; applyFilters()"
                 >
                   День
                 </button>
-                <button 
-                  :class="['period-btn', { active: filters.period === 'week' }]" 
+                <button
+                  :class="['period-btn', { active: filters.period === 'week' }]"
                   @click="filters.period = 'week'; applyFilters()"
                 >
                   Неделя
                 </button>
-                <button 
-                  :class="['period-btn', { active: filters.period === 'month' }]" 
+                <button
+                  :class="['period-btn', { active: filters.period === 'month' }]"
                   @click="filters.period = 'month'; applyFilters()"
                 >
                   Месяц
@@ -134,9 +134,9 @@
 
       <!-- Active Filters Tags -->
       <div v-if="activeTab === 'feed' && activeFilterTags.length > 0" class="active-filters">
-        <span 
-          v-for="tag in activeFilterTags" 
-          :key="tag.key" 
+        <span
+          v-for="tag in activeFilterTags"
+          :key="tag.key"
           class="filter-tag"
           @click="removeFilter(tag.key)"
         >
@@ -166,7 +166,7 @@
                 <SakuraIcon name="star" /> Избранные посты
               </button>
             </div>
-            
+
             <!-- Profiles Sub-tab -->
             <div v-if="subscriptionsSubTab === 'profiles'">
               <div class="tab-header">
@@ -514,20 +514,20 @@
                 <option value="other">Другое</option>
               </select>
             </div>
-            
+
             <div v-if="loadingReports" class="loading-state">
               <div class="skeleton-report" v-for="i in 3" :key="i">
                 <div class="skeleton-line"></div>
                 <div class="skeleton-line medium"></div>
               </div>
             </div>
-            
+
             <div v-else-if="reports.length === 0" class="empty-state">
               <div class="empty-icon"> <SakuraIcon name="clipboard" :size="56" /> </div>
               <h3>Нет жалоб</h3>
               <p>Нет жалоб для рассмотрения</p>
             </div>
-            
+
             <div v-else class="reports-list">
               <div v-for="report in reports" :key="report.id" class="report-card">
                 <div class="report-header">
@@ -743,9 +743,8 @@
                   <span>Показать {{ newPostsCount }} новых постов</span>
                 </div>
 
+                <VirtualFeed :items="visiblePosts" v-slot="{ item: post }">
                 <PostCard
-                  v-for="post in visiblePosts"
-                  :key="post.id"
                   :post="post"
                   :data-post-id="post.id"
                   :like-loading="postStore.reactions.has(String(post.id))"
@@ -756,10 +755,11 @@
                   @comment="openComments"
                   @menu="openPostMenu"
                 />
+                </VirtualFeed>
 
                 <div v-if="hasMore" class="load-more">
-                  <button @click="loadMorePosts" :disabled="loadingMore" class="btn-load-more">
-                    {{ loadingMore ? 'Загрузка...' : 'Показать ещё' }}
+                  <button @click="loadMorePosts(true)" :disabled="loadingMore" class="btn-load-more">
+                    {{ loadingMore ? 'Загрузка...' : posts.length >= 200 ? 'Следующие публикации' : 'Показать ещё' }}
                   </button>
                 </div>
               </div>
@@ -869,7 +869,7 @@
     <PostMenu v-if="showMenu && selectedPost" :post="selectedPost as any" @close="showMenu = false" @edit="editPost as any" @delete="deletePost as any" @hide="hidePost as any" @hide-author="hidePostByAuthor as any" @followed="fetchCurrentUser as any" />
     <ReportModal v-if="showReport" content-type="post" :content-id="selectedPost?.id" @close="showReport = false" />
     <PostDetailModal v-if="showPostDetail" :post="selectedPost as any" @close="showPostDetail = false" />
-    
+
     <!-- Report Detail Modal -->
     <div v-if="showReportDetail" class="modal-overlay" @click="showReportDetail = false">
       <div class="report-detail-modal" @click.stop>
@@ -949,22 +949,22 @@
 </template>
 
 <script setup lang="ts">
+import VirtualFeed from "@/components/common/VirtualFeed.vue";
 import SakuraIcon from "@/components/icons/SakuraIcon.vue";
-import { ref, computed, onMounted, onUnmounted, onActivated, onDeactivated, nextTick, watch } from 'vue'
+import { defineAsyncComponent, ref, computed, onMounted, onUnmounted, onActivated, onDeactivated, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import apiClient, { getMediaUrl, isRequestCancelled } from '@/api/client'
 import animeApi from '@/api/anime'
 import type { FeedPost, SubscriptionUser, NotInterestedUser, HiddenPost, ReportItem, AnimeCard, PlaylistCard, MatchingChannel, MatchingChannelsResponse } from '@/api/feed'
 import PostCard from '@/components/feed/PostCard.vue'
-import CreatePostModal from '@/components/feed/CreatePostModal.vue'
-import EditPostModal from '@/components/feed/EditPostModal.vue'
-import CommentsModal from '@/components/feed/CommentsModal.vue'
-import PostMenu from '@/components/feed/PostMenu.vue'
-import ReportModal from '@/components/feed/ReportModal.vue'
-import PostDetailModal from '@/components/feed/PostDetailModal.vue'
+const EditPostModal = defineAsyncComponent(() => import('@/components/feed/EditPostModal.vue'))
+const CommentsModal = defineAsyncComponent(() => import('@/components/feed/CommentsModal.vue'))
+const PostMenu = defineAsyncComponent(() => import('@/components/feed/PostMenu.vue'))
+const ReportModal = defineAsyncComponent(() => import('@/components/feed/ReportModal.vue'))
+const PostDetailModal = defineAsyncComponent(() => import('@/components/feed/PostDetailModal.vue'))
 import ExcerptCard from '@/components/excerpts/ExcerptCard.vue'
 import type { Excerpt } from '@/api/excerpts'
-import AttachModal from '@/components/feed/AttachModal.vue'
+const AttachModal = defineAsyncComponent(() => import('@/components/feed/AttachModal.vue'))
 import { postsApi, subscriptionsApi, bookmarksApi, feedApi, followsApi } from '@/api/feed'
 import { normalizePost } from '@/utils/normalizers'
 import { useAuthStore } from '@/stores/auth'
@@ -972,6 +972,7 @@ import { usePostStore } from '@/stores/posts'
 import { publishPost } from '@/lib/postPublication'
 import { postDraftGet, postDraftPut, type PostDraft } from '@/lib/postDrafts'
 import { useCachedReads } from '@/composables/useCachedReads'
+import { invalidateQueryGroups } from '@/lib/queryClient'
 const auth = useAuthStore()
 const postStore = usePostStore()
 const editModal = ref<InstanceType<typeof EditPostModal> | null>(null)
@@ -1027,6 +1028,15 @@ const hasMore = ref(true)
 const page = ref(1)
 const activeTab = ref('feed')
 const newPostsCount = ref(0)
+const newPostIds = new Set<string>()
+const handleNewPost = (event: Event) => {
+  if (!feedActive.value || route.name === 'post-detail') return
+  const id = String((event as CustomEvent<{ post_id?: string }>).detail?.post_id || '')
+  if (!id || newPostIds.has(id) || posts.value.some(post => String(post.id) === id)) return
+  newPostIds.add(id)
+  if (newPostIds.size > 1000) newPostIds.delete(newPostIds.values().next().value!)
+  newPostsCount.value = Math.min(1000, newPostsCount.value + 1)
+}
 
 const showFilters = ref(false)
 const filters = ref<FilterState>({
@@ -1500,6 +1510,7 @@ const loadPosts = async () => {
     const params: Record<string, string | number> = {
       page: 1,
       page_size: 20,
+      include_count: 'false',
       sort: filters.value.sort,
       date_range: filters.value.period,
     }
@@ -1537,6 +1548,7 @@ const loadPosts = async () => {
         feedCursor.value = data.next_cursor
       }
       newPostsCount.value = 0
+      newPostIds.clear()
     })
   } catch (error) {
     if (isRequestCancelled(error)) return
@@ -1552,13 +1564,20 @@ const loadPosts = async () => {
   }
 }
 
-const loadMorePosts = async () => {
+const loadMorePosts = async (nextSection = false) => {
   if (loadingMore.value || !hasMore.value) return
+  if (posts.value.length >= 200) {
+    if (!nextSection) return
+    posts.value = []
+    await nextTick()
+    window.scrollTo(0, 0)
+  }
   loadingMore.value = true
   try {
     const params: Record<string, string | number> = {
       cursor: feedCursor.value || '',
       page_size: 20,
+      include_count: 'false',
       sort: filters.value.sort,
       date_range: filters.value.period,
     }
@@ -1585,13 +1604,14 @@ const loadMorePosts = async () => {
 
 const loadNewPosts = async () => {
   page.value = 1
+  await invalidateQueryGroups(['feed'])
   await loadPosts()
 }
 
 const switchTab = async (tabId: string) => {
   activeTab.value = tabId
   page.value = 1
-  
+
   if (tabId === 'feed') {
     await loadPosts()
   } else if (tabId === 'popular') {
@@ -2015,10 +2035,10 @@ const toggleBookmark = async (post: Post) => {
 
 
 
-const editPost = (post: Post) => { 
+const editPost = (post: Post) => {
   selectedPost.value = post
   showMenu.value = false
-  showEditPost.value = true 
+  showEditPost.value = true
 }
 
 const onPostEdited = (updatedPost: FeedPost | null | undefined) => {
@@ -2029,26 +2049,26 @@ const onPostEdited = (updatedPost: FeedPost | null | undefined) => {
     const updated = { ...posts.value[idx], ...updatedPost }
     posts.value[idx] = updated as typeof posts.value[number]
   }
-  bookmarkedPosts.value = bookmarkedPosts.value.map(p => 
+  bookmarkedPosts.value = bookmarkedPosts.value.map(p =>
     p.id === updatedPost.id ? { ...p, ...updatedPost } : p
   )
-  pinnedPosts.value = pinnedPosts.value.map(p => 
+  pinnedPosts.value = pinnedPosts.value.map(p =>
     p.id === updatedPost.id ? { ...p, ...updatedPost } : p
   )
-  favoritePosts.value = favoritePosts.value.map(p => 
+  favoritePosts.value = favoritePosts.value.map(p =>
     p.id === updatedPost.id ? { ...p, ...updatedPost } : p
   )
   showEditPost.value = false
 }
 const deletePost = async (post: Post) => {
   const originalPosts = [...posts.value]
-  
+
   try {
     posts.value = posts.value.filter(p => p.id !== post.id)
     showMenu.value = false
-    
+
     await apiClient.delete(`/social/posts/${post.id}/`)
-    
+
   } catch (e: unknown) {
     console.error('Error deleting post:', e)
     posts.value = originalPosts
@@ -2088,10 +2108,8 @@ const hidePostByAuthor = async (post: Post) => {
 const onPostCreated = (post: Post) => { posts.value.unshift(post); showCreatePost.value = false }
 
 const fetchCurrentUser = async () => {
-  try {
-    const response = await apiClient.get('/users/me/')
-    currentUser.value = response.data
-  } catch (error) { if (!isRequestCancelled(error)) console.error('Error fetching current user:', error) }
+  await auth.checkAuth()
+  currentUser.value = auth.user as User | null
 }
 
 const handleScroll = () => {
@@ -2123,6 +2141,7 @@ onMounted(async () => {
   loadMatchingChannels()
 
   window.addEventListener('scroll', handleScroll)
+  window.addEventListener('new_post', handleNewPost)
 })
 
 watch(
@@ -2156,16 +2175,17 @@ onDeactivated(() => {
   window.removeEventListener('scroll', handleScroll)
 })
 onUnmounted(() => {
+  window.removeEventListener('new_post', handleNewPost)
   window.removeEventListener('scroll', handleScroll)
   if (feedSession !== postStore.sessionGeneration) return
-  const params: Record<string, string | number> = { page: 1, page_size: 20, sort: filters.value.sort, date_range: filters.value.period }
+  const params: Record<string, string | number> = { page: 1, page_size: 20, include_count: 'false', sort: filters.value.sort, date_range: filters.value.period }
   if (filters.value.myPosts) params.my_posts = 'true'
   if (filters.value.subscriptions) params.subscriptions = 'true'
   if (filters.value.groups) params.groups = 'true'
   if (filters.value.withAnime) params.with_anime = 'true'
   if (filters.value.tags.length) params.tags = filters.value.tags.join(',')
-  postStore.feeds.set(JSON.stringify(params), { rows: [...posts.value], cursor: feedCursor.value, scroll: window.scrollY, savedAt: Date.now() })
-  if (postStore.feeds.size > 10) postStore.feeds.delete(postStore.feeds.keys().next().value!)
+  postStore.feeds.set(JSON.stringify(params), { rows: posts.value.slice(-200), cursor: feedCursor.value, scroll: window.scrollY, savedAt: Date.now() })
+  if (postStore.feeds.size > 3) postStore.feeds.delete(postStore.feeds.keys().next().value!)
 })
 </script>
 
@@ -2174,28 +2194,28 @@ onUnmounted(() => {
   animation: pulse 1.4s infinite;
 }
 @keyframes pulse {
-  0%, 100% { 
-    transform: translateY(0px); 
+  0%, 100% {
+    transform: translateY(0px);
   }
-  50% { 
-    transform: translateY(-20px); 
+  50% {
+    transform: translateY(-20px);
   }
 }
-.feed-page { 
-  min-height: 100vh; 
+.feed-page {
+  min-height: 100vh;
   background: var(--surface-1);
 }
 
-.container { 
-  max-width: 1200px; 
-  margin: 0 auto; 
-  padding: 0 1rem; 
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
-.page-header { 
+.page-header {
   display: flex;
-  justify-content: space-between; 
-  align-items: flex-end; 
+  justify-content: space-between;
+  align-items: flex-end;
   gap: 1rem;
   padding: 1.75rem 0 1.25rem;
   flex-wrap: wrap;
@@ -2224,9 +2244,9 @@ onUnmounted(() => {
   color: var(--text-tertiary);
 }
 
-.feed-tabs { 
-  display: flex; 
-  gap: 0.35rem; 
+.feed-tabs {
+  display: flex;
+  gap: 0.35rem;
   flex-wrap: wrap;
   padding: 0.4rem;
   margin-bottom: 0.25rem;
@@ -2235,29 +2255,29 @@ onUnmounted(() => {
   border-radius: var(--radius-xl);
 }
 
-.tab-btn { 
-  display: flex; 
-  align-items: center; 
-  gap: 0.5rem; 
-  background: transparent; 
-  border: none; 
-  padding: 0.6rem 1rem; 
-  font-size: 0.9rem; 
-  font-weight: 500; 
-  color: var(--text-tertiary); 
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: none;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
   cursor: pointer;
-  border-radius: var(--radius-lg); 
-  transition: all var(--duration-base) var(--ease-petal); 
+  border-radius: var(--radius-lg);
+  transition: all var(--duration-base) var(--ease-petal);
 }
 
-.tab-btn:hover { 
-  background: var(--surface-4); 
-  color: var(--text-primary); 
+.tab-btn:hover {
+  background: var(--surface-4);
+  color: var(--text-primary);
 }
 
-.tab-btn.active { 
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-press) 100%); 
-  color: var(--text-on-accent); 
+.tab-btn.active {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-press) 100%);
+  color: var(--text-on-accent);
   box-shadow: var(--shadow-petal-sm);
 }
 
@@ -2269,32 +2289,32 @@ onUnmounted(() => {
   color: var(--text-on-accent);
 }
 
-.new-posts-badge { 
-  background: linear-gradient(135deg, var(--danger) 0%, #ff6b6b 100%); 
-  color: white; 
-  font-size: 0.7rem; 
-  padding: 0.1rem 0.4rem; 
-  border-radius: var(--radius-full); 
+.new-posts-badge {
+  background: linear-gradient(135deg, var(--danger) 0%, #ff6b6b 100%);
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--radius-full);
   box-shadow: 0 2px 8px rgba(255,138,138,0.3);
 }
 
-.btn-create-post { 
-  display: flex; 
-  align-items: center; 
-  gap: 0.5rem; 
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-press) 100%); 
-  color: var(--text-on-accent); 
-  border: none; 
-  padding: 0.75rem 1.25rem; 
-  border-radius: var(--radius-lg); 
-  font-weight: 600; 
-  cursor: pointer; 
-  transition: all var(--duration-base) var(--ease-petal); 
+.btn-create-post {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-press) 100%);
+  color: var(--text-on-accent);
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--duration-base) var(--ease-petal);
   box-shadow: var(--shadow-petal-sm);
 }
 
-.btn-create-post:hover { 
-  transform: translateY(-2px); 
+.btn-create-post:hover {
+  transform: translateY(-2px);
   box-shadow: var(--shadow-glow-sm);
 }
 
@@ -2302,37 +2322,37 @@ onUnmounted(() => {
   color: var(--text-on-accent);
 }
 
-.filters-bar { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
+.filters-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 0.3rem 0.55rem;
   margin-top: 0.75rem;
-  gap: 0.5rem; 
+  gap: 0.5rem;
   flex-wrap: wrap;
   background: var(--surface-2);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
 }
 
-.filters-section { 
-  position: relative; 
+.filters-section {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
 
-.filter-toggle { 
-  display: flex; 
-  align-items: center; 
-  gap: 0.5rem; 
-  background: var(--surface-4); 
-  color: var(--text-secondary); 
-  border: 1px solid var(--border-default); 
-  padding: 0.5rem 1rem; 
-  border-radius: var(--radius-lg); 
-  cursor: pointer; 
+.filter-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--surface-4);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
   font-weight: 500;
   transition: all var(--duration-base) var(--ease-petal);
 }
@@ -2351,41 +2371,41 @@ onUnmounted(() => {
   color: var(--accent);
 }
 
-.filter-toggle .arrow { 
-  transition: transform var(--duration-base) var(--ease-petal); 
+.filter-toggle .arrow {
+  transition: transform var(--duration-base) var(--ease-petal);
 }
 
-.filter-toggle .arrow.open { 
-  transform: rotate(180deg); 
+.filter-toggle .arrow.open {
+  transform: rotate(180deg);
 }
 
-.filters-dropdown { 
-  position: absolute; 
-  top: 100%; 
-  left: 0; 
-  margin-top: 0.5rem; 
-  background: var(--surface-3); 
-  border: 1px solid var(--border-default); 
-  border-radius: var(--radius-lg); 
-  padding: 1rem; 
-  z-index: 20; 
-  min-width: 200px; 
+.filters-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.5rem;
+  background: var(--surface-3);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  z-index: 20;
+  min-width: 200px;
   box-shadow: var(--shadow-lg);
 }
 
-.filter-group { 
-  margin-bottom: 1rem; 
+.filter-group {
+  margin-bottom: 1rem;
 }
 
-.filter-group:last-child { 
-  margin-bottom: 0; 
+.filter-group:last-child {
+  margin-bottom: 0;
 }
 
-.filter-label { 
-  display: block; 
-  margin-bottom: 0.5rem; 
-  color: var(--text-tertiary); 
-  font-size: 0.85rem; 
+.filter-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-tertiary);
+  font-size: 0.85rem;
 }
 
 .tag-filter-inline {
@@ -2445,23 +2465,23 @@ onUnmounted(() => {
   background: var(--danger-subtle);
 }
 
-.toggle-buttons { 
-  display: flex; 
-  flex-wrap: wrap; 
-  gap: 0.5rem; 
+.toggle-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
-.toggle-btn { 
-  display: flex; 
-  align-items: center; 
-  gap: 0.4rem; 
-  background: var(--surface-4); 
-  color: var(--text-secondary); 
-  border: 1px solid var(--border-default); 
-  padding: 0.5rem 0.85rem; 
-  border-radius: var(--radius-lg); 
-  cursor: pointer; 
-  font-size: 0.85rem; 
+.toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--surface-4);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  font-size: 0.85rem;
   transition: all var(--duration-base) var(--ease-petal);
 }
 
@@ -2471,8 +2491,8 @@ onUnmounted(() => {
 }
 
 .toggle-btn.active {
-  background: var(--accent-subtle); 
-  color: var(--accent); 
+  background: var(--accent-subtle);
+  color: var(--accent);
   border-color: var(--accent);
 }
 
@@ -2481,23 +2501,23 @@ onUnmounted(() => {
 }
 
 .toggle-btn.active :deep(.sakura-icon) {
-  color: var(--accent); 
+  color: var(--accent);
 }
 
-.period-buttons { 
+.period-buttons {
   display: flex;
-  flex-wrap: wrap; 
-  gap: 0.5rem; 
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
-.period-btn { 
+.period-btn {
   background: var(--surface-4);
   color: var(--text-secondary);
-  border: 1px solid var(--border-default); 
-  padding: 0.5rem 1rem; 
-  border-radius: var(--radius-lg); 
+  border: 1px solid var(--border-default);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  font-size: 0.85rem; 
+  font-size: 0.85rem;
   transition: all var(--duration-base) var(--ease-petal);
 }
 
@@ -2512,13 +2532,13 @@ onUnmounted(() => {
   border-color: var(--accent);
 }
 
-.checkbox-label { 
-  display: flex; 
-  align-items: center; 
-  gap: 0.5rem; 
-  cursor: pointer; 
-  padding: 0.3rem 0; 
-  color: var(--text-secondary) !important; 
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.3rem 0;
+  color: var(--text-secondary) !important;
   transition: color var(--duration-base) var(--ease-petal);
 }
 
@@ -2526,17 +2546,17 @@ onUnmounted(() => {
   color: var(--accent) !important;
 }
 
-.checkbox-label input { 
-  accent-color: var(--accent); 
+.checkbox-label input {
+  accent-color: var(--accent);
 }
 
-.filter-select, .sort-select { 
-  background: var(--surface-4); 
-  color: var(--text-primary); 
-  border: 1px solid var(--border-default); 
-  padding: 0.5rem 0.85rem; 
-  border-radius: var(--radius-md); 
-  cursor: pointer; 
+.filter-select, .sort-select {
+  background: var(--surface-4);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
   font-size: 0.85rem;
   transition: all var(--duration-base) var(--ease-petal);
 }
@@ -2551,9 +2571,9 @@ onUnmounted(() => {
   box-shadow: var(--border-glow);
 }
 
-.sort-section { 
-  display: flex; 
-  align-items: center; 
+.sort-section {
+  display: flex;
+  align-items: center;
   gap: 0.4rem;
 }
 
@@ -2563,38 +2583,38 @@ onUnmounted(() => {
   white-space: nowrap;
 }
 
-.active-filters { 
-  display: flex; 
-  flex-wrap: wrap; 
-  gap: 0.5rem; 
-  padding-bottom: 1rem; 
-  align-items: center; 
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-bottom: 1rem;
+  align-items: center;
 }
 
-.filter-tag { 
-  background: var(--surface-4); 
-  color: var(--text-secondary); 
-  padding: 0.3rem 0.8rem; 
-  border-radius: var(--radius-full); 
-  font-size: 0.8rem; 
-  cursor: pointer; 
-  display: flex; 
-  align-items: center; 
-  gap: 0.3rem; 
+.filter-tag {
+  background: var(--surface-4);
+  color: var(--text-secondary);
+  padding: 0.3rem 0.8rem;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
   transition: all var(--duration-base) var(--ease-petal);
 }
 
-.filter-tag:hover { 
-  background: var(--accent-subtle); 
-  color: var(--accent); 
+.filter-tag:hover {
+  background: var(--accent-subtle);
+  color: var(--accent);
 }
 
-.clear-all { 
-  background: none; 
-  border: none; 
-  color: var(--accent); 
-  cursor: pointer; 
-  font-size: 0.8rem; 
+.clear-all {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.8rem;
   font-weight: 500;
 }
 
@@ -2603,33 +2623,33 @@ onUnmounted(() => {
 }
 
 /* Sub-tabs */
-.sub-tabs { 
-  display: flex; 
-  gap: 0.5rem; 
-  margin-bottom: 1rem; 
-  border-bottom: 1px solid var(--border-subtle); 
-  padding-bottom: 0.5rem; 
+.sub-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 0.5rem;
 }
 
-.sub-tab-btn { 
-  background: none; 
-  border: none; 
-  color: var(--text-tertiary); 
-  padding: 0.5rem 1rem; 
-  font-size: 0.85rem; 
-  cursor: pointer; 
-  border-radius: var(--radius-md); 
-  transition: all var(--duration-base) var(--ease-petal); 
+.sub-tab-btn {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: all var(--duration-base) var(--ease-petal);
 }
 
-.sub-tab-btn:hover { 
-  background: var(--surface-4); 
-  color: var(--text-secondary); 
+.sub-tab-btn:hover {
+  background: var(--surface-4);
+  color: var(--text-secondary);
 }
 
-.sub-tab-btn.active { 
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-press) 100%); 
-  color: var(--text-on-accent); 
+.sub-tab-btn.active {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-press) 100%);
+  color: var(--text-on-accent);
   box-shadow: var(--shadow-petal-sm);
 }
 
@@ -2638,48 +2658,48 @@ onUnmounted(() => {
 }
 
 /* Subscription cards */
-.subscription-card.clickable { 
-  cursor: pointer; 
+.subscription-card.clickable {
+  cursor: pointer;
 }
 
-.subscription-card.clickable:hover { 
+.subscription-card.clickable:hover {
   background: var(--surface-4);
 }
 
-.subscription-card.blocked { 
-  border: 1px solid var(--danger-subtle); 
-  background: rgba(255,138,138,0.05); 
+.subscription-card.blocked {
+  border: 1px solid var(--danger-subtle);
+  background: rgba(255,138,138,0.05);
 }
 
-.subscription-card.blocked .user-info h4 { 
-  color: var(--danger); 
+.subscription-card.blocked .user-info h4 {
+  color: var(--danger);
 }
 
-.btn-unblock { 
-  background: linear-gradient(135deg, var(--danger) 0%, #ff6b6b 100%); 
-  color: white; 
-  border: none; 
-  padding: 0.5rem 1rem; 
-  border-radius: var(--radius-md); 
-  cursor: pointer; 
-  font-size: 0.85rem; 
-  font-weight: 500; 
+.btn-unblock {
+  background: linear-gradient(135deg, var(--danger) 0%, #ff6b6b 100%);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
   transition: all var(--duration-base) var(--ease-petal);
 }
 
-.btn-unblock:hover { 
+.btn-unblock:hover {
   box-shadow: 0 0 12px rgba(255,138,138,0.3);
 }
 
 /* Hidden post cards */
-.hidden-post-card { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
-  background: var(--surface-3); 
-  border-radius: var(--radius-lg); 
-  padding: 1rem; 
-  margin-bottom: 0.5rem; 
+.hidden-post-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--surface-3);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  margin-bottom: 0.5rem;
   transition: all var(--duration-base) var(--ease-petal);
 }
 
@@ -2687,41 +2707,41 @@ onUnmounted(() => {
   background: var(--surface-4);
 }
 
-.hidden-post-info { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 0.25rem; 
+.hidden-post-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
   cursor: pointer;
 }
 
-.hidden-post-info:hover .hidden-post-title { 
-  color: var(--accent); 
+.hidden-post-info:hover .hidden-post-title {
+  color: var(--accent);
 }
 
-.hidden-post-title { 
-  color: var(--text-primary); 
-  font-size: 0.9rem; 
+.hidden-post-title {
+  color: var(--text-primary);
+  font-size: 0.9rem;
 }
 
-.hidden-date { 
-  color: var(--text-tertiary); 
-  font-size: 0.8rem; 
+.hidden-date {
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
 }
 
-.btn-restore { 
-  background: var(--surface-4); 
-  color: var(--text-secondary); 
-  border: 1px solid var(--border-default); 
-  padding: 0.4rem 0.8rem; 
-  border-radius: var(--radius-md); 
-  cursor: pointer; 
-  font-size: 0.8rem; 
+.btn-restore {
+  background: var(--surface-4);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.8rem;
   transition: all var(--duration-base) var(--ease-petal);
 }
 
-.btn-restore:hover { 
-  background: var(--accent-subtle); 
-  color: var(--accent); 
+.btn-restore:hover {
+  background: var(--accent-subtle);
+  color: var(--accent);
   border-color: var(--accent);
 }
 
@@ -2738,40 +2758,40 @@ onUnmounted(() => {
   }
 }
 
-.feed-main { 
+.feed-main {
   min-width: 0;
-  min-height: 500px; 
+  min-height: 500px;
 }
 
-.composer-card { 
-  display: flex; 
+.composer-card {
+  display: flex;
   flex-wrap: wrap;
-  align-items: flex-start; 
-  gap: 1rem; 
-  background: var(--surface-3); 
+  align-items: flex-start;
+  gap: 1rem;
+  background: var(--surface-3);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl); 
-  padding: 1rem; 
-  margin-bottom: 1rem; 
+  border-radius: var(--radius-xl);
+  padding: 1rem;
+  margin-bottom: 1rem;
   box-shadow: var(--shadow-sm-card);
-  transition: all var(--duration-base) var(--ease-petal); 
+  transition: all var(--duration-base) var(--ease-petal);
 }
 
-.composer-card:focus-within { 
+.composer-card:focus-within {
   border-color: var(--accent);
   box-shadow: var(--shadow-petal-sm);
 }
 
-.composer-card:hover { 
+.composer-card:hover {
   border-color: var(--accent);
   box-shadow: var(--shadow-petal-sm);
 }
 
-.composer-avatar { 
-  width: 44px; 
-  height: 44px; 
-  border-radius: 50%; 
-  object-fit: cover; 
+.composer-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
   border: 2px solid var(--accent);
   flex-shrink: 0;
 }
@@ -2779,7 +2799,7 @@ onUnmounted(() => {
 .composer-body {
   display: flex;
   align-items: flex-start;
-  gap: 10px; 
+  gap: 10px;
   flex: 1;
   flex-wrap: wrap;
   min-width: 0;
@@ -3628,126 +3648,126 @@ onUnmounted(() => {
   }
 }
 
-.posts-list { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 1rem; 
+.posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.new-posts-bar { 
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%); 
-  color: white; 
-  text-align: center; 
-  padding: 0.75rem; 
-  border-radius: var(--radius-lg); 
-  cursor: pointer; 
-  font-weight: 600; 
-  transition: all var(--duration-base) var(--ease-petal); 
+.new-posts-bar {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  color: white;
+  text-align: center;
+  padding: 0.75rem;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all var(--duration-base) var(--ease-petal);
   box-shadow: var(--shadow-petal);
 }
 
-.new-posts-bar:hover { 
-  transform: scale(1.02); 
+.new-posts-bar:hover {
+  transform: scale(1.02);
   box-shadow: var(--shadow-glow);
 }
 
-.load-more { 
-  text-align: center; 
-  padding: 1rem; 
+.load-more {
+  text-align: center;
+  padding: 1rem;
 }
 
-.btn-load-more { 
-  background: var(--surface-4); 
-  color: var(--text-secondary); 
-  border: 1px solid var(--border-default); 
-  padding: 0.75rem 2rem; 
-  border-radius: var(--radius-lg); 
-  cursor: pointer; 
-  font-weight: 500; 
+.btn-load-more {
+  background: var(--surface-4);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+  padding: 0.75rem 2rem;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  font-weight: 500;
   transition: all var(--duration-base) var(--ease-petal);
 }
 
-.btn-load-more:hover:not(:disabled) { 
-  background: var(--accent-subtle); 
-  color: var(--accent); 
+.btn-load-more:hover:not(:disabled) {
+  background: var(--accent-subtle);
+  color: var(--accent);
   border-color: var(--accent);
 }
 
-.btn-load-more:disabled { 
-  opacity: 0.5; 
-  cursor: not-allowed; 
+.btn-load-more:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.loading-state { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 1rem; 
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.skeleton-post { 
-  background: var(--surface-3); 
-  border-radius: var(--radius-xl); 
-  padding: 1.5rem; 
+.skeleton-post {
+  background: var(--surface-3);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
 }
 
-.skeleton-header { 
-  display: flex; 
-  gap: 1rem; 
-  margin-bottom: 1rem; 
+.skeleton-header {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
-.skeleton-avatar { 
-  width: 44px; 
-  height: 44px; 
-  border-radius: 50%; 
-  background: var(--surface-5); 
-  animation: pulse 1.5s infinite; 
+.skeleton-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface-5);
+  animation: pulse 1.5s infinite;
 }
 
-.skeleton-info { 
-  flex: 1; 
-  display: flex; 
-  flex-direction: column; 
-  gap: 0.5rem; 
+.skeleton-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.skeleton-line { 
-  height: 12px; 
-  background: var(--surface-5); 
-  border-radius: var(--radius-sm); 
-  animation: pulse 1.5s infinite; 
+.skeleton-line {
+  height: 12px;
+  background: var(--surface-5);
+  border-radius: var(--radius-sm);
+  animation: pulse 1.5s infinite;
 }
 
-.skeleton-line.short { 
-  width: 40%; 
+.skeleton-line.short {
+  width: 40%;
 }
 
-.skeleton-line.medium { 
-  width: 70%; 
+.skeleton-line.medium {
+  width: 70%;
 }
 
-.skeleton-content { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 0.5rem; 
+.skeleton-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-@keyframes pulse { 
-  0%, 100% { opacity: 1; } 
-  50% { opacity: 0.5; } 
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
-.empty-state { 
-  text-align: center; 
-  padding: 4rem 2rem; 
-  background: var(--surface-3); 
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--surface-3);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl); 
+  border-radius: var(--radius-xl);
 }
 
-.empty-icon { 
-  color: var(--text-tertiary); 
-  margin-bottom: 1rem; 
+.empty-icon {
+  color: var(--text-tertiary);
+  margin-bottom: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3758,24 +3778,24 @@ onUnmounted(() => {
   opacity: 0.55;
 }
 
-.empty-state h3 { 
-  color: var(--text-primary); 
-  margin-bottom: 0.5rem; 
+.empty-state h3 {
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
 }
 
-.empty-state p { 
-  color: var(--text-tertiary); 
-  margin-bottom: 1.5rem; 
+.empty-state p {
+  color: var(--text-tertiary);
+  margin-bottom: 1.5rem;
 }
 
-.btn-primary { 
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-press) 100%); 
-  color: var(--text-on-accent); 
-  border: none; 
-  padding: 0.75rem 1.5rem; 
-  border-radius: var(--radius-lg); 
-  font-weight: 600; 
-  cursor: pointer; 
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-press) 100%);
+  color: var(--text-on-accent);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  cursor: pointer;
   box-shadow: var(--shadow-petal-sm);
   transition: all var(--duration-base) var(--ease-petal);
 }
@@ -3785,26 +3805,26 @@ onUnmounted(() => {
   transform: translateY(-1px);
 }
 
-.feed-right-sidebar { 
-  display: none; 
+.feed-right-sidebar {
+  display: none;
   position: sticky;
   top: 4rem;
   align-self: start;
 }
 
-@media (min-width: 900px) { 
-  .feed-right-sidebar { 
+@media (min-width: 900px) {
+  .feed-right-sidebar {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-  } 
+  }
 }
 
-.sidebar-card { 
-  background: var(--surface-3); 
+.sidebar-card {
+  background: var(--surface-3);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl); 
-  padding: 1rem; 
+  border-radius: var(--radius-xl);
+  padding: 1rem;
 }
 
 .sidebar-title {
@@ -3886,91 +3906,91 @@ onUnmounted(() => {
   padding: 0.75rem 0;
 }
 
-.trending-item { 
-  display: flex; 
-  gap: 0.75rem; 
-  padding: 0.5rem; 
-  cursor: pointer; 
+.trending-item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  cursor: pointer;
   border-radius: var(--radius-lg);
   transition: all var(--duration-base) var(--ease-petal);
 }
 
-.trending-item:hover { 
-  background: var(--surface-4); 
+.trending-item:hover {
+  background: var(--surface-4);
 }
 
-.trend-rank { 
-  color: var(--accent); 
-  font-weight: 700; 
-  font-size: 1.1rem; 
+.trend-rank {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 1.1rem;
   flex-shrink: 0;
 }
 
-.trend-content { 
-  display: flex; 
+.trend-content {
+  display: flex;
   flex-direction: column;
   min-width: 0;
 }
 
-.trend-title { 
-  color: var(--text-primary); 
+.trend-title {
+  color: var(--text-primary);
   font-size: 0.9rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.trend-stats { 
+.trend-stats {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  color: var(--text-tertiary); 
+  color: var(--text-tertiary);
   font-size: 0.75rem;
 }
 
 /* Subscriptions Tab */
-.subscriptions-tab, .not-interested-tab, .reports-tab { 
-  padding: 1rem 0; 
+.subscriptions-tab, .not-interested-tab, .reports-tab {
+  padding: 1rem 0;
 }
 
-.tab-header { 
-  display: flex; 
-  gap: 1rem; 
-  margin-bottom: 1rem; 
-  flex-wrap: wrap; 
+.tab-header {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 
-.search-input { 
-  flex: 1; 
-  min-width: 200px; 
-  background: var(--surface-4); 
-  border: 1px solid var(--border-default); 
-  color: var(--text-primary); 
-  padding: 0.75rem 1rem; 
-  border-radius: var(--radius-lg); 
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  background: var(--surface-4);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-lg);
   transition: all var(--duration-base) var(--ease-petal);
 }
 
-.search-input:focus { 
-  outline: none; 
+.search-input:focus {
+  outline: none;
   border-color: var(--accent);
   box-shadow: var(--border-glow);
 }
 
-.subscriptions-grid { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 1rem; 
+.subscriptions-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.subscription-card { 
-  display: flex; 
-  align-items: center; 
-  gap: 1rem; 
-  background: var(--surface-3); 
+.subscription-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--surface-3);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl); 
-  padding: 1rem; 
+  border-radius: var(--radius-xl);
+  padding: 1rem;
   transition: all var(--duration-base) var(--ease-petal);
 }
 
@@ -3979,54 +3999,54 @@ onUnmounted(() => {
   box-shadow: var(--shadow-petal-sm);
 }
 
-.avatar-lg { 
-  width: 60px; 
-  height: 60px; 
-  border-radius: 50%; 
-  object-fit: cover; 
+.avatar-lg {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
   border: 2px solid var(--accent);
 }
 
-.subscription-card .user-info { 
-  flex: 1; 
+.subscription-card .user-info {
+  flex: 1;
 }
 
-.subscription-card h4 { 
-  color: var(--text-primary); 
-  margin: 0 0 0.25rem; 
-  font-size: 1rem; 
+.subscription-card h4 {
+  color: var(--text-primary);
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
 }
 
-.subscription-card .username { 
-  color: var(--text-tertiary); 
-  font-size: 0.85rem; 
-  display: block; 
+.subscription-card .username {
+  color: var(--text-tertiary);
+  font-size: 0.85rem;
+  display: block;
 }
 
-.subscription-card .followers, .subscription-card .hidden-date { 
-  color: var(--text-secondary); 
-  font-size: 0.8rem; 
+.subscription-card .followers, .subscription-card .hidden-date {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
 }
 
-.subscription-card .reason { 
-  color: var(--danger); 
-  font-size: 0.8rem; 
-  display: block; 
-  margin-top: 0.25rem; 
+.subscription-card .reason {
+  color: var(--danger);
+  font-size: 0.8rem;
+  display: block;
+  margin-top: 0.25rem;
 }
 
-.user-actions { 
-  display: flex; 
-  gap: 0.5rem; 
+.user-actions {
+  display: flex;
+  gap: 0.5rem;
 }
 
-.btn-following { 
-  background: var(--accent-subtle); 
-  color: var(--accent); 
-  border: 1px solid var(--accent); 
-  padding: 0.5rem 1rem; 
-  border-radius: var(--radius-md); 
-  cursor: pointer; 
+.btn-following {
+  background: var(--accent-subtle);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
@@ -4039,43 +4059,43 @@ onUnmounted(() => {
   color: var(--text-on-accent);
 }
 
-.btn-unhide { 
-  background: var(--danger-subtle); 
-  color: var(--danger); 
-  border: 1px solid var(--danger); 
-  padding: 0.5rem 1rem; 
-  border-radius: var(--radius-md); 
-  cursor: pointer; 
+.btn-unhide {
+  background: var(--danger-subtle);
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
 }
 
-.btn-message, .btn-profile { 
-  background: var(--surface-4); 
-  color: var(--text-secondary); 
-  border: none; 
-  padding: 0.5rem; 
-  border-radius: var(--radius-md); 
-  cursor: pointer; 
-  font-size: 1.1rem; 
+.btn-message, .btn-profile {
+  background: var(--surface-4);
+  color: var(--text-secondary);
+  border: none;
+  padding: 0.5rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 1.1rem;
   transition: all var(--duration-base) var(--ease-petal);
 }
 
-.btn-message:hover, .btn-profile:hover { 
-  background: var(--accent-subtle); 
-  color: var(--accent); 
+.btn-message:hover, .btn-profile:hover {
+  background: var(--accent-subtle);
+  color: var(--accent);
 }
 
 /* Reports Tab */
-.reports-list { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 1rem; 
+.reports-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.report-card { 
-  background: var(--surface-3); 
+.report-card {
+  background: var(--surface-3);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl); 
-  padding: 1rem; 
+  border-radius: var(--radius-xl);
+  padding: 1rem;
   transition: all var(--duration-base) var(--ease-petal);
 }
 
@@ -4083,64 +4103,64 @@ onUnmounted(() => {
   border-color: var(--border-default);
 }
 
-.report-header { 
-  display: flex; 
-  justify-content: space-between; 
-  margin-bottom: 0.5rem; 
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
 }
 
-.report-type { 
-  color: var(--accent); 
-  font-weight: 600; 
+.report-type {
+  color: var(--accent);
+  font-weight: 600;
 }
 
-.report-status { 
-  padding: 0.2rem 0.5rem; 
-  border-radius: var(--radius-sm); 
-  font-size: 0.75rem; 
+.report-status {
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
 }
 
-.report-status.pending { 
-  background: var(--warning-subtle); 
-  color: var(--warning); 
+.report-status.pending {
+  background: var(--warning-subtle);
+  color: var(--warning);
 }
 
-.report-status.resolved { 
-  background: var(--success-subtle); 
-  color: var(--success); 
+.report-status.resolved {
+  background: var(--success-subtle);
+  color: var(--success);
 }
 
-.report-status.rejected { 
-  background: var(--danger-subtle); 
-  color: var(--danger); 
+.report-status.rejected {
+  background: var(--danger-subtle);
+  color: var(--danger);
 }
 
-.report-content p { 
-  margin: 0.25rem 0; 
-  color: var(--text-secondary); 
+.report-content p {
+  margin: 0.25rem 0;
+  color: var(--text-secondary);
 }
 
-.report-meta { 
-  color: var(--text-tertiary); 
-  font-size: 0.8rem; 
-  margin-top: 0.5rem; 
-  display: flex; 
-  gap: 1rem; 
+.report-meta {
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 1rem;
 }
 
-.report-actions { 
-  display: flex; 
-  gap: 0.5rem; 
-  margin-top: 1rem; 
+.report-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
 }
 
-.btn-review { 
-  background: var(--accent); 
-  color: var(--text-on-accent); 
-  border: none; 
-  padding: 0.5rem 1rem; 
-  border-radius: var(--radius-md); 
-  cursor: pointer; 
+.btn-review {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
   transition: all var(--duration-base) var(--ease-petal);
 }
 
@@ -4148,13 +4168,13 @@ onUnmounted(() => {
   box-shadow: var(--shadow-glow-sm);
 }
 
-.btn-reject { 
-  background: var(--surface-4); 
-  color: var(--text-secondary); 
-  border: 1px solid var(--border-default); 
-  padding: 0.5rem 1rem; 
-  border-radius: var(--radius-md); 
-  cursor: pointer; 
+.btn-reject {
+  background: var(--surface-4);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
   transition: all var(--duration-base) var(--ease-petal);
 }
 
@@ -4165,65 +4185,65 @@ onUnmounted(() => {
 }
 
 /* Report Detail Modal */
-.modal-overlay { 
-  position: fixed; 
-  top: 0; 
-  left: 0; 
-  right: 0; 
-  bottom: 0; 
-  background: rgba(5,4,8,0.88); 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  z-index: 1000; 
-  padding: 1rem; 
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(5,4,8,0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
   backdrop-filter: blur(8px);
 }
 
-.report-detail-modal { 
-  background: var(--surface-3); 
+.report-detail-modal {
+  background: var(--surface-3);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-xl); 
-  width: 100%; 
-  max-width: 500px; 
-  max-height: 90vh; 
-  overflow-y: auto; 
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: var(--shadow-modal);
 }
 
-.modal-header { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
-  padding: 1rem 1.5rem; 
-  border-bottom: 1px solid var(--border-subtle); 
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-.modal-header h3 { 
-  color: var(--text-primary); 
-  margin: 0; 
+.modal-header h3 {
+  color: var(--text-primary);
+  margin: 0;
 }
 
-.close-btn { 
-  background: none; 
-  border: none; 
-  color: var(--text-tertiary); 
-  font-size: 1.25rem; 
-  cursor: pointer; 
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 1.25rem;
+  cursor: pointer;
   transition: color var(--duration-base) var(--ease-petal);
 }
 
-.close-btn:hover { 
-  color: var(--accent); 
+.close-btn:hover {
+  color: var(--accent);
 }
 
-.modal-body { 
-  padding: 1.5rem; 
+.modal-body {
+  padding: 1.5rem;
 }
 
-.report-full-info p { 
-  margin: 0.5rem 0; 
-  color: var(--text-secondary); 
+.report-full-info p {
+  margin: 0.5rem 0;
+  color: var(--text-secondary);
 }
 
 .report-link,
@@ -4294,51 +4314,51 @@ onUnmounted(() => {
   object-fit: contain;
 }
 
-.report-actions-full { 
-  margin-top: 1.5rem; 
+.report-actions-full {
+  margin-top: 1.5rem;
 }
 
-.report-actions-full label { 
-  display: block; 
-  color: var(--text-tertiary); 
-  margin-bottom: 0.5rem; 
+.report-actions-full label {
+  display: block;
+  color: var(--text-tertiary);
+  margin-bottom: 0.5rem;
 }
 
-.action-select { 
-  width: 100%; 
-  background: var(--surface-4); 
-  color: var(--text-primary); 
-  border: 1px solid var(--border-default); 
-  padding: 0.75rem; 
-  border-radius: var(--radius-lg); 
-  margin-bottom: 1rem; 
+.action-select {
+  width: 100%;
+  background: var(--surface-4);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  padding: 0.75rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 1rem;
 }
 
-.comment-textarea { 
-  width: 100%; 
-  background: var(--surface-4); 
-  color: var(--text-primary); 
-  border: 1px solid var(--border-default); 
-  padding: 0.75rem; 
-  border-radius: var(--radius-lg); 
-  min-height: 100px; 
-  resize: vertical; 
+.comment-textarea {
+  width: 100%;
+  background: var(--surface-4);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  padding: 0.75rem;
+  border-radius: var(--radius-lg);
+  min-height: 100px;
+  resize: vertical;
 }
 
-.btn-submit { 
-  width: 100%; 
-  background: var(--accent); 
-  color: var(--text-on-accent); 
-  border: none; 
-  padding: 0.75rem; 
-  border-radius: var(--radius-lg); 
-  font-weight: 600; 
-  cursor: pointer; 
-  margin-top: 1rem; 
+.btn-submit {
+  width: 100%;
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border: none;
+  padding: 0.75rem;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
   transition: all var(--duration-base) var(--ease-petal);
 }
 
-.btn-submit:hover { 
+.btn-submit:hover {
   box-shadow: var(--shadow-glow-sm);
 }
 
@@ -4354,22 +4374,22 @@ onUnmounted(() => {
 }
 
 /* Highlight effect for post loaded from route */
-.highlight-post { 
-  animation: highlight-fade 3s ease-out; 
+.highlight-post {
+  animation: highlight-fade 3s ease-out;
 }
 
 @keyframes highlight-fade {
-  0% { 
-    box-shadow: 0 0 0 3px var(--accent-glow); 
+  0% {
+    box-shadow: 0 0 0 3px var(--accent-glow);
   }
-  100% { 
-    box-shadow: 0 0 0 0 transparent; 
+  100% {
+    box-shadow: 0 0 0 0 transparent;
   }
 }
 
 /* Bookmarks & Pinned tabs */
-.bookmarks-tab, .pinned-tab { 
-  padding: 1rem 0; 
+.bookmarks-tab, .pinned-tab {
+  padding: 1rem 0;
 }
 
 .pinned-post-wrapper {
@@ -4392,9 +4412,9 @@ onUnmounted(() => {
   transition: all var(--duration-base) var(--ease-petal);
 }
 
-.btn-unpin:hover { 
-  background: var(--danger-subtle); 
-  color: var(--danger); 
+.btn-unpin:hover {
+  background: var(--danger-subtle);
+  color: var(--danger);
   border-color: var(--danger);
 }
 

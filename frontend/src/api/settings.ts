@@ -64,6 +64,10 @@ export interface PrivacySettingsData {
   gradient_colors?: Record<string, string>;
   custom_image?: string;
   background_effects?: Record<string, unknown>;
+  analytics_consent_state?: "unknown" | "granted" | "denied";
+  analytics_consent_version?: string;
+  analytics_consent_updated_at?: string | null;
+  analytics_consent_source?: "banner" | "settings" | "server" | "policy_upgrade";
 }
 
 export interface TwoFactorSettingsData {
@@ -123,7 +127,7 @@ export const updateSettings = async (
 };
 
 export const clearSettingsCache = async (): Promise<{ message: string }> => {
-  const response = await client.post("/users/settings/cache/clear/");
+  const response = await client.post("/users/clear-cache/");
   return response.data;
 };
 
@@ -172,14 +176,14 @@ export const updateNotificationSettings = async (
 };
 
 export const getPrivacySettings = async (): Promise<PrivacySettingsData> => {
-  const response = await client.get("/users/privacy-settings/");
+  const response = await client.get("/users/privacy-settings/me/");
   return response.data;
 };
 
 export const updatePrivacySettings = async (
-  data: PrivacySettingsData,
+  data: Partial<PrivacySettingsData>,
 ): Promise<PrivacySettingsData> => {
-  const response = await client.put("/users/privacy-settings/", data);
+  const response = await client.patch("/users/privacy-settings/me/", data);
   return response.data;
 };
 
@@ -354,6 +358,11 @@ export const downloadExportData = async (exportId: number) => {
 
 export const clearCache = async (items: string[]) => {
   const response = await client.post("/users/clear-cache/", { items });
+  const { clearPublicReadCache } = await import('@/lib/publicReadCache');
+  await clearPublicReadCache();
+  if ('caches' in window) {
+    await Promise.all(['images-cache', 'fonts-cache'].map(name => caches.delete(name)));
+  }
   return response.data;
 };
 

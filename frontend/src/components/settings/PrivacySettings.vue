@@ -211,88 +211,22 @@
           />
           <span>Разрешить пересылку моих сообщений</span>
         </label>
-        <div
-          class="sub-settings"
-          v-if="privacySettings.allow_message_forwarding"
-        >
-          <label class="setting-label">
-            <input
-              type="checkbox"
-              v-model="forwardTextOnly"
-              @change="onSettingsChange"
-            />
-            <span>Только текстовые сообщения</span>
-          </label>
-          <label class="setting-label">
-            <input
-              type="checkbox"
-              v-model="forwardWithAttribution"
-              @change="onSettingsChange"
-            />
-            <span>С указанием авторства</span>
-          </label>
-        </div>
       </div>
     </div>
 
     <div class="settings-group">
-      <h3><SakuraIcon name="map-pin" /> Данные о местоположении</h3>
-      <div class="radio-group">
-        <label class="radio-option">
-          <input
-            type="radio"
-            v-model="locationSharing"
-            value="auto"
-            @change="onSettingsChange"
-          />
-          <span class="radio-label">Отправлять автоматически</span>
-        </label>
-        <label class="radio-option">
-          <input
-            type="radio"
-            v-model="locationSharing"
-            value="manual"
-            @change="onSettingsChange"
-          />
-          <span class="radio-label">Только при использовании функции</span>
-        </label>
-        <label class="radio-option">
-          <input
-            type="radio"
-            v-model="locationSharing"
-            value="never"
-            @change="onSettingsChange"
-          />
-          <span class="radio-label">Никогда</span>
-        </label>
-      </div>
-    </div>
-
-    <div class="settings-group">
-      <h3><SakuraIcon name="search" /> Поиск по номеру телефона</h3>
-      <div class="setting-item">
-        <label class="setting-label">
-          <input
-            type="checkbox"
-            v-model="allowPhoneSearch"
-            @change="onSettingsChange"
-          />
-          <span>Показывать меня по номеру телефона</span>
-        </label>
-      </div>
-    </div>
-
-    <div class="settings-group">
-      <h3><SakuraIcon name="target" /> Рекламные рассылки</h3>
-      <div class="setting-item">
-        <label class="setting-label">
-          <input
-            type="checkbox"
-            v-model="allowTargetedAds"
-            @change="onSettingsChange"
-          />
-          <span>Разрешить таргетированную рекламу</span>
-        </label>
+      <h3><SakuraIcon name="chart" /> Необязательная аналитика</h3>
+      <p class="privacy-note">
+        Внешние счётчики не загружаются до разрешения. AniLux не передаёт им сообщения,
+        поисковые запросы, email, телефон, идентификатор пользователя или содержимое форм.
+      </p>
+      <div class="consent-choice" role="group" aria-label="Согласие на аналитику">
+        <button type="button" :class="{ active: consentState === 'denied' }" @click="changeConsent('denied')">
+          Не разрешать
+        </button>
+        <button type="button" :class="{ active: consentState === 'granted' }" @click="changeConsent('granted')">
+          Разрешить
+        </button>
       </div>
     </div>
 
@@ -315,9 +249,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, onBeforeUnmount } from "vue";
+import { useAuthStore } from "@/stores/auth";
 import * as settingsApi from "@/api/settings";
 import type { PrivacySettingsData } from "@/api/settings";
+import { getConsent, onConsentChange } from "@/analytics/consent";
+import type { ConsentState } from "@/analytics/types";
+import { saveConsentChoice, reportTechnicalError } from "@/analytics";
 
 const privacySettings = ref<PrivacySettingsData>({
   who_can_see_phone: "contacts",
@@ -329,11 +267,9 @@ const privacySettings = ref<PrivacySettingsData>({
   allow_message_forwarding: true,
 });
 
-const locationSharing = ref("manual");
-const allowPhoneSearch = ref(true);
-const allowTargetedAds = ref(false);
-const forwardTextOnly = ref(false);
-const forwardWithAttribution = ref(true);
+const consentState = ref(getConsent().state);
+const stopConsentWatch = onConsentChange((record) => { consentState.value = record.state; });
+onBeforeUnmount(stopConsentWatch);
 
 const originalSettings = ref<PrivacySettingsData>({ ...privacySettings.value });
 const isSaving = ref(false);
@@ -345,16 +281,17 @@ const toast = ref({
 });
 
 const hasChanges = computed(() => {
-  return (
-    JSON.stringify(privacySettings.value) !==
-      JSON.stringify(originalSettings.value) ||
-    locationSharing.value !== "manual" ||
-    allowPhoneSearch.value !== true ||
-    allowTargetedAds.value !== false ||
-    forwardTextOnly.value !== false ||
-    forwardWithAttribution.value !== true
-  );
+  return JSON.stringify(privacySettings.value) !== JSON.stringify(originalSettings.value);
 });
+
+const changeConsent = async (state: Exclude<ConsentState, "unknown">) => {
+  try {
+    await saveConsentChoice(state, "settings");
+    showToast(state === "granted" ? "Аналитика разрешена" : "Аналитика отключена");
+  } catch {
+    showToast("Решение применено на устройстве, но не синхронизировано", "error");
+  }
+};
 
 const showToast = (message: string, type: "success" | "error" = "success") => {
   toast.value = { show: true, message, type };
@@ -376,8 +313,8 @@ const fetchPrivacySettings = async () => {
       allow_message_forwarding: data.allow_message_forwarding ?? true,
     };
     originalSettings.value = { ...privacySettings.value };
-  } catch (error) {
-    console.error("Error fetching privacy settings:", error);
+  } catch {
+    reportTechnicalError("privacy.load_failed", "/route/settings");
     showToast("Ошибка загрузки настроек", "error");
   }
 };
@@ -386,18 +323,30 @@ const onSettingsChange = () => {
   saveSettings();
 };
 
-const saveSettings = async () => {
+const auth = useAuthStore();
+const ownerId = auth.user?.id;
+let disposed = false;
+onBeforeUnmount(() => { disposed = true; });
+let saveVersion = 0;
+let saveQueue: Promise<void> = Promise.resolve();
+const saveSettings = () => {
+  const version = ++saveVersion;
+  const snapshot = { ...privacySettings.value };
   isSaving.value = true;
-  try {
-    await settingsApi.updatePrivacySettings(privacySettings.value);
-    originalSettings.value = { ...privacySettings.value };
-    showToast("Настройки сохранены");
-  } catch (error) {
-    console.error("Error saving privacy settings:", error);
-    showToast("Ошибка сохранения настроек", "error");
-  } finally {
-    isSaving.value = false;
-  }
+  saveQueue = saveQueue.catch(() => undefined).then(async () => {
+    if (disposed || auth.user?.id !== ownerId) return;
+    try {
+      const saved = await settingsApi.updatePrivacySettings(snapshot);
+      originalSettings.value = Object.fromEntries(Object.keys(snapshot).map(key => [key, saved[key as keyof PrivacySettingsData]]));
+      if (version === saveVersion) showToast("Настройки сохранены");
+    } catch {
+      reportTechnicalError("privacy.save_failed", "/route/settings");
+      showToast("Ошибка сохранения настроек", "error");
+    } finally {
+      if (version === saveVersion) isSaving.value = false;
+    }
+  });
+  return saveQueue;
 };
 
 onMounted(() => {
@@ -406,6 +355,12 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.privacy-note { color: var(--secondary-text); line-height: 1.5; }
+.consent-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+.consent-choice button { min-height: 44px; color: var(--text-color); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; }
+.consent-choice button.active { border-color: var(--primary-color); box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-color) 25%, transparent); }
+.consent-choice button:focus-visible { outline: 3px solid var(--primary-color); outline-offset: 2px; }
+@media (max-width: 480px) { .consent-choice { grid-template-columns: 1fr; } }
 .settings-section h2 {
   margin-bottom: 20px;
 }

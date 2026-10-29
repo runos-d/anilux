@@ -58,11 +58,30 @@
           </svg>
           Тема и оформление
         </button>
+        <button :class="['tab', { active: activeTab === 'privacy' }]" @click="activeTab = 'privacy'">
+          Конфиденциальность
+        </button>
+        <button :class="['tab', { active: activeTab === 'export' }]" @click="activeTab = 'export'">
+          Экспорт данных
+        </button>
+        <button :class="['tab', { active: activeTab === 'delete' }]" @click="activeTab = 'delete'">
+          Удаление аккаунта
+        </button>
       </div>
 
+      <div class="settings-tabs" aria-label="Безопасность и данные">
+        <button class="tab" @click="activeTab = 'password'">Сменить пароль</button>
+        <button class="tab" @click="activeTab = 'sessions'">Сессии</button>
+        <button class="tab" @click="activeTab = 'storage'">Хранилище</button>
+      </div>
       <div class="settings-content">
+        <ChangePassword v-if="activeTab === 'password'" />
+        <SessionsSettings v-if="activeTab === 'sessions'" />
+        <StorageSettings v-if="activeTab === 'storage'" />
         <AccountSettings v-if="activeTab === 'account'" />
         <ThemeSettings v-if="activeTab === 'theme'" />
+        <PrivacySettings v-if="activeTab === 'privacy'" />
+        <ExportDataSettings v-if="activeTab === 'export'" />
         <DeleteAccountSettings v-if="activeTab === 'delete'" />
       </div>
     </div>
@@ -71,9 +90,14 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import ChangePassword from "@/components/settings/ChangePassword.vue";
+import SessionsSettings from "@/components/settings/SessionsSettings.vue";
+import StorageSettings from "@/components/settings/StorageSettings.vue";
 import AccountSettings from "@/components/settings/AccountSettings.vue";
 import ThemeSettings from "@/components/settings/ThemeSettings.vue";
 import DeleteAccountSettings from "@/components/settings/DeleteAccountSettings.vue";
+import PrivacySettings from "@/components/settings/PrivacySettings.vue";
+import ExportDataSettings from "@/components/settings/ExportDataSettings.vue";
 
 const activeTab = ref("account");
 </script>

@@ -1,4 +1,4 @@
-import { ref, onMounted, onUnmounted, getCurrentInstance } from "vue";
+import { ref, onUnmounted, getCurrentInstance } from "vue";
 import apiClient from "@/api/client";
 import { useAuthStore } from "@/stores/auth";
 
@@ -10,10 +10,11 @@ export function useAnimeTab(animeId: number) {
 
   const activityType = ref<"watching" | "player">("watching");
   const currentEpisode = ref<number | null>(null);
+  let started = false;
   let _interval: ReturnType<typeof setInterval> | null = null;
 
   const sendPing = async () => {
-    if (!authStore.isAuthenticated || !animeId) return;
+    if (!started || !authStore.isAuthenticated || !animeId) return;
     try {
       await apiClient.post("/anime/active-tab/", {
         anime_id: animeId,
@@ -34,6 +35,7 @@ export function useAnimeTab(animeId: number) {
   };
 
   const resetInterval = () => {
+    if (!started) return;
     if (_interval) {
       clearInterval(_interval);
       _interval = null;
@@ -69,28 +71,19 @@ export function useAnimeTab(animeId: number) {
   };
 
   const stop = () => {
+    if (!started) return;
+    started = false;
     if (_interval) clearInterval(_interval);
+    _interval = null;
     document.removeEventListener("visibilitychange", onVisibilityChange);
     removeTab();
   };
 
-  if (getCurrentInstance()) {
-    onMounted(() => {
-      sendPing();
-      resetInterval();
-      document.addEventListener("visibilitychange", onVisibilityChange);
-    });
-
-    onUnmounted(() => {
-      stop();
-    });
-  } else {
-    sendPing();
-    resetInterval();
-    document.addEventListener("visibilitychange", onVisibilityChange);
-  }
+  if (getCurrentInstance()) onUnmounted(stop);
 
   const start = () => {
+    if (started) return;
+    started = true;
     sendPing();
     resetInterval();
     document.addEventListener("visibilitychange", onVisibilityChange);

@@ -237,6 +237,15 @@ export const useAuthStore = defineStore("auth", () => {
     }
   };
 
+  const clearDeletedAccountSession = async () => {
+    await clearChatRuntime(user.value?.id);
+    localStorage.clear();
+    sessionStorage.clear();
+    user.value = null;
+    onlineUsers.value.clear();
+    isAuthenticated.value = false;
+  };
+
   const fetchUser = async () => {
     try {
       const response = await apiClient.get("/users/profile/", { _keepOnNavigation: true });
@@ -393,7 +402,7 @@ export const useAuthStore = defineStore("auth", () => {
   window.addEventListener("anilux-auth-session-invalidated", onInvalidSession);
   onScopeDispose(() => window.removeEventListener("anilux-auth-session-invalidated", onInvalidSession));
 
-  const checkAuth = async () => {
+  const executeAuthCheck = async () => {
     const accessToken = localStorage.getItem("anilux_access_token_v1");
     if (!accessToken) {
       isAuthenticated.value = false;
@@ -408,6 +417,24 @@ export const useAuthStore = defineStore("auth", () => {
       !localStorage.getItem("anilux_access_token_v1");
     if (tokensWereRejected) await clearInvalidSession();
     return { success: false };
+  };
+
+  let authCheck: { token: string; promise: Promise<{ success: boolean }> } | undefined;
+  let checkedToken = '';
+  let checkedAt = 0;
+  const checkAuth = (): Promise<{ success: boolean }> => {
+    const token = localStorage.getItem('anilux_access_token_v1') || '';
+    if (isAuthenticated.value && checkedToken === token && Date.now() - checkedAt < 60_000)
+      return Promise.resolve({ success: true });
+    if (authCheck?.token === token) return authCheck.promise;
+    const promise = executeAuthCheck().then(result => {
+      if (result.success && localStorage.getItem('anilux_access_token_v1') === token) {
+        checkedToken = token; checkedAt = Date.now();
+      }
+      return result;
+    }).finally(() => { if (authCheck?.promise === promise) authCheck = undefined; });
+    authCheck = { token, promise };
+    return promise;
   };
 
   const initializeAuth = async () => {
@@ -527,14 +554,9 @@ export const useAuthStore = defineStore("auth", () => {
 
   const updatePrivacySettings = async (settings: unknown) => {
     try {
-      const response = await apiClient.patch("/users/privacy", settings);
-      if (user.value) {
-        user.value = { ...user.value, ...response.data };
-        localStorage.setItem("anilux_user_v1", JSON.stringify(user.value));
-      }
+      const response = await apiClient.patch("/users/privacy-settings/me/", settings);
       return { success: true, user: response.data };
-    } catch (_error: unknown) {
-      console.error("Auth Store: Update privacy settings failed", _error);
+    } catch {
       return {
         success: false,
         error: "Ошибка обновления настроек приватности",
@@ -618,6 +640,7 @@ export const useAuthStore = defineStore("auth", () => {
     verifyPhone,
     verifyEmail,
     logout,
+    clearDeletedAccountSession,
     fetchUser,
     passwordReset,
     updateProfile,

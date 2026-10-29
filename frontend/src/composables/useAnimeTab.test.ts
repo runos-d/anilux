@@ -1,0 +1,21 @@
+import { afterEach, expect, it, vi } from 'vitest';
+const api = vi.hoisted(() => ({ post: vi.fn().mockResolvedValue({}), delete: vi.fn().mockResolvedValue({}) }));
+vi.mock('@/api/client', () => ({ default: api }));
+vi.mock('@/stores/auth', () => ({ useAuthStore: () => ({ isAuthenticated: true }) }));
+import { useAnimeTab } from './useAnimeTab';
+afterEach(() => { vi.useRealTimers(); vi.clearAllMocks(); });
+it('starts once and stops all activity for the old title before replacement', async () => {
+  vi.useFakeTimers();
+  const first = useAnimeTab(1);
+  expect(api.post).not.toHaveBeenCalled();
+  first.start(); first.start();
+  expect(api.post).toHaveBeenCalledTimes(1);
+  first.stop();
+  const second = useAnimeTab(2); second.start();
+  await vi.advanceTimersByTimeAsync(3 * 60 * 1000);
+  expect(api.post.mock.calls.slice(1).every(call => call[1].anime_id === 2)).toBe(true);
+  second.stop();
+  const count = api.post.mock.calls.length;
+  await vi.advanceTimersByTimeAsync(6 * 60 * 1000);
+  expect(api.post).toHaveBeenCalledTimes(count);
+});

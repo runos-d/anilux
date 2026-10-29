@@ -1,0 +1,22 @@
+import { flushPromises, mount } from '@vue/test-utils';
+import { expect, it, vi } from 'vitest';
+const api = vi.hoisted(() => ({ get: vi.fn().mockResolvedValue({ who_can_see_email: 'contacts' }), patch: vi.fn() }));
+vi.mock('@/api/settings', () => ({ getPrivacySettings: api.get, updatePrivacySettings: api.patch }));
+vi.mock('@/stores/auth', () => ({ useAuthStore: () => ({ user: { id: 42 } }) }));
+vi.mock('@/analytics', () => ({ reportTechnicalError: vi.fn(), saveConsentChoice: vi.fn() }));
+import PrivacySettings from './PrivacySettings.vue';
+it('serializes privacy saves so the latest choice reaches the server last', async () => {
+  let release!: (value: object) => void;
+  api.patch.mockImplementationOnce(() => new Promise(resolve => { release = resolve; })).mockResolvedValue({ who_can_see_email: 'nobody' });
+  const wrapper = mount(PrivacySettings, { global: { stubs: { SakuraIcon: true } } });
+  await flushPromises();
+  const radios = wrapper.findAll('input[type="radio"]');
+  await radios[3]!.setValue();
+  await radios[5]!.setValue();
+  expect(api.patch).toHaveBeenCalledTimes(1);
+  release({ who_can_see_email: 'everyone' });
+  await flushPromises();
+  expect(api.patch).toHaveBeenCalledTimes(2);
+  expect(api.patch.mock.calls[1]?.[0].who_can_see_email).toBe('nobody');
+  wrapper.unmount();
+});

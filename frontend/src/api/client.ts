@@ -1,6 +1,7 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, CanceledError } from "axios";
 import { isCancelledError as isQueryCancelled } from '@tanstack/vue-query';
 import { useInitialRead } from '@/lib/initialRead';
+import { resolveApiBase } from '@/lib/localApi';
 
 declare module 'axios' { interface AxiosRequestConfig { _keepOnNavigation?: boolean; _accountId?: string; _sessionRefresh?: string | null; } }
 
@@ -9,11 +10,7 @@ interface AbortControllerRequestConfig extends AxiosRequestConfig {
   _abortCleanup?: () => void;
   _callerSignal?: AxiosRequestConfig["signal"];
 }
-let baseURL = import.meta.env.VITE_API_URL;
-
-if (!baseURL) {
-  baseURL = window.location.origin + "/api";
-}
+let baseURL = resolveApiBase(import.meta.env.VITE_API_URL, window.location.origin, import.meta.env.DEV);
 
 baseURL = baseURL.replace(/\/api\/api$/, "/api").replace(/\/\/$/, "/").replace(/^https:\/\/localhost/, "http://localhost");
 
@@ -51,6 +48,11 @@ apiClient.interceptors.request.use((config) => {
 
 apiClient.interceptors.response.use(
   (response) => {
+    if (['/users/change-password/', '/users/sessions/terminate/', '/users/sessions/terminate-all/'].includes(response.config.url || '') &&
+        response.data?.tokens && response.config._sessionRefresh === localStorage.getItem('anilux_refresh_token_v1')) {
+      localStorage.setItem('anilux_access_token_v1', response.data.tokens.access);
+      localStorage.setItem('anilux_refresh_token_v1', response.data.tokens.refresh);
+    }
     const controller = (response.config as AbortControllerRequestConfig | undefined)?._abortController;
     if (controller) {
       activeControllers.delete(controller);

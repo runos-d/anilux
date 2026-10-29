@@ -1,72 +1,99 @@
-import { computed, onScopeDispose, watch } from "vue";
-import { useAuthStore } from "@/stores/auth";
-import { useGlobalWebSocket } from "@/composables/useGlobalWebSocket";
-import { reconcilePresence } from "@/lib/onlinePresence";
-import apiClient from "@/api/client";
+import { computed, onScopeDispose, onActivated, onDeactivated, watch } from 'vue';
+import { useAuthStore } from '@/stores/auth';
+import { useGlobalWebSocket } from '@/composables/useGlobalWebSocket';
+import apiClient from '@/api/client';
 import { afterInitialContent } from '@/lib/initialContent';
 
-let subscribers = 0;
-let timer: ReturnType<typeof setInterval> | null = null;
-let accountId: number | null = null;
-let pending: Promise<void> | null = null;
-let controller: AbortController | null = null;
+const interests = new Map<symbol, Set<number>>();
+let timer: ReturnType<typeof setInterval> | undefined;
+let scheduled: ReturnType<typeof setTimeout> | undefined;
+let controller: AbortController | undefined;
+let pending: Promise<void> | undefined;
+let owner: number | undefined;
+let lastSeed = 0;
+let publishInterest: (ids: number[]) => void = () => {};
 
 async function seedOnlineUsers() {
-  const store = useAuthStore();
-  const owner = store.isAuthenticated ? store.user?.id ?? null : null;
-  if (owner !== accountId) {
-    controller?.abort();
-    pending = null;
-    store.onlineUsers.clear();
-    accountId = owner;
+  const auth = useAuthStore();
+  const account = auth.isAuthenticated ? auth.user?.id : undefined;
+  if (owner !== account) {
+    controller?.abort(); pending = undefined;
+    auth.onlineUsers.clear(); owner = account;
   }
-  if (!owner) return;
-  if (pending) return pending;
-  const ac = new AbortController();
-  controller = ac;
-  const before = new Map(store.onlineUsers);
+  if (!account || document.hidden || pending) return pending;
+  const ids = [...new Set([...interests.values()].flatMap(value => [...value]))];
+  if (!ids.length) return;
+  const ac = new AbortController(); controller = ac;
+  lastSeed = Date.now();
   pending = (async () => {
-    try {
-      const { data } = await apiClient.get<{ results: { id: number }[] }>("/users/online/", {
-        signal: ac.signal, timeout: 10000,
-      });
-      if (ac.signal.aborted || !store.isAuthenticated || store.user?.id !== owner) return;
-      reconcilePresence(store.onlineUsers, before, data.results.map(user => user.id), store.updateUserOnlineStatus, owner);
-    } catch {
-    } finally {
-      if (controller === ac) { controller = null; pending = null; }
+    for (let offset = 0; offset < ids.length; offset += 200) {
+      const batch = ids.slice(offset, offset + 200);
+      const before = new Map(batch.map(id => [id, auth.onlineUsers.get(id)]));
+      try {
+        const { data } = await apiClient.get<{ results: { id: number; is_online: boolean }[] }>('/users/online/', {
+          params: { ids: batch.join(',') }, signal: ac.signal, timeout: 5000,
+        });
+        if (ac.signal.aborted || !auth.isAuthenticated || auth.user?.id !== account) return;
+        const states = new Map(data.results.map(row => [row.id, row.is_online]));
+        for (const id of batch) if (auth.onlineUsers.get(id) === before.get(id))
+          auth.updateUserOnlineStatus(id, states.get(id) ?? false);
+      } catch { return; }
     }
-  })();
+  })().finally(() => { if (controller === ac) { controller = undefined; pending = undefined; } });
   return pending;
 }
 
+function scheduleSeed() {
+  if (scheduled) return;
+  scheduled = setTimeout(() => {
+    scheduled = undefined;
+    publishInterest([...new Set([...interests.values()].flatMap(value => [...value]))].slice(-200));
+    void seedOnlineUsers();
+  }, 150);
+}
+
 export function useOnlineStatus() {
-  let disposed = false;
-  const authStore = useAuthStore();
-  const { connect: connectGlobalWs, isConnected } = useGlobalWebSocket();
-  subscribers++;
-  if (!timer) timer = setInterval(() => { void seedOnlineUsers(); }, 15000);
-  watch(() => [authStore.isAuthenticated, authStore.user?.id], () => {
+  const key = Symbol('presence'); const ids = new Set<number>(); interests.set(key, ids);
+  const auth = useAuthStore();
+  const { connect: connectGlobalWs, isConnected, send } = useGlobalWebSocket();
+  let disposed = false, active = true;
+  publishInterest = ids => send?.({ action: 'subscribe_presence', user_ids: ids });
+  onDeactivated(() => { active = false; interests.delete(key); scheduleSeed(); });
+  onActivated(() => { active = true; interests.set(key, ids); scheduleSeed(); });
+  if (!timer) timer = setInterval(() => {
+    if (!document.hidden && (!isConnected.value || Date.now() - lastSeed >= 299_000)) void seedOnlineUsers();
+  }, 60_000);
+  const foreground = () => { if (!document.hidden) scheduleSeed(); };
+  document.addEventListener('visibilitychange', foreground);
+  watch([() => auth.isAuthenticated, () => auth.user?.id], () => {
+    const account = auth.isAuthenticated ? auth.user?.id : undefined;
+    if (owner !== account) { controller?.abort(); pending = undefined; auth.onlineUsers.clear(); owner = account; }
     afterInitialContent(() => {
-      if (disposed) return;
-      if (authStore.isAuthenticated) connectGlobalWs();
-      void seedOnlineUsers();
+    if (disposed || !active) return;
+    if (auth.isAuthenticated) connectGlobalWs();
+    scheduleSeed();
     });
   }, { immediate: true });
-  watch(isConnected, connected => { if (connected) void seedOnlineUsers(); });
+  watch(isConnected, connected => { if (connected) scheduleSeed(); });
   onScopeDispose(() => {
-    disposed = true;
-    if (--subscribers === 0) {
-      if (timer) clearInterval(timer);
-      timer = null;
-      controller?.abort();
-      controller = null;
-      pending = null;
+    disposed = true; interests.delete(key);
+    scheduleSeed();
+    document.removeEventListener('visibilitychange', foreground);
+    if (!interests.size) {
+      publishInterest([]);
+      clearInterval(timer); clearTimeout(scheduled); timer = undefined; scheduled = undefined;
+      controller?.abort(); controller = undefined; pending = undefined;
     }
   });
   return {
-    isUserOnline: (id: number) => authStore.onlineUsers.get(id)?.is_online ?? false,
-    getOnlineCount: computed(() => [...authStore.onlineUsers.values()].filter(value => value.is_online).length),
+    isUserOnline: (id: number) => {
+      if (active && Number.isInteger(id) && id > 0 && !ids.has(id)) {
+        ids.add(id); if (ids.size > 200) ids.delete(ids.values().next().value!);
+        scheduleSeed();
+      }
+      return auth.onlineUsers.get(id)?.is_online ?? false;
+    },
+    getOnlineCount: computed(() => [...auth.onlineUsers.values()].filter(value => value.is_online).length),
     seedOnlineUsers, connectGlobalWs,
   };
 }

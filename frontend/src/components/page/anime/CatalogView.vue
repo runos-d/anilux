@@ -158,7 +158,7 @@ const emit = defineEmits<{
   unshuffle: [];
   animeClick: [anime: Anime];
   watchAnime: [anime: Anime];
-  filterChange: [filters: FilterState];
+  filterChange: [filters: FilterState, userInitiated?: boolean];
 }>();
 
 interface FranchiseItem {
@@ -266,8 +266,8 @@ const effectiveTotalCount = computed(() => {
   return props.totalCount;
 });
 
-const onFilterChange = (filters: FilterState) => {
-  emit("filterChange", filters);
+const onFilterChange = (filters: FilterState, userInitiated = true) => {
+  emit("filterChange", filters, userInitiated);
 };
 
 const handleClick = (anime: Anime) => emit("animeClick", anime);

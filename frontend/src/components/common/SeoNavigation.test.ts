@@ -20,6 +20,7 @@ describe('global footer', () => {
     expect(wrapper.find('a[href^="mailto:"]').attributes('href')).toBe('mailto:' + navigation.email);
     expect(wrapper.text()).toContain('Для правообладателей');
     expect(wrapper.findAllComponents(RouterLink).filter(link => ['/contacts', '/license'].includes(String(link.props('to')))).map(link => link.text())).toEqual([
+      'Помощь',
       'Связаться с администрацией',
       'Права на материалы',
     ]);

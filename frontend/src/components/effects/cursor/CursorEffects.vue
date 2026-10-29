@@ -6,10 +6,11 @@
 </template>
 
 <script setup lang="ts">
-import SakuraCursor from "./SakuraCursor.vue";
-import NewYearCursor from "./NewYearCursor.vue";
-import HalloweenCursor from "./HalloweenCursor.vue";
-import LoveDayCursor from "./LoveDayCursor.vue";
+import { defineAsyncComponent } from "vue";
+const SakuraCursor = defineAsyncComponent(() => import("./SakuraCursor.vue"));
+const NewYearCursor = defineAsyncComponent(() => import("./NewYearCursor.vue"));
+const HalloweenCursor = defineAsyncComponent(() => import("./HalloweenCursor.vue"));
+const LoveDayCursor = defineAsyncComponent(() => import("./LoveDayCursor.vue"));
 import { useSakuraOverlay } from "@/composables/useSakuraOverlay";
 import { useNewYearOverlay } from "@/composables/useNewYearOverlay";
 import { useHalloweenOverlay } from "@/composables/useHalloweenOverlay";

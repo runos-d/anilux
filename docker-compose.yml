@@ -81,6 +81,46 @@ services:
     networks:
       - anilux_network
 
+  download_worker:
+    build: ./backend
+    restart: unless-stopped
+    cpus: 1
+    mem_limit: 1g
+    env_file: .env
+    command: ["python", "docker_entrypoint.py", "celery", "-A", "config", "worker", "-Q", "media_downloads", "-l", "info", "--concurrency=1", "--prefetch-multiplier=1", "--hostname=downloads@%h"]
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      migrate:
+        condition: service_completed_successfully
+    volumes:
+      - ./backend:/app
+      - ./backend/data:/app/data
+    networks:
+      - anilux_network
+
+  catalog_import_worker:
+    build: ./backend
+    restart: unless-stopped
+    cpus: 1
+    mem_limit: 768m
+    env_file: .env
+    command: ["python", "docker_entrypoint.py", "celery", "-A", "config", "worker", "-Q", "catalog_imports", "-l", "info", "--concurrency=1", "--prefetch-multiplier=1", "--hostname=catalog-imports@%h"]
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      migrate:
+        condition: service_completed_successfully
+    volumes:
+      - ./backend:/app
+      - ./backend/data:/app/data
+    networks:
+      - anilux_network
+
   celery_beat:
     build: ./backend
     container_name: anilux_celery_beat

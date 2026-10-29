@@ -1,0 +1,47 @@
+name: animecore-app
+x-logging: &logging
+  driver: local
+  options: { max-size: "10m", max-file: "3" }
+services:
+  backend:
+    image: ${BACKEND_IMAGE:?Set the tested backend image}
+    restart: unless-stopped
+    env_file: ${APP_ENV_FILE:?Set an absolute app env file path}
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings
+      NATIVE_AUTO_BUILD_ON_START: "false"
+      ASGI_HTTP_CONCURRENCY: ${HTTP_CONCURRENCY:-32}
+      ASGI_WEBSOCKET_CONNECTIONS: ${SOCKETS_PER_PROCESS:-4096}
+      ASGI_WEBSOCKET_HANDSHAKES: "64"
+      DB_CONN_MAX_AGE: "0"
+    deploy: { replicas: "${API_PROCESSES:-2}" }
+    cpus: "${API_CPU_LIMIT:-1}"
+    mem_limit: ${API_MEMORY_LIMIT:-1g}
+    ulimits: { nofile: { soft: 65536, hard: 65536 } }
+    volumes:
+      - ${SHARED_DATA_PATH:?Mount the SAME shared storage on every node}:/app/data
+      - ${SHARED_DATA_PATH}/seo_shell:/app/frontend_dist:ro
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready/',timeout=4)"]
+      interval: 20s
+      timeout: 5s
+      start_period: 45s
+      retries: 3
+    logging: *logging
+  gateway:
+    image: ${NGINX_IMAGE:-registry-1.docker.io/library/nginx:alpine@sha256:892bb2152464f0c5d8972593a5f5afaf8054552580b699d95f8ff4af08c2d33d}
+    restart: unless-stopped
+    cpus: "0.5"
+    mem_limit: 256m
+    ulimits: { nofile: { soft: 65536, hard: 65536 } }
+    ports: ["${APP_BIND_IP:?Use a PRIVATE interface}:8000:8000"]
+    volumes: [./nginx.app-gateway.conf:/etc/nginx/nginx.conf:ro]
+    depends_on: { backend: { condition: service_healthy } }
+    logging: *logging
+  migrate:
+    image: ${BACKEND_IMAGE:?Set the tested backend image}
+    profiles: [maintenance]
+    env_file: ${APP_ENV_FILE}
+    command: [python, manage.py, migrate, --noinput]
+    volumes: ["${SHARED_DATA_PATH}:/app/data"]
+    logging: *logging

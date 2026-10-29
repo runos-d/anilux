@@ -1,0 +1,31 @@
+name: animecore-data
+services:
+  mysql:
+    image: registry-1.docker.io/library/mysql:8.0@sha256:7dcddc01f13bab2f15cde676d44d01f61fc9f99fe7785e86196dfc07d358ae2b
+    restart: unless-stopped
+    cpus: "3"
+    mem_limit: 4g
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:?Set database name}
+      MYSQL_USER: ${DB_USER:?Set database user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Set database password}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set root password}
+    command: [--innodb-buffer-pool-size=1536M, --max-connections=256, --skip-name-resolve]
+    ports: ["${DATA_BIND_IP:?Use a PRIVATE interface}:3306:3306"]
+    volumes: ["${MYSQL_DATA_PATH:?Use a dedicated persistent directory}:/var/lib/mysql"]
+    healthcheck:
+      test: [CMD-SHELL, 'MYSQL_PWD="$$MYSQL_ROOT_PASSWORD" mysqladmin ping -h127.0.0.1 -uroot --silent']
+      interval: 15s
+      timeout: 5s
+      retries: 20
+    logging: { driver: local, options: { max-size: "10m", max-file: "3" } }
+  redis:
+    image: registry-1.docker.io/library/redis:7@sha256:4fa24486b8bcca8eec45ee0eb166edc674795e53a2b53d1a9ef263eecebaac85
+    restart: unless-stopped
+    cpus: "0.75"
+    mem_limit: 1536m
+    environment: { REDIS_PASSWORD: "${REDIS_PASSWORD:?Set a Redis password}" }
+    command: [sh, -ec, 'exec redis-server --requirepass "$$REDIS_PASSWORD" --maxmemory 768mb --maxmemory-policy noeviction --appendonly yes --appendfsync everysec']
+    ports: ["${DATA_BIND_IP}:6379:6379"]
+    volumes: ["${REDIS_DATA_PATH:?Use a dedicated persistent directory}:/data"]
+    logging: { driver: local, options: { max-size: "10m", max-file: "3" } }

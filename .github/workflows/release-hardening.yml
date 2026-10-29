@@ -29,6 +29,7 @@ jobs:
       - run: npm ci
       - run: npm run type-check
       - run: npm run lint
+      - run: npm run check:analytics-architecture
       - run: npm run test:unit:run
       - run: npm run build-only
       - run: npm run check:bundle

@@ -23,7 +23,7 @@ services:
     ports: !override
       - "127.0.0.1:8000:8000"
     healthcheck:
-      test: ["CMD", "python", "-c", "import http.client; c=http.client.HTTPConnection('127.0.0.1',8000,timeout=4); c.request('GET','/api/social/chats/'); r=c.getresponse(); assert r.status == 401, r.status"]
+      test: ["CMD", "python", "-c", "import http.client; c=http.client.HTTPConnection('127.0.0.1',8000,timeout=4); c.request('GET','/health/ready/'); r=c.getresponse(); assert r.status == 200, r.status"]
       interval: 15s
       timeout: 5s
       start_period: 30s
@@ -58,7 +58,14 @@ services:
       backend:
         condition: service_healthy
   frontend:
-    build: ./frontend
+    # Prepared artifacts are served internally after backend authorization.
+    build:
+      context: ./frontend
+      args:
+        VITE_YANDEX_METRIKA_ENABLED: ${VITE_YANDEX_METRIKA_ENABLED:-false}
+        VITE_YANDEX_METRIKA_ID: ${VITE_YANDEX_METRIKA_ID:-}
+        VITE_GOOGLE_ANALYTICS_ENABLED: ${VITE_GOOGLE_ANALYTICS_ENABLED:-false}
+        VITE_GOOGLE_ANALYTICS_ID: ${VITE_GOOGLE_ANALYTICS_ID:-}
     image: anilux-frontend:local-release
     container_name: anilux_frontend
     restart: unless-stopped
@@ -68,9 +75,42 @@ services:
       - seo_shell:/seo-shell
       - ./backend/data/private_post_media:/app/post-private:ro
       - ./backend/data/media:/app/post-legacy:ro
+      - ./backend/data/private_downloads:/app/prepared-downloads:ro
     depends_on:
       backend:
         condition: service_healthy
         restart: true
     networks:
       - anilux_network
+  download_worker:
+    image: anilux-backend:local-release
+    restart: unless-stopped
+    cpus: 1
+    mem_limit: 1g
+    env_file: .env
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings_local_production
+    command: ["python", "docker_entrypoint.py", "celery", "-A", "config", "worker", "-Q", "media_downloads", "-l", "info", "--concurrency=1", "--prefetch-multiplier=1", "--hostname=downloads@%h"]
+    volumes: !override
+      - ./backend/data:/app/data
+    networks:
+      - anilux_network
+    depends_on:
+      backend:
+        condition: service_healthy
+  catalog_import_worker:
+    image: anilux-backend:local-release
+    restart: unless-stopped
+    cpus: 1
+    mem_limit: 768m
+    env_file: .env
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings_local_production
+    command: ["python", "docker_entrypoint.py", "celery", "-A", "config", "worker", "-Q", "catalog_imports", "-l", "info", "--concurrency=1", "--prefetch-multiplier=1", "--hostname=catalog-imports@%h"]
+    volumes: !override
+      - ./backend/data:/app/data
+    networks:
+      - anilux_network
+    depends_on:
+      backend:
+        condition: service_healthy

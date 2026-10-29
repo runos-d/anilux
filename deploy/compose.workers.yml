@@ -1,0 +1,25 @@
+name: animecore-workers
+x-common: &common
+  image: ${BACKEND_IMAGE:?Set the tested backend image}
+  restart: unless-stopped
+  env_file: ${WORKER_ENV_FILE:?Set an absolute worker env file path}
+  environment: { DJANGO_SETTINGS_MODULE: config.settings, DB_CONN_MAX_AGE: "0" }
+  volumes: ["${SHARED_DATA_PATH:?Mount the SAME shared storage as API nodes}:/app/data"]
+  logging: { driver: local, options: { max-size: "10m", max-file: "3" } }
+services:
+  events:
+    <<: *common
+    cpus: "${EVENTS_CPU_LIMIT:-2}"
+    mem_limit: ${EVENTS_MEMORY_LIMIT:-1536m}
+    command: [python, docker_entrypoint.py, celery, -A, config, worker, -Q, celery, -l, warning, '--concurrency=${EVENTS_CONCURRENCY:-2}', --prefetch-multiplier=1, --max-tasks-per-child=1000, --hostname=events@%h]
+  media:
+    <<: *common
+    cpus: "${MEDIA_CPU_LIMIT:-1}"
+    mem_limit: ${MEDIA_MEMORY_LIMIT:-1536m}
+    command: [python, docker_entrypoint.py, celery, -A, config, worker, -Q, 'post_media,media_downloads,catalog_imports', -l, warning, --concurrency=1, --prefetch-multiplier=1, --max-tasks-per-child=25, --max-memory-per-child=750000, --hostname=media@%h]
+  beat:
+    <<: *common
+    profiles: [scheduler]
+    cpus: "0.25"
+    mem_limit: 256m
+    command: [python, docker_entrypoint.py, celery, -A, config, beat, -l, warning, --schedule, /app/data/celerybeat/celerybeat-schedule]

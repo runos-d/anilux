@@ -1,0 +1,22 @@
+name: animecore-edge
+services:
+  edge:
+    image: ${FRONTEND_IMAGE:?Set the tested frontend image}
+    restart: unless-stopped
+    cpus: '1'
+    mem_limit: 1g
+    ulimits: { nofile: { soft: 65536, hard: 65536 } }
+    ports: ['80:80', '443:443']
+    volumes:
+      - ${EDGE_CONFIG_PATH:?Set the rendered nginx config}:/etc/nginx/nginx.conf:ro
+      - ${TLS_CERT_DIR:?Set the directory containing fullchain.pem and privkey.pem}:/etc/nginx/tls:ro
+      - ${SHARED_DATA_PATH:?Mount the SAME shared storage as API nodes}/seo_shell:/seo-shell
+      - ${SHARED_DATA_PATH}/private_post_media:/app/post-private:ro
+      - ${SHARED_DATA_PATH}/media:/app/post-legacy:ro
+      - ${SHARED_DATA_PATH}/private_downloads:/app/prepared-downloads:ro
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, http://127.0.0.1/health]
+      interval: 20s
+      timeout: 3s
+      retries: 3
+    logging: { driver: local, options: { max-size: 10m, max-file: '3' } }

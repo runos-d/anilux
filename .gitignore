@@ -167,3 +167,12 @@ pinegrow.json
 /frontend/src/components/Chats/analyze_state.py
 /frontend/src/components/page/analyze.py
 /frontend/tests/ui-alignment-diagnostic.js
+
+# Machine-specific generated deployment configuration (source templates are tracked).
+/deploy/generated/
+
+# Version only deployment examples; the generic ENV/ rule also matches this
+# directory on Windows. Real environment files stay excluded.
+!/deploy/env/
+/deploy/env/*
+!/deploy/env/*.env.example

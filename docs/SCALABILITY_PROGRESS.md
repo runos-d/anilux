@@ -10,7 +10,7 @@
 | 2. Клиент/API | Bounded reads, SQL/DOM budgets, cold/warm | Холодные рекомендации вне HTTP; bounded ranked cursor; membership subqueries | 334 backend, 284 frontend tests; build/bundle; authenticated browser desktop/390px | Все остальные домены под большим dataset, длительный UI/memory/CPU профиль |
 | 3. Данные/проекции | Outbox/idempotency/version/rebuild + актуальные ACL | Recommendation fencing и bounded rebuild; существующие Chat/Post outbox сохранены | Stale worker, dirty history, visibility/owner/cursor regression | Общий outbox всех доменов, hybrid feed, search index, асинхронные counters и доменное разделение |
 | 4. Realtime/очереди | Security equivalence, bounded queues, отказ брокера | Opt-in isolated routes/RabbitMQ; synthetic Centrifugo + официальный SDK; publish deadlines/DLQ policy | Broker stop/pause/recovery; 1200 synthetic deliveries; actual router для всех 88 tasks | D0031 equivalence/replay Centrifugo, функциональность task corpus, broker HA/poison replay; default legacy сохранён |
-| 5. Медиа | Private Range и S3/CDN migration без потери данных | Async private file streaming; optional copy-first S3 migration worker | Range/HEAD/ACL; corruption/path/dry-run tests; SDK image/pip check | Реальный provider, inventory/dual-read/write, live file-path migration и CDN |
+| 5. Медиа | Private Range и S3/CDN migration без потери данных | Async private file streaming; copy-first S3 worker; bounded private FileField inventory | Range/HEAD/ACL; corruption/path/dry-run tests; SDK image/pip check | Реальный provider, inventory/dual-read/write, live file-path migration и CDN |
 | 6. Горизонтальный рост | API/WS реплики, отдельные ресурсы, restore/replicas | 2/4 API lab, физически отдельные Redis процессы, DB dump/restore rehearsal | Один профиль на 2 и 4 API; restore counts/checksums 6 tables | Shared storage removal, MySQL replica/promotion, host failover; Vitess/K8s gates ещё не выполнены |
 | 7. Приёмка/переход | Ступени, soak/reconnect/fault, rollback | Exit gates и сохранение failed evidence; routing/broker rollback procedures | 120 clients/240 WS/60с на 4 API прошли smoke ≤1с p95 | Более строгий chat SLO **не пройден**; full-domain mix, soak, reconnect/replay/failover и 6000/миллион не подтверждены |
 
@@ -38,6 +38,8 @@
 - Проверено: 22 telemetry/session/TLS tests (0,559с), 72 chat projection/isolation/conversation regressions (173,021с), isolated MySQL. Capacity/SLO по этой инструментированной версии ещё не заявлены.
 
 - Продолжение realtime: bounded union текущих user groups уменьшает число transport frames/process; native Channels receiver/dispatch и D0031 сохранены. Реальный Redis проверяет capacity/expiry/dedup/изоляцию; сессия и membership отозваны после первой успешной multicast-доставки, повтор старого event не раскрывает payload. 63 targeted regressions + 5 real Redis/security tests PASS. Сопоставимый 120/4 API профиль: HTTP 154/239мс, chat 681/895мс, 7200/7200, против instrumented baseline 3190/3880мс. Smoke PASS; p95 500мс ещё открыт. [Новый evidence](reviews/2026-10-29-scalability-continuation-evidence/README.md).
+
+Медиа продолжены независимо: `inventory_media_page --describe` и bounded private FileField pages с keyset/watermark/status и 0..64MiB hashing/page. Четыре regression tests PASS: границы/cursor/new writes, hash budget, missing/invalid paths, exclusive manifest/checkout/symlink protection и отсутствие SQL в describe. Это подготовка migration inventory; JSON/exports/orphans, dual-read/write, live S3/CDN остаются открыты.
 
 ## Следующая работа
 

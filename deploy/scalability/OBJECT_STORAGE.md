@@ -22,3 +22,17 @@ python manage.py mirror_media_file --domain chat --name attachments/example.bin 
 Перед cutover ещё нужны: пакетный inventory/manifest всех реально используемых путей; проверка checksum/Range выбранного S3 provider; dual-read/dual-write и отслеживание изменений во время копирования; изменение path-based FFmpeg/export/storage consumers; приватная proxy/X-Accel выдача с проверкой **текущих** ACL/сессии на каждый запрос, включая Range/HEAD/304. Presigned TTL не заменяет немедленный отзыв. Нельзя включать S3 private URLs напрямую в shared cache/CDN. CDN public whitelist — posters/covers и статические build assets, никогда attachments/backups/exports по одному расширению файла. До практической проверки и отдельного cutover исходники не удаляются. Провайдер/CDN и настоящие buckets этим кодом не созданы.
 
 Проверено локально: optional SDK image собирается, mock copy/dry-run/corruption/path traversal tests проходят. Это не S3 compatibility или production migration; нужны внешние endpoint/identity и разрешённые тестовые файлы.
+
+## Пакетный inventory FileFields
+
+`inventory_media_page --describe` перечисляет зарегистрированные FileFields и поддержанные local storage domains без чтения БД/файлов. Затем один запуск читает максимум 500 строк выбранной модели по integer PK, с фиксированным верхним watermark. Имена/PK/file metadata попадают только в новый private JSON manifest вне checkout (exclusive creation, mode 600); stdout содержит counts/status/cursor. Source files и live paths не меняются; SDK/сеть не нужны.
+
+```sh
+python manage.py inventory_media_page --describe
+python manage.py inventory_media_page --model social.Attachment --limit 100 --manifest /private-manifests/attachments-page-001.json
+python manage.py inventory_media_page --model social.Attachment --after-id LAST_ID --through-id FIRST_PAGE_WATERMARK --limit 100 --hash-budget-mib 64 --manifest /private-manifests/attachments-page-002.json
+```
+
+Сохранять `through_id` первой страницы и продолжать `next_after_id`, пока `has_more=false`; новые записи после watermark обрабатываются следующей серией. Лимит hash I/O 0..64MiB на страницу, по умолчанию 0 (только stat); большие файлы откладываются без SHA, changed/missing/invalid/unreadable отмечаются отдельно. Рост файла во время hashing ограничен исходным размером +1 байт. Это наблюдение, не transaction snapshot файлов и не verified S3 mapping. После копирования повторять inventory и checksum, изменения за время обхода ещё требуют reconciliation/dual-write.
+
+Название `public` означает только MEDIA_ROOT: **видимость из storage domain не выводится**, profile/private legacy files не разрешаются для CDN. Unsupported storages сохраняются как явный status. Команда охватывает FileFields, а не пути внутри JSON/настроек, orphan files, export/download/FFmpeg caches или внешние URLs; `complete_storage_inventory=false` не позволяет принять такую страницу за полный manifest миграции. Не публиковать private pages в Git/logs/evidence.

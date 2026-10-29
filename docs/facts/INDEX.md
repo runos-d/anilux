@@ -57,3 +57,4 @@ F0055,Рейтинговый курсор удерживает ограниче�
 F0056,Добавлены отдельные task routes и изолированные прототипы RabbitMQ и Centrifugo,"realtime, performance, verification, release",active
 F0057,Миграция в S3 подготавливает проверенную копию без переключения live paths,"media, data-integrity, verification, release",active
 F0058,Адресные события чата объединяются по текущим пользовательским группам Redis,"realtime, performance, access-control, verification",active
+F0059,FileField inventory ограничен keyset страницей и приватным manifest,"media, data-integrity, verification",active

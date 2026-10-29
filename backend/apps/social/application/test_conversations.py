@@ -292,7 +292,8 @@ class ConversationTests(TestCase):
         message = self.send()
         event = ChatEvent.objects.get(kind='new_message', payload__message__id=message.pk)
         with patch('channels.layers.get_channel_layer') as layer:
-            layer.return_value.group_send = AsyncMock()
+            from types import SimpleNamespace
+            layer.return_value = SimpleNamespace(group_send=AsyncMock())
             deliver_chat_event.run(event.pk)
             frames = {call.args[0]: call.args[1] for call in layer.return_value.group_send.await_args_list}
         self.assertCountEqual(frames[f'conversation_{event.conversation_id}']['recipients'], [self.a.pk,self.b.pk])

@@ -29,14 +29,12 @@ def deliver_chat_event(event_id):
             frame['_published_at'] = time.time()
         layer = get_channel_layer()
         conversation_id = event.conversation_id or envelope.get('conversation_id')
-        from core.group_events import send_to_groups
+        from core.group_events import send_to_users
         async def deliver():
             room_started = time.monotonic()
             await layer.group_send(f'conversation_{conversation_id}', frame)
             phases['room_seconds'] = time.monotonic() - room_started
-            # Do not repeat the entire recipient list in every user's Redis frame.
-            await send_to_groups(layer, (f'user_{uid}' for uid in event.recipients),
-                lambda group: {**frame, 'recipients': [int(group.removeprefix('user_'))]})
+            await send_to_users(layer, event.recipients, frame)
             phases['user_fanout_seconds'] = time.monotonic() - room_started - phases['room_seconds']
         async_to_sync(deliver)()
         event.delivered_at = timezone.now()

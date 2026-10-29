@@ -13,6 +13,18 @@ async def send_to_groups(layer, groups, event, batch_size=16):
             await asyncio.gather(*(layer.group_send(group, event(group) if callable(event) else event) for group in batch))
 
 
+async def send_to_users(layer, user_ids, event):
+    """Bound recipient metadata and coalesce only identical addressed events."""
+    remaining = iter(user_ids)
+    while users := list(islice(remaining, 256)):
+        groups = [f'user_{uid}' for uid in users]
+        if hasattr(layer, 'user_groups_send'):
+            await layer.user_groups_send(groups, {**event, 'recipients': users})
+        else:
+            await send_to_groups(layer, groups,
+                lambda group: {**event, 'recipients': [int(group.removeprefix('user_'))]})
+
+
 async def renew_socket_groups(consumer, groups):
     """Called by serialized, authenticated client heartbeats, never a TTL auth cache."""
     layer = consumer.channel_layer

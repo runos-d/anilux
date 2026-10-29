@@ -30,6 +30,7 @@ async def run(args):
         raise RuntimeError('Insufficient synthetic sessions')
     sockets, readers, commands = [], [], {}
     http, delivery, ack, drift = Histogram(), Histogram(), Histogram(), Histogram()
+    delivery_by_socket = {'global': Histogram(), 'chat': Histogram()}
     statuses = Counter()
     unexpected = duplicates = frame_errors = offered = dropped = sent = 0
     max_frame_received = 0
@@ -68,6 +69,7 @@ async def run(args):
                     else:
                         command['received'].add(key)
                         delivery.add(time.monotonic()-command['start'])
+                        delivery_by_socket[kind].add(time.monotonic()-command['start'])
         async def heartbeat():
             nonlocal frame_errors
             while True:
@@ -151,6 +153,8 @@ async def run(args):
                 'max_received_frame_bytes': max_frame_received, 'response_frame_budget_bytes': 1048576,
                 'http_ms': {'p95': http.percentile(.95), 'p99': http.percentile(.99)},
                 'delivery_ms': {'p95': delivery.percentile(.95), 'p99': delivery.percentile(.99)},
+                'delivery_by_socket_ms': {kind: {'count': hist.count, 'p95': hist.percentile(.95), 'p99': hist.percentile(.99)}
+                                          for kind, hist in delivery_by_socket.items()},
                 'generator': {'schedule_delay_p99_ms': drift.percentile(.99),
                               'cpu_seconds': time.process_time()-start_cpu,
                               'max_rss_kib': resource.getrusage(resource.RUSAGE_SELF).ru_maxrss}}

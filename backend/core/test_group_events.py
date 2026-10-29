@@ -9,10 +9,28 @@ from django.conf import settings
 from django.test import SimpleTestCase
 
 from core.channel_layer import BoundedRedisChannelLayer
-from core.group_events import send_to_groups, renew_socket_groups
+from core.group_events import send_to_groups, send_to_users, renew_socket_groups
 
 
 class GroupFanoutTests(SimpleTestCase):
+    def test_user_union_is_bounded_and_generic_fallback_remains_addressed(self):
+        async def scenario():
+            union = SimpleNamespace(user_groups_send=AsyncMock())
+            await send_to_users(union, range(600), {'type': 'test'})
+            self.assertEqual(union.user_groups_send.await_count, 3)
+            for call in union.user_groups_send.await_args_list:
+                groups, event = call.args
+                self.assertLessEqual(len(groups), 256)
+                self.assertEqual(groups, [f'user_{uid}' for uid in event['recipients']])
+            fallback = SimpleNamespace(group_send=AsyncMock())
+            await send_to_users(fallback, [1, 2], {'type': 'test'})
+            self.assertEqual(fallback.group_send.await_count, 2)
+            self.assertEqual(fallback.group_send.await_args_list[0].args, ('user_1', {'type': 'test', 'recipients': [1]}))
+            union.user_groups_send.side_effect = RuntimeError('unavailable')
+            with self.assertRaises(RuntimeError):
+                await send_to_users(union, [1], {})
+        async_to_sync(scenario)()
+
     def test_large_recipient_list_skips_empty_groups_with_bounded_concurrency(self):
         async def scenario():
             delivered, pending, peak = {}, 0, 0

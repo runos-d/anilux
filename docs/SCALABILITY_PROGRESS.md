@@ -37,6 +37,8 @@
 - Реализовано: ограниченные post-publication histograms по transport/consumer, batch/executor wait, MySQL connection/SQL, DTO preparation/serialization и ASGI send. Timestamp остаётся внутренним; D0031/CONN_MAX_AGE=0 сохранены. Collector хеширует все tracked backend Python sources и сохраняет exit code; mixed probe отмечает load window, phase summarizer проверяет resets/membership и исключает ramp.
 - Проверено: 22 telemetry/session/TLS tests (0,559с), 72 chat projection/isolation/conversation regressions (173,021с), isolated MySQL. Capacity/SLO по этой инструментированной версии ещё не заявлены.
 
+- Продолжение realtime: bounded union текущих user groups уменьшает число transport frames/process; native Channels receiver/dispatch и D0031 сохранены. Реальный Redis проверяет capacity/expiry/dedup/изоляцию; сессия и membership отозваны после первой успешной multicast-доставки, повтор старого event не раскрывает payload. 63 targeted regressions + 5 real Redis/security tests PASS. Сопоставимый 120/4 API профиль: HTTP 154/239мс, chat 681/895мс, 7200/7200, против instrumented baseline 3190/3880мс. Smoke PASS; p95 500мс ещё открыт. [Новый evidence](reviews/2026-10-29-scalability-continuation-evidence/README.md).
+
 ## Следующая работа
 
 1. Разделить CPU/DB connection setup/query/serializer/executor wait в post-publication pipeline на текущем профиле 120/4 API. Снизить chat p95/p99 до согласованного SLO, сохраняя все свежие D0031 checks; не заменять их JWT-only или TTL cache.

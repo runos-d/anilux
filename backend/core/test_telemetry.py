@@ -2,6 +2,7 @@ import asyncio
 import json
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import patch
+from django.test import override_settings
 
 from core.telemetry import OperationalTelemetry, Registry
 
@@ -72,6 +73,35 @@ class TelemetryTests(IsolatedAsyncioTestCase):
         for i in range(1000):
             registry.observe(str(i), i + 600, .1, 2)
         self.assertEqual(len(registry.http), 1)
+        for i in range(1000):
+            registry.observe_ws_phase(str(i), str(i), .02)
+        self.assertEqual(len(registry.ws_phases), 1)
+
+    @override_settings(OPERATIONAL_METRICS_ENABLED=True)
+    async def test_database_phase_context_cleans_up_after_failure(self):
+        from core.telemetry import measured_database_call, current_ws_operation
+        registry = Registry()
+        def failed():
+            self.assertEqual(current_ws_operation.get(), 'projection')
+            raise RuntimeError('private content')
+        with patch('core.telemetry.process_registry', registry):
+            with self.assertRaises(RuntimeError):
+                await measured_database_call(failed, 'projection')
+        self.assertIsNone(current_ws_operation.get())
+        self.assertEqual(registry.ws_phases[('projection', 'work')][0], 1)
+        self.assertEqual(registry.ws_phases[('projection', 'executor_wait')][0], 1)
+        self.assertNotIn(b'private', registry.render())
+
+    @override_settings(OPERATIONAL_METRICS_ENABLED=True)
+    def test_publication_metadata_is_optional_bounded_and_payload_free(self):
+        import time
+        from core.telemetry import observe_publication
+        registry = Registry()
+        with patch('core.telemetry.process_registry', registry):
+            for stamp in (None, 'private', time.time() + 60, time.time() - 7200):
+                observe_publication({'_published_at': stamp}, 'room')
+            observe_publication({'_published_at': time.time() - .1}, 'room')
+        self.assertEqual(registry.ws_phases[('room', 'publication_to_handler')][0], 1)
 
     def test_sql_wrapper_is_attached_once_and_never_retains_private_sql(self):
         from types import SimpleNamespace

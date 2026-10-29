@@ -96,6 +96,7 @@ async def run(args):
                         await asyncio.wait_for(ready.wait(), 15)
                 await asyncio.sleep(.025)
             started = time.monotonic()
+            load_started_at_unix = time.time()
             pending = set()
             next_http = next_send = 0
             async def request(index, scheduled):
@@ -142,6 +143,7 @@ async def run(args):
                 'users': len(users), 'sockets': len(sockets), 'fixture_room_size': rooms['room_size'],
                 'connected_users_per_room': list(Counter(str(rooms['rooms'][str(user['user_id'])]) for user in users).values()),
                 'seconds': args.seconds, 'offered_http_rps': args.rate, 'http_expected': args.rate*args.seconds,
+                'load_started_at_unix': load_started_at_unix, 'load_finished_at_unix': time.time(),
                 'http_offered': offered,
                 'http_completed': http.count, 'statuses': dict(statuses), 'generator_dropped': dropped,
                 'durable_sends': sent, 'acks': ack.count, 'expected_deliveries': expected, 'unique_deliveries': received,

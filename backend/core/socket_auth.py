@@ -8,7 +8,6 @@ import math
 import time
 from weakref import WeakKeyDictionary
 
-from channels.db import database_sync_to_async
 from django.contrib.sessions.models import Session
 from django.db.models import OuterRef, Subquery
 from django.utils import timezone
@@ -92,7 +91,10 @@ def validate_batch(records):
 
 class SocketAuthBatcher:
     def __init__(self, validator=None, batch_size=128, max_pending=32768, flush_delay=0.002, coalesce_between_batches=False, operation='session'):
-        self.validator = validator or database_sync_to_async(validate_batch, thread_sensitive=False)
+        async def validate(records):
+            from core.telemetry import measured_database_call
+            return await measured_database_call(validate_batch, operation, records)
+        self.validator = validator or validate
         self.batch_size = batch_size
         self.max_pending = max_pending
         self.flush_delay = flush_delay
@@ -108,7 +110,7 @@ class SocketAuthBatcher:
         if record is None or len(self.pending) >= self.max_pending:
             return None
         future = asyncio.get_running_loop().create_future()
-        self.pending.append((record, future))
+        self.pending.append((record, future, time.monotonic() if self.instrumented else None))
         if not self.scheduled and not self.running:
             self.scheduled = True
             asyncio.get_running_loop().call_later(self.flush_delay, self.start)
@@ -128,8 +130,13 @@ class SocketAuthBatcher:
                 first = False
                 pending_count = len(self.pending)
                 batch = [self.pending.popleft() for _ in range(min(self.batch_size, pending_count))]
-                records = {record for record, future in batch if not future.cancelled()}
+                records = {record for record, future, queued in batch if not future.cancelled()}
                 started = time.monotonic() if self.instrumented else None
+                if started is not None:
+                    from core.telemetry import process_registry
+                    for record, future, queued in batch:
+                        if not future.cancelled():
+                            process_registry.observe_ws_phase(self.operation, 'batch_wait', started - queued)
                 try:
                     values = await self.validator(records) if records else {}
                 except Exception:
@@ -138,7 +145,7 @@ class SocketAuthBatcher:
                 if started is not None:
                     from core.telemetry import process_registry
                     process_registry.observe_batch(self.operation, len(records), time.monotonic()-started, pending_count)
-                for record, future in batch:
+                for record, future, queued in batch:
                     if not future.done():
                         future.set_result(copy.copy(values[record]) if values.get(record) is not None else None)
         finally:

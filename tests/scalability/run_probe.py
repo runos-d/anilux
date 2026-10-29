@@ -45,10 +45,8 @@ def main():
         'profile_settings': vars(args),
         'generator_image_id': command(['docker', 'image', 'inspect', 'animecore-scalability-backend:lab', '--format', '{{.Id}}']),
         'source_files_sha256': {path.relative_to(ROOT).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
-            for pattern in ('tests/scalability/*.py', 'backend/core/*.py', 'backend/config/*.py',
-                            'deploy/scalability/*.yml', 'backend/apps/social/application/live_projection.py',
-                            'backend/apps/social/application/post_feed.py', 'backend/apps/social/application/tasks_chat.py',
-                            'backend/apps/anime/application/recommendations.py') for path in ROOT.glob(pattern)
+            for pattern in ('tests/scalability/*.py', 'backend/**/*.py',
+                            'deploy/scalability/*.yml') for path in ROOT.glob(pattern)
             if path.relative_to(ROOT).as_posix() in tracked_sources},
         'docker_host_cpu_memory': command(['docker', 'info', '--format', '{{.NCPU}} {{.MemTotal}}']),
         'shared_host_generator': True,
@@ -84,6 +82,8 @@ def main():
             if process.poll() is None:
                 time.sleep(2)
         code = process.wait()
+    (folder/'completion.json').write_text(json.dumps({'generator_exit_code': code,
+        'elapsed_seconds': time.monotonic()-started, 'capacity_certified': False}, indent=2))
     print(json.dumps({'evidence_directory': str(folder), 'generator_exit_code': code,
                       'capacity_certified': False}))
     return code

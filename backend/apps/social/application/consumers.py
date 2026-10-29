@@ -316,6 +316,8 @@ class GlobalEventsConsumer(AsyncWebsocketConsumer):
             pass
 
     async def conversation_event(self, event):
+        from core.telemetry import observe_publication, ws_phase
+        observe_publication(event, 'global')
         if self.user_id not in event.get('recipients', []):
             return
         if self.token_expires and self.token_expires <= timezone.now().timestamp():
@@ -327,7 +329,10 @@ class GlobalEventsConsumer(AsyncWebsocketConsumer):
         from apps.social.application.live_projection import live_event
         payload = await live_event(event['payload'], self.user)
         if payload:
-            await self.send(text_data=json.dumps(payload, default=str))
+            with ws_phase('global', 'serialize'):
+                encoded = json.dumps(payload, default=str)
+            with ws_phase('global', 'send'):
+                await self.send(text_data=encoded)
 
     async def notification_event(self, event):
         data = event.get("data", {"notification": event.get("notification", {})})

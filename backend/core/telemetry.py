@@ -13,6 +13,7 @@ import threading
 import time
 from collections import defaultdict
 from contextvars import ContextVar
+from contextlib import contextmanager
 
 logger = logging.getLogger('core.telemetry')
 BUCKETS = (.01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10, 30)
@@ -20,6 +21,10 @@ DOMAINS = frozenset(('anime', 'users', 'social', 'playlists', 'notifications',
                      'seo', 'admin', 'studios', 'dubs', 'ideas', 'native'))
 TRACEPARENT = re.compile(r'^00-([0-9a-f]{32})-([0-9a-f]{16})-[0-9a-f]{2}$')
 current_domain = ContextVar('operational_domain', default='other')
+current_ws_operation = ContextVar('operational_ws_operation', default=None)
+WS_OPERATIONS = frozenset(('session', 'chat_acl', 'projection', 'room', 'global'))
+WS_PHASES = frozenset(('batch_wait', 'executor_wait', 'work', 'connection', 'sql',
+                       'prepare', 'serialize', 'send', 'publication_to_handler'))
 
 
 def domain_for(path):
@@ -39,6 +44,18 @@ class Registry:
         self.frames = defaultdict(int)
         self.sql = defaultdict(lambda: [0, 0., 0])
         self.ws_batches = defaultdict(lambda: [0, 0., 0, 0])
+        self.ws_phases = defaultdict(lambda: [0, 0., [0] * len(BUCKETS)])
+
+    def observe_ws_phase(self, operation, phase, seconds):
+        operation = operation if operation in WS_OPERATIONS else 'other'
+        phase = phase if phase in WS_PHASES else 'other'
+        seconds = max(0., seconds)
+        with self.lock:
+            row = self.ws_phases[(operation, phase)]
+            row[0] += 1
+            row[1] += seconds
+            for i, bound in enumerate(BUCKETS):
+                row[2][i] += seconds <= bound
 
     def observe_batch(self, operation, records, seconds, pending):
         operation = operation if operation in ('session', 'projection', 'chat_acl') else 'other'
@@ -86,10 +103,59 @@ class Registry:
                               f'site_ws_batch_validation_seconds_total{{{labels}}} {duration}',
                               f'site_ws_batch_records_total{{{labels}}} {records}',
                               f'site_ws_batch_pending_peak{{{labels}}} {peak}'))
+            lines.append('# TYPE site_ws_phase_seconds histogram')
+            for (operation, phase), (count, total, buckets) in sorted(self.ws_phases.items()):
+                labels = f'operation="{operation}",phase="{phase}"'
+                for bound, value in zip(BUCKETS, buckets):
+                    lines.append(f'site_ws_phase_seconds_bucket{{{labels},le="{bound}"}} {value}')
+                lines.extend((f'site_ws_phase_seconds_bucket{{{labels},le="+Inf"}} {count}',
+                              f'site_ws_phase_seconds_count{{{labels}}} {count}',
+                              f'site_ws_phase_seconds_sum{{{labels}}} {total}'))
         return ('\n'.join(lines) + '\n').encode()
 
 
 process_registry = Registry()
+
+
+@contextmanager
+def ws_phase(operation, phase):
+    from django.conf import settings
+    enabled = getattr(settings, 'OPERATIONAL_METRICS_ENABLED', False)
+    started = time.monotonic() if enabled else None
+    try:
+        yield
+    finally:
+        if started is not None:
+            process_registry.observe_ws_phase(operation, phase, time.monotonic() - started)
+
+
+async def measured_database_call(function, operation, *args):
+    """Keep Channels cleanup/thread ownership; measure executor and fresh work."""
+    from channels.db import database_sync_to_async
+    from django.conf import settings
+    if not getattr(settings, 'OPERATIONAL_METRICS_ENABLED', False):
+        return await database_sync_to_async(function, thread_sensitive=False)(*args)
+    submitted = time.monotonic()
+
+    def execute():
+        process_registry.observe_ws_phase(operation, 'executor_wait', time.monotonic() - submitted)
+        token = current_ws_operation.set(operation)
+        try:
+            with ws_phase(operation, 'work'):
+                return function(*args)
+        finally:
+            current_ws_operation.reset(token)
+    return await database_sync_to_async(execute, thread_sensitive=False)()
+
+
+def observe_publication(event, operation):
+    from django.conf import settings
+    if not getattr(settings, 'OPERATIONAL_METRICS_ENABLED', False):
+        return
+    published = event.get('_published_at')
+    # Internal transport metadata only; never part of the client payload.
+    if isinstance(published, (int, float)) and 0 <= time.time() - published <= 3600:
+        process_registry.observe_ws_phase(operation, 'publication_to_handler', time.time() - published)
 
 
 def sql_timing(execute, sql, params, many, context):
@@ -107,6 +173,9 @@ def sql_timing(execute, sql, params, many, context):
             row[0] += 1
             row[1] += time.monotonic() - start
             row[2] += failed
+        operation = current_ws_operation.get()
+        if operation:
+            process_registry.observe_ws_phase(operation, 'sql', time.monotonic() - start)
 
 
 def instrument_connection(sender, connection, **kwargs):

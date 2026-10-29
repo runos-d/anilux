@@ -31,6 +31,12 @@
 
 Финальная упаковка: source-hashes collector ограничены tracked-файлами; Docker context исключает local-only config/helpers, `.env.*`, ключи и дампы. Backend image собран, проверка отсутствия этих файлов и tracked selection PASS. После основного набора 334 PASS добавлены static inventory и дополнительные isolated routes: 7 targeted checks PASS; actual Celery router совпал с картой всех 88 tasks, unregistered beat tasks нет. Legacy default/ACL/delivery pipeline не менялись. В опубликованных manifests удалён только hash одного ignored-конфига, факт фильтрации отмечен; исходные local evidence сохранены. Тестовый Compose остановлен без удаления volumes; рабочие пользовательские контейнеры продолжают работать. Финальная поставка содержит код/инфраструктуру и проверенные локальные ступени, **не завершение всего roadmap**.
 
+## Продолжение: фазовая диагностика
+
+- Фактический старт: чистая `codex/scalability-roadmap`, HEAD и origin `79749ce`; `main`/origin main `102b9cb`. Только локальная среда, сохранённые synthetic volumes.
+- Реализовано: ограниченные post-publication histograms по transport/consumer, batch/executor wait, MySQL connection/SQL, DTO preparation/serialization и ASGI send. Timestamp остаётся внутренним; D0031/CONN_MAX_AGE=0 сохранены. Collector хеширует все tracked backend Python sources и сохраняет exit code; mixed probe отмечает load window, phase summarizer проверяет resets/membership и исключает ramp.
+- Проверено: 22 telemetry/session/TLS tests (0,559с), 72 chat projection/isolation/conversation regressions (173,021с), isolated MySQL. Capacity/SLO по этой инструментированной версии ещё не заявлены.
+
 ## Следующая работа
 
 1. Разделить CPU/DB connection setup/query/serializer/executor wait в post-publication pipeline на текущем профиле 120/4 API. Снизить chat p95/p99 до согласованного SLO, сохраняя все свежие D0031 checks; не заменять их JWT-only или TTL cache.

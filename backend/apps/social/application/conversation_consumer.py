@@ -23,7 +23,9 @@ from apps.users.infrastructure.models.users import User
 class ConversationConsumer(AsyncJsonWebsocketConsumer):
     @classmethod
     async def encode_json(cls, content):
-        return json.dumps(content, cls=JSONEncoder)
+        from core.telemetry import ws_phase
+        with ws_phase('room', 'serialize'):
+            return json.dumps(content, cls=JSONEncoder)
 
     async def connect(self):
         self.frames = SocketFrameBudget()
@@ -198,6 +200,8 @@ class ConversationConsumer(AsyncJsonWebsocketConsumer):
         return await can_read_chat(self.chat, self.user)
 
     async def conversation_event(self, event):
+        from core.telemetry import observe_publication, ws_phase
+        observe_publication(event, 'room')
         recipients = event.get('recipients')
         if recipients is not None and self.user.pk not in recipients:
             return
@@ -211,4 +215,5 @@ class ConversationConsumer(AsyncJsonWebsocketConsumer):
         from apps.social.application.live_projection import live_event
         payload = await live_event(event['payload'], self.user)
         if payload:
-            await self.send_json(payload)
+            with ws_phase('room', 'send'):
+                await self.send_json(payload)

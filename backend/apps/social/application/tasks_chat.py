@@ -24,6 +24,9 @@ def deliver_chat_event(event_id):
             return
         envelope = event_envelope(event)
         frame = {'type': 'conversation_event', 'payload': envelope, 'recipients': event.recipients}
+        from django.conf import settings
+        if getattr(settings, 'OPERATIONAL_METRICS_ENABLED', False):
+            frame['_published_at'] = time.time()
         layer = get_channel_layer()
         conversation_id = event.conversation_id or envelope.get('conversation_id')
         from core.group_events import send_to_groups

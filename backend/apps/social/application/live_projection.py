@@ -19,6 +19,7 @@ from apps.social.infrastructure.models.social import ChatMember, GroupChat, Priv
 from apps.social.infrastructure.models.social_chat import ChatBan
 from apps.users.infrastructure.models.users import User
 from core.socket_auth import SocketAuthBatcher
+from core.telemetry import measured_database_call, ws_phase
 
 _formatters = threading.local()
 
@@ -30,7 +31,8 @@ def plain_payload(message):
     if formatter is None:
         from apps.social.presentation.serializers.social_serializers import MessageSerializer
         formatter = _formatters.plain = MessageSerializer()
-    return formatter.to_representation(message)
+    with ws_phase('projection', 'serialize'):
+        return formatter.to_representation(message)
 
 
 @dataclass(frozen=True)
@@ -102,24 +104,25 @@ def plain_projections(event, message, users):
     columns = ['pk', 'projection_cleared', 'projection_unread']
     if isinstance(chat, GroupChat):
         columns.append('projection_joined')
-    rows = candidates.annotate(projection_unread=Subquery(unread)).values(*columns)
-    common = plain_payload(message)
-    readers = {receipt.user_id for receipt in message.read_statuses.all()}
-    projected = {}
-    for row in rows:
-        uid = row['pk']
-        if message.seq <= row['projection_cleared']:
-            continue
-        if isinstance(chat, GroupChat) and not chat.history_visible and message.created_at < row['projection_joined']:
-            continue
-        mine = message.sender_id == uid
-        if isinstance(chat, GroupChat):
-            read_by_other = mine and bool(readers - {uid})
-        else:
-            other = chat.user2_id if chat.user1_id == uid else chat.user1_id
-            read_by_other = mine and other in readers
-        projected[uid] = dict(service.event_envelope(event), unread_count=row['projection_unread'] or 0,
-            message=dict(common, is_mine=mine, is_read_by_other=read_by_other))
+    rows = list(candidates.annotate(projection_unread=Subquery(unread)).values(*columns))
+    with ws_phase('projection', 'prepare'):
+        common = plain_payload(message)
+        readers = {receipt.user_id for receipt in message.read_statuses.all()}
+        projected = {}
+        for row in rows:
+            uid = row['pk']
+            if message.seq <= row['projection_cleared']:
+                continue
+            if isinstance(chat, GroupChat) and not chat.history_visible and message.created_at < row['projection_joined']:
+                continue
+            mine = message.sender_id == uid
+            if isinstance(chat, GroupChat):
+                read_by_other = mine and bool(readers - {uid})
+            else:
+                other = chat.user2_id if chat.user1_id == uid else chat.user1_id
+                read_by_other = mine and other in readers
+            projected[uid] = dict(service.event_envelope(event), unread_count=row['projection_unread'] or 0,
+                message=dict(common, is_mine=mine, is_read_by_other=read_by_other))
     return projected
 
 
@@ -152,7 +155,7 @@ async def can_read_chat(chat, user):
     loop=asyncio.get_running_loop()
     if loop not in _access_loops:
         _access_loops[loop]=SocketAuthBatcher(
-            validator=database_sync_to_async(read_access_records,thread_sensitive=False),flush_delay=0.02,coalesce_between_batches=True,operation='chat_acl')
+            validator=read_access_batch,flush_delay=0.02,coalesce_between_batches=True,operation='chat_acl')
     return await _access_loops[loop].check(ChatRead(service.chat_kind(chat),chat.pk,user.pk))
 
 
@@ -162,5 +165,13 @@ async def live_event(payload, user):
     loop = asyncio.get_running_loop()
     if loop not in _loops:
         _loops[loop] = SocketAuthBatcher(
-            validator=database_sync_to_async(project_records, thread_sensitive=False), flush_delay=0.02,coalesce_between_batches=True,operation='projection')
+            validator=project_batch, flush_delay=0.02,coalesce_between_batches=True,operation='projection')
     return await _loops[loop].check(Projection(int(payload['event_id']), user.pk))
+
+
+async def read_access_batch(records):
+    return await measured_database_call(read_access_records, 'chat_acl', records)
+
+
+async def project_batch(records):
+    return await measured_database_call(project_records, 'projection', records)

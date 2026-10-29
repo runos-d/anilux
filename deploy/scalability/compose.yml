@@ -101,6 +101,17 @@ services:
     cpus: '1'
     mem_limit: 256m
     depends_on: { frontend: { condition: service_started } }
+  observer:
+    <<: *backend
+    command: [python, /load/observer.py]
+    volumes: ['../../tests/scalability:/load:ro']
+    cpus: '0.25'
+    mem_limit: 256m
+    healthcheck:
+      test: [CMD, python, -c, "import os,time,json; p='/tmp/scalability-observer.json'; d=json.load(open(p)); assert time.time()-os.stat(p).st_mtime < 20 and 'api_metrics' in d and not d.get('probe_unavailable',False)"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 networks:
   lab: { internal: true }
   generator: {}

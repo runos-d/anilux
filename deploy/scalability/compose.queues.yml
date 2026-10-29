@@ -4,6 +4,8 @@ services:
     environment: { CELERY_QUEUE_PROFILE: isolated }
   migrate:
     environment: { CELERY_QUEUE_PROFILE: isolated }
+  observer:
+    environment: { CELERY_QUEUE_PROFILE: isolated }
   events:
     environment: { CELERY_QUEUE_PROFILE: isolated }
     command: [python, docker_entrypoint.py, celery, -A, config, worker, -Q, events, -l, info, --concurrency=1, --prefetch-multiplier=1, --hostname=events@%h]

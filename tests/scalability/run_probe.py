@@ -30,6 +30,12 @@ def main():
     if not ids:
         raise RuntimeError('Start the isolated lab first')
     images = json.loads(command(['docker', 'inspect', *ids]))
+    observer_compose = ['docker', 'compose', '--env-file', '.env.example', '-f', 'deploy/scalability/compose.yml']
+    if any(item['Config']['Labels'].get('com.docker.compose.service') == 'rabbitmq' for item in images):
+        observer_compose += ['-f', 'deploy/scalability/compose.queues.yml', '-f', 'deploy/scalability/compose.rabbitmq.yml']
+    command([*observer_compose, 'up', '-d', '--no-deps', '--wait', 'observer'])
+    ids = command(['docker', 'ps', '-q', '--filter', 'label=com.docker.compose.project=animecore-scalability-lab']).splitlines()
+    images = json.loads(command(['docker', 'inspect', *ids]))
     # Deliberately retain only image identities/resource limits, never Config.Env.
     metadata = {'schema_version': 1, 'capacity_certified': False, 'started_at': stamp,
         'git_sha': command(['git', 'rev-parse', 'HEAD']),
@@ -67,10 +73,8 @@ def main():
                 live = command(['docker', 'ps', '-q', '--filter', 'label=com.docker.compose.project=animecore-scalability-lab']).splitlines()
                 sample['docker_stats'] = [json.loads(line) for line in command(
                     ['docker', 'stats', '--no-stream', '--format', '{{json .}}', *live]).splitlines()]
-                sample['database_outbox'] = json.loads(command(['docker', 'exec',
-                    'animecore-scalability-lab-api-1', 'python', 'manage.py', 'scalability_snapshot']))
-                sample['broker_queues'] = json.loads(command(['docker', 'exec', 'animecore-scalability-lab-api-1',
-                    'python', '-c', "import json,requests; r=requests.get('http://rabbitmq:15672/api/queues/lab',auth=('lab','disposable-lab'),timeout=2); r.raise_for_status(); print(json.dumps([{k:q.get(k) for k in ('name','messages_ready','messages_unacknowledged')} for q in r.json()]))"]))
+                sample['observer'] = json.loads(command(['docker', 'exec',
+                    'animecore-scalability-lab-observer-1', 'cat', '/tmp/scalability-observer.json']))
             except (subprocess.SubprocessError, ValueError):
                 sample['probe_unavailable'] = True
             resources.write(json.dumps(sample)+'\n')

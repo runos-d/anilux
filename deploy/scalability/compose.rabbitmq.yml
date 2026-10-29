@@ -21,5 +21,7 @@ services:
   background:
     environment: *rabbit
     depends_on: { rabbitmq: { condition: service_healthy } }
+  observer:
+    environment: *rabbit
 volumes:
   lab-rabbitmq: {}

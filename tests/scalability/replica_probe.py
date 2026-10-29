@@ -114,13 +114,17 @@ def bootstrap(source, replica, folder):
 
 
 def recover(source, replica):
+    if mysql(source, 'SELECT DATABASE(),@@server_id,@@log_bin') != 'scalability_lab\t101\t1':
+        raise RuntimeError('Unexpected lab source identity')
+    if mysql(replica, 'SELECT DATABASE(),@@server_id') != 'scalability_lab\t102':
+        raise RuntimeError('Unexpected lab replica identity')
+    if mysql(replica, 'SELECT HOST FROM performance_schema.replication_connection_configuration') != 'lab-mysql':
+        raise RuntimeError('Replica is connected to an unexpected source')
     if not status(replica)['super_read_only']:
         raise RuntimeError('Refusing a writable/unprovisioned replica')
     mysql(source, 'CREATE TABLE IF NOT EXISTS scalability_replication_probe '
                   '(id varchar(36) PRIMARY KEY, value integer NOT NULL) ENGINE=InnoDB')
     wait_coordinate(source, replica)
-    if mysql(replica, 'SELECT HOST FROM performance_schema.replication_connection_configuration') != 'lab-mysql':
-        raise RuntimeError('Replica is connected to an unexpected source')
     marker = str(uuid.uuid4())
     started = time.monotonic()
     mysql(replica, 'STOP REPLICA SQL_THREAD')

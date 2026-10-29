@@ -12,6 +12,11 @@ def main():
     broker = container('rabbitmq')
     # Consumers must already be running before this producer is allowed.
     container('events')
+    queues = command(['docker', 'exec', broker, 'rabbitmqctl', '-q', 'list_queues',
+                      '-p', 'lab', 'name', 'consumers']).decode().splitlines()
+    if not any(row.startswith('events\t') and row.split('\t')[1].isdigit()
+               and int(row.split('\t')[1]) > 0 for row in queues):
+        raise RuntimeError('No events queue consumer; refusing to start the producer')
     folder = ROOT/'.tmp'/'scalability'/(datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')+'-outbox-fault')
     folder.mkdir(parents=True)
     compose = ['docker', 'compose', '--env-file', '.env.example', '-f', 'deploy/scalability/compose.yml',

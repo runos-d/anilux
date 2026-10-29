@@ -1,0 +1,94 @@
+{
+  "date": "2026-10-29",
+  "capacity_certified": false,
+  "external_infrastructure_available": false,
+  "backend": {
+    "source_commit": "0487acfecba67b858a79d1012ff509328ec68f12",
+    "database": "isolated MySQL test_scalability_lab",
+    "passed": true,
+    "exit_code": 0,
+    "modules": [
+      "core",
+      "apps.social.application.test_conversations",
+      "apps.social.application.test_live_projection",
+      "apps.social.application.test_consumer_isolation",
+      "apps.social.application.test_multicast_security",
+      "apps.social.application.test_chat_startup",
+      "apps.social.application.test_chat_extensions",
+      "apps.social.application.test_chat_query_budgets",
+      "apps.social.application.test_chat_file_gc",
+      "apps.social.application.test_site_rebuild",
+      "apps.social.application.test_oct12_fixes",
+      "apps.users.test_privacy_data_management",
+      "apps.users.test_review_regressions",
+      "apps.users.test_release_auth",
+      "apps.users.test_query_budgets",
+      "apps.anime.test_performance_regressions",
+      "apps.anime.application.test_scalability_reads",
+      "apps.anime.application.test_calendar_recommendations",
+      "apps.seo.tests"
+    ],
+    "tests": 356,
+    "seconds": 227.089,
+    "real_redis_security_tests_enabled": true,
+    "capacity_certified": false,
+    "image_id": "sha256:354be4519fda90b651eea95e8da95e05df90075053d94a5355651565d0491aa1"
+  },
+  "host_guard_checks": {
+    "tests": 6,
+    "seconds": 0.015,
+    "passed": true
+  },
+  "django_check_issues": 0,
+  "model_drift": false,
+  "compose_including_replica_valid": true,
+  "nginx_syntax_valid": true,
+  "final_lab_http_smoke": {
+    "identity": 200,
+    "readiness": 200,
+    "catalog_page_1": 200
+  },
+  "frontend": {
+    "source_unchanged": true,
+    "suite_repeated": false,
+    "previous_tests": 284,
+    "previous_suite_passed": true
+  },
+  "replication": {
+    "bootstrap_counts_checksums_match": true,
+    "compared_tables": 6,
+    "paused_applier_and_restart_recovered": true,
+    "persisted_read_only_and_write_rejection": true,
+    "nonempty_bootstrap_rejected": true,
+    "api_reads_use_replica": false,
+    "writer_promoted": false,
+    "production_ca_identity_verified": false
+  },
+  "outbox_paused_broker_recovery": {
+    "passed": true,
+    "consumer_checked_before_producer": true,
+    "duplicate_safe": true,
+    "client_delivery_verified": false
+  },
+  "load": {
+    "four_api_300_seconds_smoke": false,
+    "four_api_300_seconds_proposed_slo": false,
+    "eight_api_60_seconds_smoke": true,
+    "eight_api_60_seconds_proposed_slo": false,
+    "reconnect_rich_replay_functional": true,
+    "full_domain_or_30_minute_acceptance": false
+  },
+  "cleanup": {
+    "remaining_lab_containers": 0,
+    "named_lab_volumes_preserved": 6,
+    "working_containers_still_running": 11,
+    "private_manifests_dumps_and_raw_evidence_retained_ignored": true
+  },
+  "open_requirements": [
+    "120/4 API sustained chat SLO and pre-publication/CPU scheduling",
+    "Search/hybrid feed/domain-wide outbox and prepared reads/counters",
+    "Large rich rooms, full-domain/30-60min/client acceptance and reconnect storm",
+    "Full storage inventory/dual-read-write/S3-CDN/provider acceptance",
+    "Production DB replication/fencing/promotion/new-host/media restore and HA"
+  ]
+}

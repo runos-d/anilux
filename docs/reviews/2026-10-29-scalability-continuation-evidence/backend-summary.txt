@@ -1,0 +1,5 @@
+Retained release image regression
+Ran 356 tests in 227.089s
+OK
+MySQL test_scalability_lab; real Redis security tests enabled.
+Frontend sources unchanged; previous frontend suite was not rerun.

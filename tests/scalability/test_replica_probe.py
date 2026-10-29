@@ -29,6 +29,14 @@ class ReplicaProbeSafetyTests(unittest.TestCase):
         self.assertIsNone(replica_probe.COORDINATES.search(
             b"-- CHANGE REPLICATION SOURCE TO SOURCE_LOG_FILE='working-bin.000001', SOURCE_LOG_POS=157;"))
 
+    def test_recovery_checks_source_and_replica_before_any_mutation(self):
+        for answers in (['working\t1\t1'], ['scalability_lab\t101\t1', 'working\t102'],
+                        ['scalability_lab\t101\t1', 'scalability_lab\t102', 'foreign-source']):
+            with patch.object(replica_probe, 'mysql', side_effect=answers) as sql:
+                with self.assertRaises(RuntimeError):
+                    replica_probe.recover('source', 'replica')
+                self.assertTrue(all(call.args[1].startswith('SELECT') for call in sql.call_args_list))
+
 
 if __name__ == '__main__':
     unittest.main()

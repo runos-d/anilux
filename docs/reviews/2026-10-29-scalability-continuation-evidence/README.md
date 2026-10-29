@@ -45,3 +45,11 @@ Generator: 300с — scheduler p99 10мс, CPU 24,8с/RSS 55MiB; 60с — 9мс,
 [Paused broker](replication/outbox-paused-recovery.json) после новых chat изменений: durable SQL остался pending, unpause/retry опубликовали outbox, duplicate task безопасна; producer/recovery CLI 4,141/2,407с с Docker/Django startup. Защита finally снимает pause. Это публикация в transport, не доказательство получения клиентом.
 
 Ни один API/ACL/session read не маршрутизируется на replica; writer не продвигался. Это локальная пара на одном host, self-signed lab TLS без production CA identity, без host HA/RPO/RTO/promotion acceptance. Команды/границы: [replication guide](../../../deploy/scalability/REPLICATION.md).
+
+## Итоговая регрессия и сохранение среды
+
+[Validation](validation.json), [backend summary](backend-summary.txt): **356/356 PASS**, 227,089с, MySQL `test_scalability_lab`, реальные Redis transport/session/membership/ban checks включены. История, восстановление, private media, feed, recommendations, privacy/account/auth и SEO включены; полный список модулей в JSON. Source `0487acf`, backend image `sha256:354be4519fda90b651eea95e8da95e05df90075053d94a5355651565d0491aa1`; дальнейшие изменения касаются только host probe guards/docs. Финальные guard checks — 6 PASS (0,015с); recover/fault повторены после проверки source identity до mutations и actual events consumer до producer.
+
+Django check 0 issues, drift отсутствует, Compose с replica/RabbitMQ и nginx syntax PASS. Короткий HTTP smoke identity/readiness/catalog через lab nginx — 200. Frontend source не изменён; предыдущие 284 frontend tests/build не выдаются за новый прогон.
+
+Остановлен только `animecore-scalability-lab`, **без удаления volumes**: сохранены шесть named volumes (включая replica), private manifests/SQL backups/raw evidence в ignored местах. Все 11 ранее работавших пользовательских/служебных контейнеров продолжают работать. `main`/production не переключались. Этапы roadmap остаются частичными; search/hybrid feed/остальные проекции, storage dual-read-write, large rich rooms/full acceptance и production HA ещё открыты.

@@ -26,6 +26,14 @@ python tests/scalability/run_probe.py --profile mixed-chat-http-smoke --users 12
 
 Host collector сохраняет `.tmp/scalability/TIMESTAMP-PROFILE/`: result, generator exit code/log, manifest (Git SHA/dirty diff/source hashes, immutable image IDs, CPU/RAM limits) и временные samples Docker CPU/RAM/network/PIDs с DB/outbox snapshots. Source hashes ограничены tracked-файлами; Config.Env не сохраняется. Docker context исключает локальные `.env.*`, ключи, дампы и известные ignored helpers. Генератор запущен в отдельном контейнере, но делит физический Docker-хост; scrape/SQL probes тоже добавляют нагрузку. Невалидный/упавший прогон сохраняется и возвращает nonzero. Нельзя считать его пределом API. Брокер/RabbitMQ queue ready/unacked отдельно проверяется приватными средствами брокера; Redis LLEN не включает inflight/priority lists.
 
+Статическая карта текущих HTTP/WS handlers и всех зарегистрированных application tasks:
+
+```sh
+docker compose --env-file .env.example -f deploy/scalability/compose.yml run --rm --no-deps migrate python manage.py describe_scalability_surface > .tmp/scalability/surface-map.json
+```
+
+Команда не вызывает handlers/tasks и не подключается к БД/брокеру; отдельно проверена с Docker `--network none`. JSON содержит route templates/names/classes, объявленные методы, legacy/isolated task queues, task names beat и отсутствующие registrations. Политики доступа и фактические методы function views определяются в runtime; явная queue в producer signature имеет приоритет. Карта зависит от включённых feature flags; credentials/configuration values не экспортируются. Использовать её для сопоставления workload coverage и task corpus, а не как доказательство ACL/performance.
+
 Observer запускается отдельно до прогона (0,25 CPU / 256 MiB), импортирует Django один раз и раз в 5с собирает DB/outbox, broker ready/unacked и метрики каждой API-реплики. Collector читает готовый JSON из observer; запускать `manage.py` через `docker exec` в CPU-квоте API во время измерения запрещено: такой ранний эксперимент исказил задержки и оставлен как diagnostic. На каждом цикле observer закрывает старые DB connections; readiness требует свежего успешного snapshot. Это всё ещё общий host, не независимая физическая машина.
 
 ## Техническая наблюдаемость

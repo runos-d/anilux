@@ -27,11 +27,22 @@ class TaskTopologyTests(SimpleTestCase):
             ('users.build_data_export', 'reports'),
             ('anime.sync_franchises', 'catalog_imports'),
             ('social.process_post_media', 'post_media'),
+            ('anime.prepare_download', 'media_downloads'),
+            ('apps.anime.application.tasks.process_clip_task', 'media_downloads'),
+            ('apps.anime.application.tasks.sync_anime_metadata_task', 'catalog_imports'),
+            ('native_apps.build_release', 'native_builds'),
+            ('imagekit.cachefiles.backends._generate_file', 'post_media'),
+            ('apps.social.application.tasks.generate_thumbnail_for_attachment', 'post_media'),
+            ('apps.social.application.tasks.send_email_digest', 'notifications'),
+            ('apps.social.application.tasks.update_followers_feeds', 'maintenance'),
+            ('social.send_scheduled_messages', 'maintenance'),
         ):
             self.assertEqual(app.amqp.router.route({}, name)['queue'].name, queue)
         self.assertEqual(set(app.amqp.queues), set(QUEUES))
         with self.assertRaises(QueueNotFound):
             app.amqp.router.route({'queue': 'unexpected_unbounded_queue'}, 'anything')
+        self.assertEqual(app.amqp.router.route({'queue': 'post_media'},
+            'apps.social.application.tasks.send_email_digest')['queue'].name, 'post_media')
         app.close()
 
     def test_quorum_queues_have_confirm_overflow_dead_letter_and_bounded_length(self):

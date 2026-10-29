@@ -4,6 +4,8 @@
 
 Production-роли: после `deploy/compose.workers.yml` добавить `deploy/compose.workers.isolated.yml`. Этот override отделяет события, медиа, импорт и отчёты; background сначала совместно обслуживает notifications/recommendations/maintenance/default. Для независимого роста каждой из этих очередей выделить отдельный worker с `-Q NAME` и снять её с background. Не копировать сумму лимитов всех ролей на один маленький хост. Это подготовленная конфигурация, не удалённый deployment.
 
+Статическая карта `manage.py describe_scalability_surface` проверила 88 зарегистрированных application tasks: все соответствуют фактическому Celery router и fixed queue set; в `celery` остались только debug task и lab retry probe. Legacy social notifications, imagekit/thumbnail/clip jobs, metadata/import и native build получили отдельные isolated routes. Это проверка маршрутизации без выполнения задач, не проверка идемпотентности/функциональности всего corpus. Неизвестные будущие задачи сохраняют default; явная queue producer-а имеет приоритет. При каждом расширении routes повторять consumer-first rollout и дренирование.
+
 Порядок Redis routing canary: запустить новые consumers, убедиться, что они слушают нужные очереди, затем включить профиль на API/beat. Старый consumer `celery` нужен для дренирования старых задач. Откат: вернуть producers к legacy, оставить isolated consumers до опустошения их очередей. Не очищать Redis и не терять необработанные задачи при откате.
 
 ## RabbitMQ rehearsal

@@ -1,0 +1,34 @@
+# Opt-in override after compose.workers.yml. Roll out consumers before producers.
+services:
+  events:
+    command: [python, docker_entrypoint.py, celery, -A, config, worker, -Q, events, -l, warning, '--concurrency=${EVENTS_CONCURRENCY:-2}', --prefetch-multiplier=1, --max-tasks-per-child=1000, --hostname=events@%h]
+  media:
+    command: [python, docker_entrypoint.py, celery, -A, config, worker, -Q, 'post_media,media_downloads', -l, warning, --concurrency=1, --prefetch-multiplier=1, --max-tasks-per-child=25, --max-memory-per-child=750000, --hostname=media@%h]
+  background:
+    image: ${BACKEND_IMAGE:?Set the tested backend image}
+    restart: unless-stopped
+    env_file: ${WORKER_ENV_FILE:?Set an absolute worker env file path}
+    environment: { DJANGO_SETTINGS_MODULE: config.settings, DB_CONN_MAX_AGE: '0' }
+    command: [python, docker_entrypoint.py, celery, -A, config, worker, -Q, 'celery,notifications,recommendations,maintenance', -l, warning, --concurrency=1, --prefetch-multiplier=1, --max-tasks-per-child=250, --hostname=background@%h]
+    volumes: ['${SHARED_DATA_PATH}:/app/data']
+    cpus: '1'
+    mem_limit: 768m
+    logging: { driver: local, options: { max-size: 10m, max-file: '3' } }
+  imports:
+    image: ${BACKEND_IMAGE}
+    restart: unless-stopped
+    env_file: ${WORKER_ENV_FILE}
+    command: [python, docker_entrypoint.py, celery, -A, config, worker, -Q, catalog_imports, -l, warning, --concurrency=1, --prefetch-multiplier=1, --max-tasks-per-child=100, --hostname=imports@%h]
+    volumes: ['${SHARED_DATA_PATH}:/app/data']
+    cpus: '1'
+    mem_limit: 768m
+    logging: { driver: local, options: { max-size: 10m, max-file: '3' } }
+  reports:
+    image: ${BACKEND_IMAGE}
+    restart: unless-stopped
+    env_file: ${WORKER_ENV_FILE}
+    command: [python, docker_entrypoint.py, celery, -A, config, worker, -Q, reports, -l, warning, --concurrency=1, --prefetch-multiplier=1, --max-tasks-per-child=25, --hostname=reports@%h]
+    volumes: ['${SHARED_DATA_PATH}:/app/data']
+    cpus: '1'
+    mem_limit: 1g
+    logging: { driver: local, options: { max-size: 10m, max-file: '3' } }

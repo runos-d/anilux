@@ -1,0 +1,21 @@
+# Synthetic transport experiment only. No real events, credentials or host ports.
+services:
+  centrifugo:
+    image: centrifugo/centrifugo:v6.10.2@sha256:34b84f823515927266ce3abfb840fd9e0acabb58805e7e896f5de731217a627d
+    command: [centrifugo, --config=/centrifugo/config.json]
+    volumes: ['./centrifugo.json:/centrifugo/config.json:ro']
+    networks: [lab]
+    deploy: { replicas: 2 }
+    cpus: '0.5'
+    mem_limit: 128m
+    depends_on: { lab-realtime: { condition: service_healthy } }
+    logging: { driver: local, options: { max-size: 10m, max-file: '2' } }
+  transport-probe:
+    profiles: [transport]
+    image: animecore-scalability-transport-probe:lab
+    build: { context: ../../tests/scalability, dockerfile: Dockerfile.transport }
+    command: [node, centrifugo_probe.mjs]
+    networks: [lab]
+    cpus: '1'
+    mem_limit: 256m
+    depends_on: { centrifugo: { condition: service_started } }

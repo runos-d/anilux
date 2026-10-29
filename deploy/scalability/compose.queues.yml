@@ -1,0 +1,13 @@
+# Stage consumers first. This overlay is for the disposable lab only.
+services:
+  api:
+    environment: { CELERY_QUEUE_PROFILE: isolated }
+  migrate:
+    environment: { CELERY_QUEUE_PROFILE: isolated }
+  events:
+    environment: { CELERY_QUEUE_PROFILE: isolated }
+    command: [python, docker_entrypoint.py, celery, -A, config, worker, -Q, events, -l, info, --concurrency=1, --prefetch-multiplier=1, --hostname=events@%h]
+  background:
+    extends: { file: compose.yml, service: events }
+    environment: { CELERY_QUEUE_PROFILE: isolated }
+    command: [python, docker_entrypoint.py, celery, -A, config, worker, -Q, 'celery,notifications,recommendations,maintenance,reports,catalog_imports,post_media,media_downloads', -l, warning, --concurrency=1, --prefetch-multiplier=1, --hostname=lab-background@%h]

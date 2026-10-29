@@ -30,3 +30,4 @@ D0030,Внешняя аналитика требует явного соглас
 D0031,Пакетировать текущие WS-проверки без кеширования решений доступа,"realtime, access-control, performance, api-contracts",active
 D0032,Переиспользовать неизменяемый TLS context MySQL без кеширования соединений,"performance, data-integrity, verification",active
 D0033,Ограниченные технические метрики включаются отдельно от продуктовой аналитики,"performance, verification, access-control",active
+D0034,Разделение workers и смена брокера включаются независимо с дренированием,"realtime, release, data-integrity, verification",active

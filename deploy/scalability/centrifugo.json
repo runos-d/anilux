@@ -1,0 +1,24 @@
+{
+  "client": {
+    "token": {"hmac_secret_key": "disposable-lab-centrifugo-not-production"},
+    "allowed_origins": ["http://localhost:4480"],
+    "connection_limit": 1000,
+    "channel_limit": 4,
+    "queue_max_size": 262144,
+    "recovery_max_publication_limit": 100,
+    "history_max_publication_limit": 100
+  },
+  "http_server": {"port": 8000, "internal_port": "9000"},
+  "http_api": {"key": "disposable-lab-api-only"},
+  "engine": {"type": "redis", "redis": {"address": ["redis://lab-realtime:6379/9"], "prefix": "scalability-lab"}},
+  "channel": {"namespaces": [{
+    "name": "lab",
+    "channel_regex": "^probe-[a-z0-9-]+$",
+    "allow_subscribe_for_client": true,
+    "allow_history_for_subscriber": true,
+    "history_size": 100,
+    "history_ttl": "60s",
+    "force_recovery": true
+  }]},
+  "health": {"enabled": true}
+}

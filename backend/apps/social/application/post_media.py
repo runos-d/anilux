@@ -97,7 +97,9 @@ def queue_media(media_id):
     try:
         if not cache.add(key, 1, 7200): return
         kind = PostMedia.objects.filter(pk=media_id).values_list('media_type', flat=True).first()
-        process_post_media.apply_async(args=[media_id], queue='celery' if kind == 'image' else 'post_media')
+        from django.conf import settings
+        queue = 'post_media' if settings.CELERY_QUEUE_PROFILE == 'isolated' else ('celery' if kind == 'image' else 'post_media')
+        process_post_media.apply_async(args=[media_id], queue=queue)
     except Exception:
         try: cache.delete(key)
         except Exception: pass

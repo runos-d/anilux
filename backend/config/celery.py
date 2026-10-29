@@ -7,7 +7,7 @@ import logging
 logger = logging.getLogger(__name__)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
-app = Celery('config')
+app = Celery('config', task_cls='core.bounded_tasks:BoundedPublishTask')
 
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
@@ -68,6 +68,14 @@ app.conf.update(
     task_default_exchange='celery',
     task_default_routing_key='celery',
 )
+
+from django.conf import settings
+from core.task_topology import worker_topology
+app.conf.update(**worker_topology(settings.CELERY_QUEUE_PROFILE,
+    quorum=settings.CELERY_QUORUM_QUEUES, broker_url=settings.CELERY_BROKER_URL,
+    max_length=settings.CELERY_QUEUE_MAX_LENGTH))
+if settings.ROOT_URLCONF == 'config.urls_scalability_lab':
+    app.conf.imports = (*app.conf.imports, 'core.scalability_tasks')
 
 app.set_default()
 

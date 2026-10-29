@@ -1,0 +1,25 @@
+# Run after compose.yml + compose.queues.yml; no production credentials or ports.
+services:
+  rabbitmq:
+    image: rabbitmq:4.4.0-management-alpine@sha256:0452ee3fd3b9a74160b251e693338616b464f22df4d4ba43304c101bebdca292
+    hostname: lab-rabbitmq
+    environment: { RABBITMQ_DEFAULT_USER: lab, RABBITMQ_DEFAULT_PASS: disposable-lab, RABBITMQ_DEFAULT_VHOST: lab }
+    volumes: [lab-rabbitmq:/var/lib/rabbitmq]
+    networks: [lab]
+    cpus: '1'
+    mem_limit: 768m
+    healthcheck: { test: [CMD, rabbitmq-diagnostics, -q, ping], interval: 10s, timeout: 5s, retries: 20 }
+  api:
+    environment: &rabbit
+      CELERY_BROKER_URL: amqp://lab:disposable-lab@rabbitmq:5672/lab
+      CELERY_QUORUM_QUEUES: 'true'
+  migrate:
+    environment: *rabbit
+  events:
+    environment: *rabbit
+    depends_on: { rabbitmq: { condition: service_healthy } }
+  background:
+    environment: *rabbit
+    depends_on: { rabbitmq: { condition: service_healthy } }
+volumes:
+  lab-rabbitmq: {}

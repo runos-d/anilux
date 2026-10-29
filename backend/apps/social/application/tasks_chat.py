@@ -1,4 +1,6 @@
 import logging
+import json
+import time
 from datetime import timedelta
 
 from celery import shared_task
@@ -9,6 +11,8 @@ logger = logging.getLogger(__name__)
 
 @shared_task(autoretry_for=(Exception,), retry_backoff=True, max_retries=8)
 def deliver_chat_event(event_id):
+    started = time.monotonic()
+    phases = {}
     from django.db import transaction
     from asgiref.sync import async_to_sync
     from channels.layers import get_channel_layer
@@ -24,15 +28,19 @@ def deliver_chat_event(event_id):
         conversation_id = event.conversation_id or envelope.get('conversation_id')
         from core.group_events import send_to_groups
         async def deliver():
+            room_started = time.monotonic()
             await layer.group_send(f'conversation_{conversation_id}', frame)
+            phases['room_seconds'] = time.monotonic() - room_started
             # Do not repeat the entire recipient list in every user's Redis frame.
             await send_to_groups(layer, (f'user_{uid}' for uid in event.recipients),
                 lambda group: {**frame, 'recipients': [int(group.removeprefix('user_'))]})
+            phases['user_fanout_seconds'] = time.monotonic() - room_started - phases['room_seconds']
         async_to_sync(deliver)()
         event.delivered_at = timezone.now()
         event.save(update_fields=['delivered_at'])
-        logger.info('chat.event.delivered event=%s conversation=%s recipients=%s age_seconds=%.3f',
-                    event.pk, conversation_id, len(event.recipients), (event.delivered_at-event.created_at).total_seconds())
+    logger.info(json.dumps({'event': 'chat.outbox.published', 'event_id': event.pk,
+        'recipients': len(event.recipients), 'age_seconds': (event.delivered_at-event.created_at).total_seconds(),
+        'task_seconds': time.monotonic()-started, **phases}))
 
 
 @shared_task

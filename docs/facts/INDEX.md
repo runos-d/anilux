@@ -54,3 +54,4 @@ F0052,Добавлен изолированный production-build стенд и
 F0053,Холодные рекомендации не пересчитывают персональную библиотеку в HTTP,"performance, catalog, data-integrity, verification",active
 F0054,Приватные chat и post файлы передаются без полной ASGI буферизации,"media, performance, access-control, verification",active
 F0055,Рейтинговый курсор удерживает ограниченное окно ID с актуальной видимостью,"posts, performance, api-contracts, access-control, verification",active
+F0056,Добавлены отдельные task routes и изолированные прототипы RabbitMQ и Centrifugo,"realtime, performance, verification, release",active

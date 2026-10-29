@@ -1,0 +1,6 @@
+{
+  "name": "scalability-transport-lab",
+  "private": true,
+  "type": "module",
+  "dependencies": { "centrifuge": "5.8.0", "ws": "8.21.0" }
+}

@@ -37,4 +37,11 @@ class Command(BaseCommand):
                 result['queue_ready'] = {'available': False}
             finally:
                 client.close()
+        if settings.ROOT_URLCONF == 'config.urls_scalability_lab':
+            from apps.users.models import User
+            from apps.anime.models import Anime
+            from apps.social.infrastructure.models.social import Post, Message, GroupChat, ChatMember
+            result['synthetic_dataset'] = {name: model.objects.count() for name, model in (
+                ('users', User), ('anime', Anime), ('posts', Post), ('messages', Message),
+                ('rooms', GroupChat), ('memberships', ChatMember))}
         self.stdout.write(json.dumps(result, indent=2))

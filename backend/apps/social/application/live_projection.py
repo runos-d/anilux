@@ -152,7 +152,7 @@ async def can_read_chat(chat, user):
     loop=asyncio.get_running_loop()
     if loop not in _access_loops:
         _access_loops[loop]=SocketAuthBatcher(
-            validator=database_sync_to_async(read_access_records,thread_sensitive=False),flush_delay=0.02,coalesce_between_batches=True)
+            validator=database_sync_to_async(read_access_records,thread_sensitive=False),flush_delay=0.02,coalesce_between_batches=True,operation='chat_acl')
     return await _access_loops[loop].check(ChatRead(service.chat_kind(chat),chat.pk,user.pk))
 
 
@@ -162,5 +162,5 @@ async def live_event(payload, user):
     loop = asyncio.get_running_loop()
     if loop not in _loops:
         _loops[loop] = SocketAuthBatcher(
-            validator=database_sync_to_async(project_records, thread_sensitive=False), flush_delay=0.02,coalesce_between_batches=True)
+            validator=database_sync_to_async(project_records, thread_sensitive=False), flush_delay=0.02,coalesce_between_batches=True,operation='projection')
     return await _loops[loop].check(Projection(int(payload['event_id']), user.pk))

@@ -72,3 +72,15 @@ class TelemetryTests(IsolatedAsyncioTestCase):
         for i in range(1000):
             registry.observe(str(i), i + 600, .1, 2)
         self.assertEqual(len(registry.http), 1)
+
+    def test_sql_wrapper_is_attached_once_and_never_retains_private_sql(self):
+        from types import SimpleNamespace
+        from core.telemetry import instrument_connection, sql_timing, process_registry
+        connection = SimpleNamespace(execute_wrappers=[])
+        instrument_connection(None, connection)
+        instrument_connection(None, connection)
+        self.assertEqual(connection.execute_wrappers, [sql_timing])
+        self.assertEqual(sql_timing(lambda *args: 7, 'private sql', ['private text'], False, {}), 7)
+        with self.assertRaises(RuntimeError):
+            sql_timing(lambda *args: (_ for _ in ()).throw(RuntimeError()), 'private sql', [], False, {})
+        self.assertNotIn(b'private', process_registry.render())

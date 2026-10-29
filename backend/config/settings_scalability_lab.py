@@ -22,6 +22,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 SECURE_HSTS_SECONDS = 0
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
+CORS_ALLOWED_ORIGINS = [*CORS_ALLOWED_ORIGINS, 'http://127.0.0.1:4480', 'http://localhost:4480']
+CSRF_TRUSTED_ORIGINS = [*CSRF_TRUSTED_ORIGINS, 'http://127.0.0.1:4480', 'http://localhost:4480']
 PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']
 # External adapters cannot be exercised accidentally with copied credentials.
 BREVO_API_KEY = ''

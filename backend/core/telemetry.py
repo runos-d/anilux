@@ -12,12 +12,14 @@ import secrets
 import threading
 import time
 from collections import defaultdict
+from contextvars import ContextVar
 
 logger = logging.getLogger('core.telemetry')
 BUCKETS = (.01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10, 30)
 DOMAINS = frozenset(('anime', 'users', 'social', 'playlists', 'notifications',
                      'seo', 'admin', 'studios', 'dubs', 'ideas', 'native'))
 TRACEPARENT = re.compile(r'^00-([0-9a-f]{32})-([0-9a-f]{16})-[0-9a-f]{2}$')
+current_domain = ContextVar('operational_domain', default='other')
 
 
 def domain_for(path):
@@ -35,6 +37,17 @@ class Registry:
         self.http = defaultdict(lambda: [0, 0., [0] * len(BUCKETS), 0])
         self.active = {'http': 0, 'websocket': 0}
         self.frames = defaultdict(int)
+        self.sql = defaultdict(lambda: [0, 0., 0])
+        self.ws_batches = defaultdict(lambda: [0, 0., 0, 0])
+
+    def observe_batch(self, operation, records, seconds, pending):
+        operation = operation if operation in ('session', 'projection', 'chat_acl') else 'other'
+        with self.lock:
+            row = self.ws_batches[operation]
+            row[0] += 1
+            row[1] += seconds
+            row[2] += records
+            row[3] = max(row[3], pending)
 
     def observe(self, domain, status, duration, size):
         # Only these finite labels may enter the registry, even from callers.
@@ -63,7 +76,43 @@ class Registry:
                 lines.append(f'site_connections_active{{protocol="{kind}"}} {count}')
             for kind, count in sorted(self.frames.items()):
                 lines.append(f'site_ws_frames_total{{direction="{kind}"}} {count}')
+            for domain, (count, duration, errors) in sorted(self.sql.items()):
+                lines.extend((f'site_sql_queries_total{{domain="{domain}"}} {count}',
+                              f'site_sql_duration_seconds_total{{domain="{domain}"}} {duration}',
+                              f'site_sql_errors_total{{domain="{domain}"}} {errors}'))
+            for operation, (count, duration, records, peak) in sorted(self.ws_batches.items()):
+                labels = f'operation="{operation}"'
+                lines.extend((f'site_ws_batches_total{{{labels}}} {count}',
+                              f'site_ws_batch_validation_seconds_total{{{labels}}} {duration}',
+                              f'site_ws_batch_records_total{{{labels}}} {records}',
+                              f'site_ws_batch_pending_peak{{{labels}}} {peak}'))
         return ('\n'.join(lines) + '\n').encode()
+
+
+process_registry = Registry()
+
+
+def sql_timing(execute, sql, params, many, context):
+    start, failed = time.monotonic(), False
+    try:
+        return execute(sql, params, many, context)
+    except Exception:
+        failed = True
+        raise
+    finally:
+        # Query text and params can contain private content: never retain them.
+        domain = current_domain.get()
+        with process_registry.lock:
+            row = process_registry.sql[domain]
+            row[0] += 1
+            row[1] += time.monotonic() - start
+            row[2] += failed
+
+
+def instrument_connection(sender, connection, **kwargs):
+    # Django reopens the same object; wrappers survive close().
+    if sql_timing not in connection.execute_wrappers:
+        connection.execute_wrappers.append(sql_timing)
 
 
 class OperationalTelemetry:
@@ -94,6 +143,7 @@ class OperationalTelemetry:
         # Remote sampling flags never force logging; no credentials or URL in logs.
         sampled = secrets.randbelow(1_000_000) < self.sample_rate * 1_000_000
         domain = domain_for(scope.get('path', ''))
+        domain_token = current_domain.set(domain)
         with self.registry.lock:
             self.registry.active[kind] += 1
 
@@ -137,3 +187,4 @@ class OperationalTelemetry:
                                        'protocol': kind, 'domain': domain, 'status': status if kind == 'http' else None,
                                        'duration_seconds': round(duration, 6), 'response_bytes': size,
                                        'outcome': outcome}, separators=(',', ':')))
+            current_domain.reset(domain_token)

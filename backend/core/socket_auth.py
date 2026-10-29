@@ -91,7 +91,7 @@ def validate_batch(records):
 
 
 class SocketAuthBatcher:
-    def __init__(self, validator=None, batch_size=128, max_pending=32768, flush_delay=0.002, coalesce_between_batches=False):
+    def __init__(self, validator=None, batch_size=128, max_pending=32768, flush_delay=0.002, coalesce_between_batches=False, operation='session'):
         self.validator = validator or database_sync_to_async(validate_batch, thread_sensitive=False)
         self.batch_size = batch_size
         self.max_pending = max_pending
@@ -100,6 +100,9 @@ class SocketAuthBatcher:
         self.pending = deque()
         self.scheduled = False
         self.running = False
+        self.operation = operation
+        from django.conf import settings
+        self.instrumented = getattr(settings, 'OPERATIONAL_METRICS_ENABLED', False)
 
     async def check(self, record):
         if record is None or len(self.pending) >= self.max_pending:
@@ -123,13 +126,18 @@ class SocketAuthBatcher:
                 if not first and self.coalesce_between_batches and len(self.pending) < self.batch_size:
                     await asyncio.sleep(self.flush_delay)
                 first = False
-                batch = [self.pending.popleft() for _ in range(min(self.batch_size, len(self.pending)))]
+                pending_count = len(self.pending)
+                batch = [self.pending.popleft() for _ in range(min(self.batch_size, pending_count))]
                 records = {record for record, future in batch if not future.cancelled()}
+                started = time.monotonic() if self.instrumented else None
                 try:
                     values = await self.validator(records) if records else {}
                 except Exception:
                     logger.warning('Socket authorization batch failed; access denied')
                     values = {}
+                if started is not None:
+                    from core.telemetry import process_registry
+                    process_registry.observe_batch(self.operation, len(records), time.monotonic()-started, pending_count)
                 for record, future in batch:
                     if not future.done():
                         future.set_result(copy.copy(values[record]) if values.get(record) is not None else None)

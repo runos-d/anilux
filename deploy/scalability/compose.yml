@@ -4,6 +4,7 @@ x-backend: &backend
   build: { context: ../../backend }
   environment: &environment
     DJANGO_SETTINGS_MODULE: config.settings_scalability_lab
+    PYTHONPATH: /app
     DJANGO_SECRET_KEY: disposable-scalability-lab-not-a-production-secret
     DEBUG: 'false'
     DB_HOST: lab-mysql
@@ -24,6 +25,10 @@ x-backend: &backend
   mem_limit: 1g
   logging: { driver: local, options: { max-size: 10m, max-file: '2' } }
 services:
+  init-files:
+    <<: *backend
+    user: root
+    command: [python, -c, "import os; os.chown('/lab-data',1000,1000)"]
   lab-mysql:
     image: registry-1.docker.io/library/mysql:8.0@sha256:7dcddc01f13bab2f15cde676d44d01f61fc9f99fe7785e86196dfc07d358ae2b
     environment: { MYSQL_DATABASE: scalability_lab, MYSQL_ROOT_PASSWORD: disposable-lab }
@@ -62,7 +67,7 @@ services:
   migrate:
     <<: *backend
     command: [python, manage.py, migrate, --noinput]
-    depends_on: { lab-mysql: { condition: service_healthy }, lab-realtime: { condition: service_healthy }, lab-cache: { condition: service_healthy }, lab-broker: { condition: service_healthy } }
+    depends_on: { init-files: { condition: service_completed_successfully }, lab-mysql: { condition: service_healthy }, lab-realtime: { condition: service_healthy }, lab-cache: { condition: service_healthy }, lab-broker: { condition: service_healthy } }
   api:
     <<: *backend
     deploy: { replicas: 2 }
@@ -91,7 +96,7 @@ services:
     image: animecore-scalability-backend:lab
     profiles: [load]
     entrypoint: [python, /load/http_load.py]
-    volumes: ['../../tests/scalability:/load:ro']
+    volumes: ['../../tests/scalability:/load:ro', 'lab-files:/lab-data:ro']
     networks: [generator]
     cpus: '1'
     mem_limit: 256m

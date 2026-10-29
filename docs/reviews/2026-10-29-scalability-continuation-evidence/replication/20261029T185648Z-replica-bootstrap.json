@@ -1,0 +1,16 @@
+{
+  "phase": "bootstrap",
+  "source_commit": "aa7a3a60fd0815318da2eb045ce071ff6dac7e0a",
+  "dirty": true,
+  "source_hashes": {
+    "tests/scalability/replica_probe.py": "57702ee64e3190ba0a7a06d2ade6a5f5e0e77f2e8ed677969a5d38e904e2e162",
+    "deploy/scalability/compose.replica.yml": "31ff290f036d7debc073f6b54558bcc51031fa5aa64680185e1d5ce2240de52f"
+  },
+  "containers": {
+    "source": "sha256:6cd09145362dfe6831b14545de3d5fd6cc75c37cfd6ef8561429c1fc73518b39 2000000000 1610612736",
+    "replica": "sha256:6cd09145362dfe6831b14545de3d5fd6cc75c37cfd6ef8561429c1fc73518b39 1000000000 1073741824"
+  },
+  "passed": false,
+  "error_type": "RuntimeError",
+  "capacity_certified": false
+}

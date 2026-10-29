@@ -59,3 +59,4 @@ F0057,Миграция в S3 подготавливает проверенную
 F0058,Адресные события чата объединяются по текущим пользовательским группам Redis,"realtime, performance, access-control, verification",active
 F0059,FileField inventory ограничен keyset страницей и приватным manifest,"media, data-integrity, verification",active
 F0060,Plain chat projection читает viewer IDs и использует покрывающий unread индекс,"chats, performance, data-integrity, verification",active
+F0061,Локальная реплика MySQL проверена без переключения API,"data-integrity, environment, access-control, verification",active

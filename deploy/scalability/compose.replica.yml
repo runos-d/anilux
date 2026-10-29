@@ -1,0 +1,25 @@
+# Disposable local replication rehearsal only. Does not route any API reads.
+services:
+  lab-mysql:
+    command: [--innodb-buffer-pool-size=256M, --max-connections=128, --skip-name-resolve,
+              --server-id=101, --log-bin=lab-bin, --binlog-format=ROW,
+              --sync-binlog=1, --innodb-flush-log-at-trx-commit=1]
+  lab-replica:
+    image: registry-1.docker.io/library/mysql:8.0@sha256:7dcddc01f13bab2f15cde676d44d01f61fc9f99fe7785e86196dfc07d358ae2b
+    environment: { MYSQL_DATABASE: scalability_lab, MYSQL_ROOT_PASSWORD: disposable-lab }
+    command: [--innodb-buffer-pool-size=128M, --max-connections=32, --skip-name-resolve,
+              --server-id=102, --log-bin=replica-bin, --relay-log=replica-relay,
+              --log-replica-updates=ON, --read-only=ON, --skip-replica-start,
+              --replicate-do-db=scalability_lab, --binlog-format=ROW, --replica-parallel-workers=2]
+    volumes: [lab-replica:/var/lib/mysql]
+    networks: [lab]
+    cpus: '1'
+    mem_limit: 1g
+    healthcheck:
+      test: [CMD-SHELL, 'MYSQL_PWD="$$MYSQL_ROOT_PASSWORD" mysqladmin ping -h127.0.0.1 -uroot --silent']
+      interval: 5s
+      timeout: 3s
+      retries: 40
+    logging: { driver: local, options: { max-size: 10m, max-file: '2' } }
+volumes:
+  lab-replica: {}

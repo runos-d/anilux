@@ -28,6 +28,8 @@ docker compose --env-file .env.example -f deploy/scalability/compose.yml -f depl
 
 `tests/scalability/broker_probe.py` проверяет countdown retry и восстановление chat outbox после stopped broker. Запускать через `migrate` с read-only mount `tests/scalability:/load`, `PYTHONPATH=/app`; фазы `produce`, `recover --event-id N`, `retry`. При недоступном RabbitMQ SQL-сообщение сохранено; после restart опубликовано; повторная задача не публикует уже помеченное событие. Это broker/outbox test без клиентских доставок и без доказательства HA. Потеря целого broker host, три quorum nodes, DLQ replay, provider jobs и длительный soak ещё требуют проверки.
 
+`python tests/scalability/outbox_fault_probe.py` автоматизирует paused-broker вариант: проверяет точные lab labels и запущенный events consumer, pause → bounded producer CLI → unpause в finally → outbox recovery и duplicate task. Raw logs остаются ignored, результат без payload/credentials. Только этот lab; не совмещать с load/regressions. После multicast/index изменений повторено: SQL pending во время pause, recovery/duplicate PASS; CLI 4,141/2,407с вместе с Docker/Django startup. Клиентская доставка этим probe не проверяется.
+
 ## Centrifugo
 
 `compose.centrifugo.yml` поднимает два Centrifugo **6.10.2** с Redis engine и отдельным synthetic namespace, без host ports. Только тестовый JWT и канал `lab:probe-*`; реальные domain events/credentials не подключены. SDK **centrifuge 5.8.0** находится в отдельном тестовом package, не увеличивает frontend bundle. `checkconfig` и официальный JS client проверяют подписку, публикацию, unique recipients и запреты неизвестного namespace/client publish.

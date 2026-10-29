@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "capacity_certified": false,
+  "client_delivery_verified": false,
+  "sql_saved_while_broker_paused": true,
+  "outbox_recovered": true,
+  "duplicate_task_safe": true,
+  "producer_cli_seconds": 4.140999999988708,
+  "recovery_cli_seconds": 2.4069999999919673,
+  "source_commit": "aa7a3a60fd0815318da2eb045ce071ff6dac7e0a"
+}

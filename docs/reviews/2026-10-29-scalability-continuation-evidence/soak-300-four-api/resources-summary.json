@@ -1,0 +1,26 @@
+{
+  "sampled_snapshots": 58,
+  "outbox_pending_max": 1,
+  "outbox_oldest_age_max_seconds": 0.136935,
+  "db_connections_min_max": [
+    1,
+    9
+  ],
+  "dataset_before": {
+    "users": 120,
+    "anime": 3000,
+    "posts": 10000,
+    "messages": 666,
+    "rooms": 4,
+    "memberships": 124
+  },
+  "dataset_after": {
+    "users": 120,
+    "anime": 3000,
+    "posts": 10000,
+    "messages": 960,
+    "rooms": 4,
+    "memberships": 124
+  },
+  "samples_are_not_continuous": true
+}

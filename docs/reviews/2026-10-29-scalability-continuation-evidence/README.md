@@ -26,3 +26,22 @@
 Общий unread подсчёт был проверен ещё в трёх **удалённых** вариантах: [ORM](discarded-grouped-orm/result.json) 2281/3030мс, [ORM + command timing](discarded-grouped-orm-command/result.json) 3051/3437мс, [fixed parameterized SQL](discarded-grouped-raw/result.json) 2357/2816мс. Все 7200 доставки получены, но smoke/SLO FAIL. SQL microprobe стал дешевле; при этом выросли CPU пики API и ACK (в двух последних p95 2560/1657мс). Command work/connection/SQL теперь измеряются отдельно. Из этих последовательных прогонов нельзя заключить, что один SQL query является причиной всех хвостов; server/host scheduling и pre-publication pipeline ещё требуют профиля. Все три reader patches удалены, текущий код сохраняет `a34ba3b` reader/индекс. Disposition/patch/manifests/resources и failed results сохранены, новые equivalence tests разных sender/read/clear/join bounds оставлены как регрессии.
 
 На возвращённом reader: 19 telemetry/projection/real Redis security checks PASS (13,295с). Безопасность и отсутствие избыточного SQL не заменяют capacity acceptance.
+
+## Более длинный профиль и восемь API
+
+| Retained code, 120 users/240 WS, 10 HTTP/s + 1 send/s | HTTP p95/p99 | ACK p95/p99 | Chat p95/p99 | HTTP / ACK / unique deliveries |
+|---|---|---|---|---|
+| [4 API, 300с](soak-300-four-api/result.json) | 315/952мс | 5449/7483мс | 5998/8177мс | 3000/3000; 300/300; 36000/36000 |
+| [8 API, 60с](mixed-120-eight-api/result.json) | 179/269мс | 255/421мс | 714/1079мс | 600/600; 60/60; 7200/7200 |
+
+В обоих duplicates/unexpected recipients/socket closures/frame errors/generator drops = 0. Первый smoke/SLO **FAIL**, второй smoke PASS, строгий SLO **FAIL**. 4 API по 1 CPU/1GiB, затем 8 с теми же лимитами; увеличенная сумма CPU ceilings делит тот же 8 CPU host с DB/workers и другими сервисами. Кеши/history/process placement отличаются, коэффициент ускорения не заявлен. Это 5 минут, не требуемые 30–60 минут/full-domain/weak-client/storm acceptance.
+
+Generator: 300с — scheduler p99 10мс, CPU 24,8с/RSS 55MiB; 60с — 9мс, CPU 4,36с/RSS 53MiB. [58 наблюдений длинного прогона](soak-300-four-api/resources-summary.json): outbox pending ≤1, oldest ≤0,137с, DB connections 1..9; dataset messages 666→960 внутри sample window. В 8 API — 11 snapshots, pending 0, connections 1..7, messages 968→1021. Это редкие snapshots, не доказательство отсутствия коротких spikes. Raw resources сжаты в `resources.jsonl.gz`, исходные JSONL сохранены ignored; manifests/phase histograms доступны рядом. Длинный ACK хвост и насыщение отдельных API требуют дальнейшей работы; малый sampled outbox не объясняет задержку сам по себе.
+
+## Реплика и восстановление брокера
+
+[Replication evidence](replication/): новый private volume, source/replica server-id 101/102, согласованный file/position dump 8394461 bytes, SHA-256 и совпавшие counts/checksums шести таблиц. Bootstrap result сохраняет source/image/resources fingerprints; SQL dump с synthetic sessions **не опубликован**. Recover: остановленный applier отстаёт, resume достигает checkpoint, application write отвергнут, restart сохраняет read-only и одну обновлённую строку — PASS, 8,328с. Повторный bootstrap непустой schema **ожидаемо отвергнут** (отдельный `passed=false`/RuntimeError report), данные не перезаписаны. Три host guard tests и два phase summary tests PASS (0,013с).
+
+[Paused broker](replication/outbox-paused-recovery.json) после новых chat изменений: durable SQL остался pending, unpause/retry опубликовали outbox, duplicate task безопасна; producer/recovery CLI 4,141/2,407с с Docker/Django startup. Защита finally снимает pause. Это публикация в transport, не доказательство получения клиентом.
+
+Ни один API/ACL/session read не маршрутизируется на replica; writer не продвигался. Это локальная пара на одном host, self-signed lab TLS без production CA identity, без host HA/RPO/RTO/promotion acceptance. Команды/границы: [replication guide](../../../deploy/scalability/REPLICATION.md).

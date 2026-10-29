@@ -1,0 +1,13 @@
+{
+  "profile": "reconnect-rich-replay",
+  "capacity_certified": false,
+  "passed": true,
+  "offline_messages": 5,
+  "rich_replies": 4,
+  "replayed_unique_messages": 5,
+  "duplicate_command_idempotent": true,
+  "cross_room_replay_denied": true,
+  "replay_uses_current_edits_and_deletions": true,
+  "seconds": 3.1164484470064053,
+  "reconnect_storm_tested": false
+}

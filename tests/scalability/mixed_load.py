@@ -49,7 +49,14 @@ async def run(args):
                         frame_errors += 1
                     continue
                 max_frame_received = max(max_frame_received, len(message.data.encode()))
-                data = json.loads(message.data)
+                try:
+                    data = json.loads(message.data)
+                except (ValueError, TypeError):
+                    frame_errors += 1
+                    continue
+                if not isinstance(data, dict):
+                    frame_errors += 1
+                    continue
                 if data.get('action') == 'init':
                     ready.set()
                 if data.get('action') == 'error':
@@ -125,7 +132,7 @@ async def run(args):
                         pending.add(task)
                         task.add_done_callback(pending.discard)
                     next_http += 1
-                if elapsed >= next_send and len(commands) < 200:
+                if elapsed >= next_send and len(commands) < 1800:
                     user, kind, room, ws = sockets[1]
                     key = str(uuid.uuid4())
                     commands[key] = {'room': room, 'start': time.monotonic(), 'acked': False, 'received': set(),
@@ -150,6 +157,7 @@ async def run(args):
                 'http_completed': http.count, 'statuses': dict(statuses), 'generator_dropped': dropped,
                 'durable_sends': sent, 'acks': ack.count, 'expected_deliveries': expected, 'unique_deliveries': received,
                 'duplicates': duplicates, 'unexpected_recipients': unexpected, 'frame_errors': frame_errors,
+                'unexpected_socket_closures': sum(ws.closed for _, _, _, ws in sockets),
                 'max_received_frame_bytes': max_frame_received, 'response_frame_budget_bytes': 1048576,
                 'http_ms': {'p95': http.percentile(.95), 'p99': http.percentile(.99)},
                 'delivery_ms': {'p95': delivery.percentile(.95), 'p99': delivery.percentile(.99)},
@@ -159,9 +167,13 @@ async def run(args):
                               'cpu_seconds': time.process_time()-start_cpu,
                               'max_rss_kib': resource.getrusage(resource.RUSAGE_SELF).ru_maxrss}}
             result['passed_smoke'] = (ack.count == sent and expected == received and not unexpected and not frame_errors
+                and not duplicates and not result['unexpected_socket_closures']
                 and offered == args.rate*args.seconds
                 and not dropped and statuses.get('200', 0) == offered and (http.percentile(.95) or 60001) <= 1000
                 and (delivery.percentile(.95) or 60001) <= 1000 and (drift.percentile(.99) or 0) <= 100)
+            result['passed_proposed_slo'] = (result['passed_smoke'] and (http.percentile(.95) or 60001) <= 300
+                and (http.percentile(.99) or 60001) <= 1000 and (delivery.percentile(.95) or 60001) <= 500
+                and (delivery.percentile(.99) or 60001) <= 1000)
             print(json.dumps(result, indent=2))
             return 0 if result['passed_smoke'] else 2
         finally:
@@ -177,7 +189,8 @@ if __name__ == '__main__':
     parser.add_argument('--users', type=int, default=12)
     parser.add_argument('--seconds', type=int, default=20)
     parser.add_argument('--rate', type=int, default=5)
+    parser.add_argument('--soak', action='store_true', help='Allow an explicit bounded 61..1800 second run')
     args = parser.parse_args()
-    if not (2 <= args.users <= 120 and 1 <= args.seconds <= 60 and 1 <= args.rate <= 30):
-        parser.error('users 2..120, seconds 1..60 and rate 1..30 required')
+    if not (2 <= args.users <= 120 and 1 <= args.seconds <= (1800 if args.soak else 60) and 1 <= args.rate <= 30):
+        parser.error('users 2..120, seconds 1..60 (1800 with --soak) and rate 1..30 required')
     raise SystemExit(asyncio.run(run(args)))

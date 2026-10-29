@@ -1,0 +1,28 @@
+diff --git a/backend/apps/social/application/conversation_consumer.py b/backend/apps/social/application/conversation_consumer.py
+index be0e40c..0a004d1 100644
+--- a/backend/apps/social/application/conversation_consumer.py
++++ b/backend/apps/social/application/conversation_consumer.py
+@@ -208,7 +208,11 @@ class ConversationConsumer(AsyncJsonWebsocketConsumer):
+         if self.token_expired():
+             await self.close(code=4001)
+             return
+-        allowed = await self.can_receive()
++        # A versioned new-message projection itself reloads current ACL, bans,
++        # account, clear/prejoin bounds and the message. Avoid a second ACL DB
++        # roundtrip before that complete check. All other events keep the reader.
++        projected = event['payload'].get('action') == 'new_message' and bool(event['payload'].get('event_id'))
++        allowed = await self.active_account() if projected else await self.can_receive()
+         if not allowed:
+             await self.close(code=1013 if allowed is None else 4004)
+             return
+@@ -217,3 +221,10 @@ class ConversationConsumer(AsyncJsonWebsocketConsumer):
+         if payload:
+             with ws_phase('room', 'send'):
+                 await self.send_json(payload)
++        elif projected:
++            # A filtered/deleted message does not necessarily revoke room access.
++            # Preserve the existing close/reconnect policy on actual ACL denial.
++            from apps.social.application.live_projection import can_read_chat
++            allowed = await can_read_chat(self.chat, self.user)
++            if not allowed:
++                await self.close(code=1013 if allowed is None else 4004)

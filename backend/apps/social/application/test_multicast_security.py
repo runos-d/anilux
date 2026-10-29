@@ -43,7 +43,7 @@ class MulticastSecurityTests(TransactionTestCase):
         token['sid'] = str(active.pk)
         self.token = str(token)
 
-    def scenario(self, revoke):
+    def scenario(self, revoke, rich=False):
         async def run():
             sockets = [WebsocketCommunicator(URLRouter(websocket_urlpatterns), path,
                 subprotocols=['animecore.v2', 'auth.'+self.token]) for path in
@@ -54,7 +54,12 @@ class MulticastSecurityTests(TransactionTestCase):
                     self.assertTrue((await socket.connect())[0])
                 self.assertEqual((await sockets[1].receive_json_from())['action'], 'init')
                 def publish():
-                    message, _ = service.send_message(self.chat, self.a, {'text': 'current access'})
+                    values = {'text': 'current access'}
+                    if rich:
+                        original, _ = service.send_message(self.chat, self.a, {'text': 'original reply'})
+                        # This first event is not the one published by this probe.
+                        values['reply_to'] = original
+                    message, _ = service.send_message(self.chat, self.a, values)
                     event = ChatEvent.objects.get(kind='new_message', payload__message__id=message.pk)
                     deliver_chat_event.run(event.pk)
                     return event
@@ -92,3 +97,9 @@ class MulticastSecurityTests(TransactionTestCase):
         def membership():
             ChatMember.objects.filter(chat=self.chat, user=self.b).delete()
         self.scenario(membership)
+
+    def test_ban_blocks_rich_projection_and_old_multicast_replay(self):
+        from apps.social.infrastructure.models.social_chat import ChatBan
+        def ban():
+            ChatBan.objects.create(chat=self.chat, user=self.b, banned_by=self.a)
+        self.scenario(ban, rich=True)

@@ -16,13 +16,16 @@ def command(args):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--profile', choices=('public-http-smoke', 'authenticated-http-smoke', 'mixed-chat-http-smoke'), required=True)
+    parser.add_argument('--profile', choices=('public-http-smoke', 'authenticated-http-smoke', 'mixed-chat-http-smoke', 'reconnect-rich-replay'), required=True)
     parser.add_argument('--rate', type=int, default=5)
     parser.add_argument('--seconds', type=int, default=20)
     parser.add_argument('--users', type=int, default=12)
+    parser.add_argument('--soak', action='store_true')
     args = parser.parse_args()
-    if not (1 <= args.rate <= 30 and 1 <= args.seconds <= 60 and 2 <= args.users <= 120):
-        parser.error('Probe bounds: rate 1..30, seconds 1..60, users 2..120')
+    if args.soak and args.profile != 'mixed-chat-http-smoke':
+        parser.error('--soak is only supported by the bounded mixed probe')
+    if not (1 <= args.rate <= 30 and 1 <= args.seconds <= (1800 if args.soak else 60) and 2 <= args.users <= 120):
+        parser.error('Probe bounds: rate 1..30, seconds 1..60 (1800 with --soak), users 2..120')
     stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
     folder = ROOT / '.tmp' / 'scalability' / f'{stamp}-{args.profile}'
     folder.mkdir(parents=True)
@@ -58,9 +61,14 @@ def main():
                'run', '--rm', '--no-deps', '--entrypoint', 'python', 'generator']
     if args.profile == 'mixed-chat-http-smoke':
         invocation = [*compose, '/load/mixed_load.py', '--users', str(args.users)]
+    elif args.profile == 'reconnect-rich-replay':
+        invocation = [*compose, '/load/replay_probe.py']
     else:
         invocation = [*compose, '/load/http_load.py', '--profile', args.profile]
-    invocation += ['--rate', str(args.rate), '--seconds', str(args.seconds)]
+    if args.profile != 'reconnect-rich-replay':
+        invocation += ['--rate', str(args.rate), '--seconds', str(args.seconds)]
+    if args.soak:
+        invocation += ['--soak']
     started = time.monotonic()
     with (folder/'result.json').open('w') as out, (folder/'generator.log').open('w') as error, \
             (folder/'resources.jsonl').open('w') as resources:

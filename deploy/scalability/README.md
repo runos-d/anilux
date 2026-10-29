@@ -70,3 +70,14 @@ docker compose --env-file .env.example -f deploy/scalability/compose.yml run --r
 ## Фазы post-publication chat
 
 Opt-in histogram `site_ws_phase_seconds` имеет только фиксированные operation/phase labels. `publication_to_handler` — wall-clock от начала публикации worker до входа в room/global handler (включает fanout, transport и ожидание consumer; часы разных hosts должны быть синхронизированы). Timestamp находится только в transport envelope, не в client DTO. `batch_wait` — ожидание отдельного callback до отбора в batch; `executor_wait` — до запуска sync callback, включая начальный Channels connection cleanup. `work` — callback целиком; вложенные `connection` — MySQL handshake/setup, `sql` — execute без SQL text, `prepare` — подготовка персональных DTO после загрузки rows, `serialize` — formatter/JSON. `send` заканчивается на передаче ASGI/Daphne, не доказывает получение клиентом. На room path JSON входит также в send. Вложенные интервалы **нельзя складывать**; отдельно измеренный client histogram остаётся end-to-end. Метрики включают ramp/heartbeat; сравнивать deltas samples внутри load stage. Решения сессии/ACL между batches не сохраняются.
+
+## Reconnect/replay и более длинная проверка
+
+```sh
+python tests/scalability/run_probe.py --profile reconnect-rich-replay
+python tests/scalability/run_probe.py --profile mixed-chat-http-smoke --users 120 --rate 10 --seconds 300 --soak
+```
+
+Replay probe использует только synthetic credentials/две приватные комнаты: отключает получателя, пишет 5 сообщений (4 с цитатой), повторяет последнюю команду, reconnect и HTTP replay; проверяет уникальные сообщения, запрет другой комнате и актуальные edit/delete при повторном чтении. Ограничен 32 frames до ACK, response 1MiB, HTTP/WS deadlines. Это функциональный сценарий, не storm, не большое rich-payload принятие. Real Redis regression `test_multicast_security` дополнительно отзывает session/membership/ban после успешного live frame.
+
+`--soak` явно разрешает до 1800с; без него прежний предел 60с. Больше 120 users/30 HTTP/s по-прежнему запрещено. Command history ограничена 1800 записями с максимум 240 socket keys на запись; histograms ограничены 60с/1мс. Ошибочные frames, duplicates, unexpected closures/recipients, drops и недостающие доставки проваливают smoke. `passed_proposed_slo` отдельно проверяет roadmap API 300/1000мс и chat 500/1000мс; успешный exit code smoke сам по себе его не доказывает. Во время прогона не запускать build/regressions/replica bootstrap или другую нагрузку на lab.

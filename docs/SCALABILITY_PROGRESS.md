@@ -45,6 +45,8 @@
 
 ## Следующая работа
 
-1. Разделить CPU/DB connection setup/query/serializer/executor wait в post-publication pipeline на текущем профиле 120/4 API. Снизить chat p95/p99 до согласованного SLO, сохраняя все свежие D0031 checks; не заменять их JWT-only или TTL cache.
+1. Фазовая диагностика выполнена; продолжить ограничение стоимости точного unread на длинной истории и снизить chat p95 до 500мс на повторяемом профиле. Эксперимент удаления дополнительного ACL callback не улучшил p95 (615 против 598мс), сохранён и откачен; текущий ACL pipeline прежний.
 2. Расширить фиксированные datasets/профили на rich messages, тысячи участников, действия read/typing/edit/delete/replay и остальные домены из workload map. Только после этого повышать пользователей/RPS и длительность.
 3. Продолжить открытые реализации этапов 3/5/6 из таблицы. Без внешних host/storage провести только локальные совместимые изменения; S3/CDN, DB/broker HA и большие load stages принять на отдельной инфраструктуре.
+
+Проверено дополнительно: функциональные reconnect/5 offline messages/4 rich replies/idempotent duplicate/current edit-delete replay/cross-room denial. Генератор теперь допускает bounded 1..1800с только с `--soak`, отдельно отражает предложенный SLO, проваливает duplicates/closures. Длительный acceptance ещё требует выполненного прогона; mass reconnect/большие rich rooms остаются открыты.

@@ -1,0 +1,6 @@
+{
+  "retained": false,
+  "reason": "No end-to-end improvement: chat p95 615ms versus preceding 598ms; retain simpler explicit ACL pipeline. Sequential runs/history differ; no statistical regression claim.",
+  "security_tests_passed": 84,
+  "seconds": 119.596
+}

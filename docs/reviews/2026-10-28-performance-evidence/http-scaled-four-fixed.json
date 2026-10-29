@@ -1,0 +1,23 @@
+{
+  "environment": {
+    "appCpuLimit": 2,
+    "mysqlCpuLimit": 2,
+    "users": 100,
+    "anime": 10000,
+    "appReplicas": 4
+  },
+  "phases": [
+    {
+      "name": "four HTTP replicas, authenticated cached catalog 100rps",
+      "requests": 2000,
+      "elapsedSeconds": 21.0446368,
+      "requestsPerSecond": 95.03609014530487,
+      "p50Ms": 206.30059999999867,
+      "p95Ms": 1523.7473,
+      "p99Ms": 1934.6758999999993,
+      "statuses": {
+        "200": 2000
+      }
+    }
+  ]
+}

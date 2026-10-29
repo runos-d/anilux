@@ -1,0 +1,1 @@
+from apps.users.test_review_regressions import ReviewRegressions

@@ -1,0 +1,1266 @@
+{
+  "errors": [],
+  "results": [
+    {
+      "name": "home",
+      "path": "/",
+      "desktop": {
+        "url": "/",
+        "overflow": false,
+        "dom": 586,
+        "heading": [
+          "Фиолетовый сад",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 426
+      }
+    },
+    {
+      "name": "login",
+      "path": "/login",
+      "desktop": {
+        "url": "/login",
+        "overflow": false,
+        "dom": 439,
+        "heading": [
+          "Вход в аккаунт",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 279
+      }
+    },
+    {
+      "name": "register",
+      "path": "/register",
+      "desktop": {
+        "url": "/register",
+        "overflow": false,
+        "dom": 445,
+        "heading": [
+          "Регистрация",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 285
+      }
+    },
+    {
+      "name": "confirm-email",
+      "path": "/confirm-email?token=visual-token",
+      "desktop": {
+        "url": "/confirm-email?token=visual-token",
+        "overflow": false,
+        "dom": 416,
+        "heading": [
+          "Подтверждение email",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 256
+      }
+    },
+    {
+      "name": "reset-password",
+      "path": "/reset-password?token=visual-token",
+      "desktop": {
+        "url": "/reset-password?token=visual-token",
+        "overflow": false,
+        "dom": 419,
+        "heading": [
+          "Новый пароль",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 259
+      }
+    },
+    {
+      "name": "oauth-callback",
+      "path": "/oauth/callback?error=visual-test",
+      "desktop": {
+        "url": "/oauth/callback?error=visual-test",
+        "overflow": false,
+        "dom": 414,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 254
+      }
+    },
+    {
+      "name": "contacts",
+      "path": "/contacts",
+      "desktop": {
+        "url": "/contacts",
+        "overflow": false,
+        "dom": 511,
+        "heading": [
+          "Контакты администрации",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 351
+      }
+    },
+    {
+      "name": "terms",
+      "path": "/terms",
+      "desktop": {
+        "url": "/terms",
+        "overflow": false,
+        "dom": 563,
+        "heading": [
+          "Пользовательское соглашение",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 400
+      }
+    },
+    {
+      "name": "privacy",
+      "path": "/privacy",
+      "desktop": {
+        "url": "/privacy",
+        "overflow": false,
+        "dom": 640,
+        "heading": [
+          "Политика обработки персональных данных",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 482
+      }
+    },
+    {
+      "name": "license",
+      "path": "/license",
+      "desktop": {
+        "url": "/license",
+        "overflow": false,
+        "dom": 330,
+        "heading": [
+          "AniLux"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 216
+      }
+    },
+    {
+      "name": "application",
+      "path": "/app",
+      "desktop": {
+        "url": "/app",
+        "overflow": false,
+        "dom": 385,
+        "heading": [
+          "AniLux"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 248
+      }
+    },
+    {
+      "name": "anime-overview",
+      "path": "/anime",
+      "desktop": {
+        "url": "/anime?section=calendar",
+        "overflow": false,
+        "dom": 603,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 432
+      }
+    },
+    {
+      "name": "anime-catalog",
+      "path": "/anime?section=catalog",
+      "desktop": {
+        "url": "/anime?section=catalog",
+        "overflow": false,
+        "dom": 537,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 390
+      }
+    },
+    {
+      "name": "anime-ongoings",
+      "path": "/anime?section=ongoings",
+      "desktop": {
+        "url": "/anime?section=ongoings",
+        "overflow": false,
+        "dom": 816,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 656
+      }
+    },
+    {
+      "name": "anime-announcements",
+      "path": "/anime?section=announcements",
+      "desktop": {
+        "url": "/anime?section=announcements",
+        "overflow": false,
+        "dom": 622,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 462
+      }
+    },
+    {
+      "name": "anime-calendar",
+      "path": "/anime?section=calendar",
+      "desktop": {
+        "url": "/anime?section=calendar",
+        "overflow": false,
+        "dom": 603,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 443
+      }
+    },
+    {
+      "name": "anime-recommendations",
+      "path": "/anime?section=recommendations",
+      "desktop": {
+        "url": "/anime?section=recommendations",
+        "overflow": false,
+        "dom": 1309,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 953
+      }
+    },
+    {
+      "name": "anime-currently-watching",
+      "path": "/anime?section=currently_watching",
+      "desktop": {
+        "url": "/anime?section=currently_watching",
+        "overflow": false,
+        "dom": 518,
+        "heading": [
+          "Сейчас смотрят",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 358
+      }
+    },
+    {
+      "name": "anime-browse",
+      "path": "/anime/browse",
+      "desktop": {
+        "url": "/anime/browse",
+        "overflow": false,
+        "dom": 532,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 372
+      }
+    },
+    {
+      "name": "anime-franchises",
+      "path": "/anime/franchises",
+      "desktop": {
+        "url": "/anime/franchises",
+        "overflow": false,
+        "dom": 502,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 342
+      }
+    },
+    {
+      "name": "anime-year",
+      "path": "/anime/year/2024",
+      "desktop": {
+        "url": "/anime/year/2024",
+        "overflow": false,
+        "dom": 782,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 622
+      }
+    },
+    {
+      "name": "anime-genre",
+      "path": "/anime/genre/drama",
+      "desktop": {
+        "url": "/anime/genre/drama",
+        "overflow": false,
+        "dom": 782,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 622
+      }
+    },
+    {
+      "name": "anime-type",
+      "path": "/anime/type/tv",
+      "desktop": {
+        "url": "/anime/type/tv",
+        "overflow": false,
+        "dom": 782,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 622
+      }
+    },
+    {
+      "name": "anime-status",
+      "path": "/anime/status/ongoing",
+      "desktop": {
+        "url": "/anime/status/ongoing",
+        "overflow": false,
+        "dom": 782,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 622
+      }
+    },
+    {
+      "name": "anime-season",
+      "path": "/anime/season/2024/spring",
+      "desktop": {
+        "url": "/anime/season/2024/spring",
+        "overflow": false,
+        "dom": 782,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 622
+      }
+    },
+    {
+      "name": "anime-collection",
+      "path": "/anime/collection/quiet-stories",
+      "desktop": {
+        "url": "/anime/collection/quiet-stories",
+        "overflow": false,
+        "dom": 782,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 622
+      }
+    },
+    {
+      "name": "anime-detail",
+      "path": "/anime/1-fioletovyy-sad",
+      "desktop": {
+        "url": "/anime/1-fioletovyy-sad",
+        "overflow": false,
+        "dom": 671,
+        "heading": [
+          "Визуальная проверка",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 510
+      }
+    },
+    {
+      "name": "anime-watch",
+      "path": "/anime/1-fioletovyy-sad/watch",
+      "desktop": {
+        "url": "/anime/1-fioletovyy-sad/watch",
+        "overflow": false,
+        "dom": 669,
+        "heading": [
+          "Фиолетовый сад",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 510
+      }
+    },
+    {
+      "name": "franchise",
+      "path": "/franchise/fioletovyy-sad",
+      "desktop": {
+        "url": "/franchise/fioletovyy-sad",
+        "overflow": false,
+        "dom": 553,
+        "heading": [
+          "Фиолетовый сад",
+          "Все части",
+          "AniLux"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 393
+      }
+    },
+    {
+      "name": "roulette",
+      "path": "/roulette",
+      "desktop": {
+        "url": "/roulette",
+        "overflow": false,
+        "dom": 646,
+        "heading": [
+          "Рулетка аниме",
+          "Мой вечер",
+          "AniLux"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 486
+      }
+    },
+    {
+      "name": "people",
+      "path": "/people",
+      "desktop": {
+        "url": "/people",
+        "overflow": false,
+        "dom": 433,
+        "heading": [
+          "Люди",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 269
+      }
+    },
+    {
+      "name": "public-profile",
+      "path": "/@sakura-reader",
+      "desktop": {
+        "url": "/@sakura-reader",
+        "overflow": false,
+        "dom": 422,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 287
+      }
+    },
+    {
+      "name": "own-profile",
+      "path": "/profile",
+      "desktop": {
+        "url": "/profile",
+        "overflow": false,
+        "dom": 464,
+        "heading": [
+          "",
+          "Уведомления -подписки на серии",
+          "Уведомления -подписки на серии"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 298
+      }
+    },
+    {
+      "name": "achievements",
+      "path": "/achievements",
+      "desktop": {
+        "url": "/achievements",
+        "overflow": false,
+        "dom": 389,
+        "heading": [
+          "AniLux"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 233
+      }
+    },
+    {
+      "name": "feed",
+      "path": "/feed",
+      "desktop": {
+        "url": "/feed",
+        "overflow": false,
+        "dom": 420,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 434
+      }
+    },
+    {
+      "name": "news",
+      "path": "/news",
+      "desktop": {
+        "url": "/news",
+        "overflow": false,
+        "dom": 448,
+        "heading": [
+          "Новости",
+          "Обновление AniLux",
+          "AniLux"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 287
+      }
+    },
+    {
+      "name": "ideas",
+      "path": "/ideas",
+      "desktop": {
+        "url": "/ideas",
+        "overflow": false,
+        "dom": 574,
+        "heading": [
+          "Давайте сделаем AniLux лучше",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 421
+      }
+    },
+    {
+      "name": "post-detail",
+      "path": "/post/101",
+      "desktop": {
+        "url": "/post/101",
+        "overflow": false,
+        "dom": 545,
+        "heading": [
+          "Визуальная проверка",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 384
+      }
+    },
+    {
+      "name": "chats",
+      "path": "/chats",
+      "desktop": {
+        "url": "/chats",
+        "overflow": false,
+        "dom": 453,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 293
+      }
+    },
+    {
+      "name": "chat-private",
+      "path": "/chats/12345678",
+      "desktop": {
+        "url": "/chats/12345678",
+        "overflow": false,
+        "dom": 402,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 238
+      }
+    },
+    {
+      "name": "chat-group",
+      "path": "/chats/11111111-1111-4111-8111-111111111111",
+      "desktop": {
+        "url": "/chats/11111111-1111-4111-8111-111111111111",
+        "overflow": false,
+        "dom": 393,
+        "heading": [
+          "AniLux"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 231
+      }
+    },
+    {
+      "name": "chat-topic",
+      "path": "/chats/11/topic/general",
+      "desktop": {
+        "url": "/chats/11/topic/general",
+        "overflow": false,
+        "dom": 393,
+        "heading": [
+          "AniLux"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 231
+      }
+    },
+    {
+      "name": "chat-groups",
+      "path": "/chats/groups",
+      "desktop": {
+        "url": "/chats/groups",
+        "overflow": false,
+        "dom": 394,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 245
+      }
+    },
+    {
+      "name": "chat-create-group",
+      "path": "/chats/create-group",
+      "desktop": {
+        "url": "/chats/create-group",
+        "overflow": false,
+        "dom": 453,
+        "heading": [
+          "Создать группу",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 293
+      }
+    },
+    {
+      "name": "chat-invite",
+      "path": "/chats/invite/visualtest12",
+      "desktop": {
+        "url": "/chats/invite/visualtest12",
+        "overflow": false,
+        "dom": 414,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 254
+      }
+    },
+    {
+      "name": "playlists",
+      "path": "/playlists",
+      "desktop": {
+        "url": "/playlists",
+        "overflow": false,
+        "dom": 541,
+        "heading": [
+          "Плейлисты",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 381
+      }
+    },
+    {
+      "name": "playlists-public-tab",
+      "path": "/playlists?tab=public",
+      "desktop": {
+        "url": "/playlists?tab=public",
+        "overflow": false,
+        "dom": 537,
+        "heading": [
+          "Плейлисты",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 377
+      }
+    },
+    {
+      "name": "playlists-favorites-tab",
+      "path": "/playlists?tab=favorites",
+      "desktop": {
+        "url": "/playlists?tab=favorites",
+        "overflow": false,
+        "dom": 530,
+        "heading": [
+          "Плейлисты",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 370
+      }
+    },
+    {
+      "name": "playlist-detail",
+      "path": "/playlist/12345678",
+      "desktop": {
+        "url": "/playlist/12345678",
+        "overflow": false,
+        "dom": 487,
+        "heading": [
+          "Визуальная проверка",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 327
+      }
+    },
+    {
+      "name": "playlist-shared",
+      "path": "/playlist/shared/visualtoken",
+      "desktop": {
+        "url": "/playlist/shared/visualtoken",
+        "overflow": false,
+        "dom": 502,
+        "heading": [
+          "Тихие истории",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 342
+      }
+    },
+    {
+      "name": "playlist-create",
+      "path": "/playlists/create",
+      "desktop": {
+        "url": "/playlists/create",
+        "overflow": false,
+        "dom": 504,
+        "heading": [
+          "Создание нового плейлиста",
+          "Основное",
+          "Поиск аниме *"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 344
+      }
+    },
+    {
+      "name": "playlist-edit",
+      "path": "/playlists/12345678/edit",
+      "desktop": {
+        "url": "/playlists/12345678/edit",
+        "overflow": false,
+        "dom": 503,
+        "heading": [
+          "Редактирование плейлиста",
+          "Основное",
+          "Поиск аниме *"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 343
+      }
+    },
+    {
+      "name": "my-playlists",
+      "path": "/my-playlists",
+      "desktop": {
+        "url": "/playlists",
+        "overflow": false,
+        "dom": 541,
+        "heading": [
+          "Плейлисты",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 381
+      }
+    },
+    {
+      "name": "public-playlists",
+      "path": "/public-playlists",
+      "desktop": {
+        "url": "/playlists?tab=public",
+        "overflow": false,
+        "dom": 537,
+        "heading": [
+          "Плейлисты",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 377
+      }
+    },
+    {
+      "name": "library",
+      "path": "/library",
+      "desktop": {
+        "url": "/library",
+        "overflow": false,
+        "dom": 163,
+        "heading": [
+          "AniLux"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 166
+      }
+    },
+    {
+      "name": "stats",
+      "path": "/stats",
+      "desktop": {
+        "url": "/stats",
+        "overflow": false,
+        "dom": 422,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 262
+      }
+    },
+    {
+      "name": "history",
+      "path": "/history",
+      "desktop": {
+        "url": "/history",
+        "overflow": false,
+        "dom": 467,
+        "heading": [
+          "История просмотров",
+          "Январь 2026 г.",
+          "AniLux"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 307
+      }
+    },
+    {
+      "name": "notifications",
+      "path": "/notifications",
+      "desktop": {
+        "url": "/notifications",
+        "overflow": false,
+        "dom": 445,
+        "heading": [
+          "Уведомления",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 292
+      }
+    },
+    {
+      "name": "notification-settings",
+      "path": "/notifications/settings",
+      "desktop": {
+        "url": "/notifications/settings",
+        "overflow": false,
+        "dom": 578,
+        "heading": [
+          "Настройки уведомлений",
+          "Каналы",
+          "По типам"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 418
+      }
+    },
+    {
+      "name": "settings",
+      "path": "/settings",
+      "desktop": {
+        "url": "/settings",
+        "overflow": false,
+        "dom": 524,
+        "heading": [
+          "Настройки",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 364
+      }
+    },
+    {
+      "name": "excerpts",
+      "path": "/excerpts",
+      "desktop": {
+        "url": "/excerpts",
+        "overflow": false,
+        "dom": 436,
+        "heading": [
+          "Мои отрывки",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 265
+      }
+    },
+    {
+      "name": "excerpt",
+      "path": "/excerpts/1",
+      "desktop": {
+        "url": "/excerpts/1",
+        "overflow": false,
+        "dom": 427,
+        "heading": [
+          "Тихая сцена",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 267
+      }
+    },
+    {
+      "name": "excerpt-shared",
+      "path": "/excerpts/s/visualtoken",
+      "desktop": {
+        "url": "/excerpts/s/visualtoken",
+        "overflow": false,
+        "dom": 427,
+        "heading": [
+          "Тихая сцена",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 267
+      }
+    },
+    {
+      "name": "add-anime",
+      "path": "/add-anime",
+      "desktop": {
+        "url": "/add-anime",
+        "overflow": false,
+        "dom": 426,
+        "heading": [
+          "Пополнить каталог",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 266
+      }
+    },
+    {
+      "name": "announcement",
+      "path": "/announcements/novaya-istoriya",
+      "desktop": {
+        "url": "/announcements/novaya-istoriya",
+        "overflow": false,
+        "dom": 420,
+        "heading": [
+          "Новая история",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 260
+      }
+    },
+    {
+      "name": "donate",
+      "path": "/donate",
+      "desktop": {
+        "url": "/donate",
+        "overflow": false,
+        "dom": 464,
+        "heading": [
+          "Поддержать проект",
+          "Почему это важно?",
+          "Способы доната"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 304
+      }
+    },
+    {
+      "name": "admin",
+      "path": "/admin",
+      "desktop": {
+        "url": "/admin",
+        "overflow": false,
+        "dom": 539,
+        "heading": [
+          "Панель администратора",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": true,
+        "dom": 378
+      }
+    },
+    {
+      "name": "admin-complaints",
+      "path": "/admin/complaints",
+      "desktop": {
+        "url": "/admin/complaints",
+        "overflow": false,
+        "dom": 477,
+        "heading": [
+          "Панель администратора",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": true,
+        "dom": 325
+      }
+    },
+    {
+      "name": "admin-franchises",
+      "path": "/admin/franchises",
+      "desktop": {
+        "url": "/admin/franchises",
+        "overflow": false,
+        "dom": 511,
+        "heading": [
+          "Панель администратора",
+          "Управление франшизами",
+          "AniLux"
+        ]
+      },
+      "mobile": {
+        "overflow": true,
+        "dom": 350
+      }
+    },
+    {
+      "name": "admin-import",
+      "path": "/admin/kodik-import",
+      "desktop": {
+        "url": "/admin/kodik-import",
+        "overflow": false,
+        "dom": 528,
+        "heading": [
+          "Импорт аниме и франшизы",
+          "Импорт аниме из Kodik",
+          "Сбор франшиз (живая Shikimori API)"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 368
+      }
+    },
+    {
+      "name": "moderation",
+      "path": "/moderation",
+      "desktop": {
+        "url": "/moderation",
+        "overflow": false,
+        "dom": 419,
+        "heading": [
+          "Модерация",
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 259
+      }
+    },
+    {
+      "name": "not-found",
+      "path": "/visual-test-not-found",
+      "desktop": {
+        "url": "/visual-test-not-found",
+        "overflow": false,
+        "dom": 414,
+        "heading": [
+          "AniLux",
+          "Помочь улучшать AniLux?"
+        ]
+      },
+      "mobile": {
+        "overflow": false,
+        "dom": 254
+      }
+    }
+  ]
+}

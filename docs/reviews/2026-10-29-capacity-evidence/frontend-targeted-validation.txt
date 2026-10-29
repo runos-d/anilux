@@ -1,0 +1,9 @@
+
+ RUN  v4.1.12 C:/Users/Serezhka/Documents/Projects/Kaiden/Web/Production/animecore/frontend
+
+
+ Test Files  4 passed (4)
+      Tests  21 passed (21)
+   Start at  11:30:17
+   Duration  5.93s (transform 619ms, setup 0ms, import 1.26s, tests 215ms, environment 8.61s)
+

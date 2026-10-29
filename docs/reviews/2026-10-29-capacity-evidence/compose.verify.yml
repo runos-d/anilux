@@ -1,0 +1,58 @@
+name: animecore-capacity
+x-api: &api
+  image: anilux-backend:local-release
+  entrypoint: python
+  command: [-m, daphne, -v, '0', --access-log, /dev/null, -b, 0.0.0.0, -p, '8000', capacity_asgi:application]
+  environment: &env
+    DJANGO_SECRET_KEY: disposable-performance-audit-only
+    DJANGO_SETTINGS_MODULE: capacity_settings
+    PYTHONPATH: /capacity:/audit:/app
+  volumes:
+    - ../../../backend:/app:ro
+    - ../2026-10-28-performance-evidence:/audit:ro
+    - ./:/capacity:ro
+  networks: [verification]
+  cpus: '1'
+  mem_limit: 1g
+  ulimits: { nofile: { soft: 65536, hard: 65536 } }
+  logging: { driver: local, options: { max-size: 10m, max-file: '2' } }
+services:
+  api1:
+    <<: *api
+    environment: { <<: *env, CAPACITY_NODE: api1 }
+    ports: ['127.0.0.1:4387:8000']
+    networks: { verification: { aliases: [backend] } }
+  api2:
+    <<: *api
+    environment: { <<: *env, CAPACITY_NODE: api2 }
+    ports: ['127.0.0.1:4388:8000']
+    networks: { verification: { aliases: [backend] } }
+  api3:
+    <<: *api
+    environment: { <<: *env, CAPACITY_NODE: api3 }
+    ports: ['127.0.0.1:4389:8000']
+    networks: { verification: { aliases: [backend] } }
+  api4:
+    <<: *api
+    environment: { <<: *env, CAPACITY_NODE: api4 }
+    ports: ['127.0.0.1:4390:8000']
+    networks: { verification: { aliases: [backend] } }
+  events:
+    <<: *api
+    command: [-m, celery, -A, config, worker, -Q, celery, -l, warning, --concurrency=2, --prefetch-multiplier=1]
+    cpus: '1'
+    mem_limit: 768m
+    ports: []
+  gateway:
+    image: registry-1.docker.io/library/nginx:alpine@sha256:892bb2152464f0c5d8972593a5f5afaf8054552580b699d95f8ff4af08c2d33d
+    volumes: [./nginx.verify.conf:/etc/nginx/nginx.conf:ro]
+    networks: [verification]
+    ports: ['127.0.0.1:4386:8000']
+    cpus: '0.5'
+    mem_limit: 256m
+    ulimits: { nofile: { soft: 65536, hard: 65536 } }
+    logging: { driver: local, options: { max-size: 10m, max-file: '2' } }
+networks:
+  verification:
+    external: true
+    name: animecore-capacity-verification

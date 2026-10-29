@@ -1,0 +1,207 @@
+[
+  {
+    "label": "unknown anime slug",
+    "path": "/api/anime/not-an-anime/",
+    "ms": [
+      80.45
+    ],
+    "sql": [
+      3
+    ],
+    "status": [
+      404
+    ],
+    "bytes": [
+      42
+    ],
+    "python_slug_calls": 0
+  },
+  {
+    "label": "detail with missing screenshots",
+    "path": "/api/anime/20430/",
+    "ms": [
+      20.79,
+      10.46,
+      12.26
+    ],
+    "sql": [
+      1,
+      1,
+      1
+    ],
+    "status": [
+      200,
+      200,
+      200
+    ],
+    "bytes": [
+      886,
+      886,
+      886
+    ],
+    "provider_calls": 0
+  },
+  {
+    "label": "catalog or franchises",
+    "path": "/api/anime/?page_size=20",
+    "ms": [
+      183.51,
+      4.09
+    ],
+    "sql": [
+      5,
+      0
+    ],
+    "status": [
+      200,
+      200
+    ],
+    "bytes": [
+      17589,
+      17589
+    ]
+  },
+  {
+    "label": "catalog or franchises",
+    "path": "/api/anime/?page_size=500",
+    "ms": [
+      306.65,
+      11.56
+    ],
+    "sql": [
+      5,
+      0
+    ],
+    "status": [
+      200,
+      200
+    ],
+    "bytes": [
+      87670,
+      87670
+    ]
+  },
+  {
+    "label": "catalog or franchises",
+    "path": "/api/anime/franchises/?page_size=20",
+    "ms": [
+      66.38,
+      74.86
+    ],
+    "sql": [
+      4,
+      4
+    ],
+    "status": [
+      200,
+      200
+    ],
+    "bytes": [
+      20914,
+      20914
+    ]
+  },
+  {
+    "label": "catalog or franchises",
+    "path": "/api/anime/franchises/?page_size=0",
+    "ms": [
+      19.29,
+      29.25
+    ],
+    "sql": [
+      4,
+      4
+    ],
+    "status": [
+      200,
+      200
+    ],
+    "bytes": [
+      1105,
+      1105
+    ]
+  },
+  {
+    "label": "catalog or franchises",
+    "path": "/api/anime/franchises/?page=-1",
+    "ms": [
+      78.63,
+      60.88
+    ],
+    "sql": [
+      4,
+      4
+    ],
+    "status": [
+      200,
+      200
+    ],
+    "bytes": [
+      20914,
+      20914
+    ]
+  },
+  {
+    "label": "catalog or franchises",
+    "path": "/api/anime/franchises/?page_size=abc",
+    "ms": [
+      8.66,
+      5.09
+    ],
+    "sql": [
+      1,
+      1
+    ],
+    "status": [
+      400,
+      400
+    ],
+    "bytes": [
+      55,
+      55
+    ]
+  },
+  {
+    "label": "contact-only avatars search",
+    "path": "/api/users/search/?search=probe",
+    "ms": [
+      51.08
+    ],
+    "sql": [
+      3
+    ],
+    "status": [
+      200
+    ],
+    "bytes": [
+      7125
+    ]
+  },
+  {
+    "label": "online projection",
+    "path": "/api/users/online/",
+    "ms": [
+      39.8
+    ],
+    "sql": [
+      2
+    ],
+    "status": [
+      200
+    ],
+    "bytes": [
+      17181
+    ]
+  },
+  {
+    "label": "online Redis 1000",
+    "ms": 8.44,
+    "commands": {
+      "cmdstat_info": 1,
+      "cmdstat_mget": 1,
+      "cmdstat_zrangebyscore": 1,
+      "cmdstat_set": 1,
+      "cmdstat_get": 3
+    }
+  }
+]

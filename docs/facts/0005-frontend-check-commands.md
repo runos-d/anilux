@@ -10,6 +10,6 @@ kind: environmental
 governed-by: TBD
 ---
 
-`npm run build` параллельно запускает type-check и build-only; type-check - vue-tsc --build, build-only - vite build, test:unit - vitest, lint - eslint . --fix --cache. Frontend Dockerfile выполняет npm ci и npm run build. Команда lint изменяет файлы.
+`npm run build` параллельно выполняет type-check и build-only. type-check — vue-tsc --build; build-only — Vite; test:unit:run — Vitest без visual tests. lint выполняет проверку без исправлений; lint:fix явно включает --fix. Dockerfile запускает npm ci и build.
 
 Источники: `frontend/package.json`, `frontend/Dockerfile`.

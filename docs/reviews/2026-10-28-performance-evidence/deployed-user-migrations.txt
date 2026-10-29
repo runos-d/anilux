@@ -1,0 +1,14 @@
+[X]  users.0001_initial
+[X]  users.0002_appearance_settings
+[X]  users.0003_userlibrary_real_episodes_watched_and_more
+[X]  users.0004_userprofilesettings_theme_accents_and_more
+[X]  users.0005_add_pink_anime_theme
+[X]  users.0006_alter_userlibrary_status
+[X]  users.0007_alter_userprofilesettings_theme
+[X]  users.0008_repair_missing_subscription_table
+[X]  users.0009_userlibrary_episode_baseline_and_more
+[X]  users.0010_transactional_email_delivery
+[X]  users.0011_normalize_unique_user_email
+[X]  users.0012_userlibrary_current_season
+[X]  users.0013_privacy_consent_exports_activity_summary
+[ ]  users.0014_token_version_profile_storage

@@ -1,0 +1,13 @@
+
+ RUN  v4.1.12 C:/Users/Serezhka/Documents/Projects/Kaiden/Web/Production/animecore/frontend
+
+
+warn - The `content` option in your Tailwind CSS configuration is missing or empty.
+warn - Configure your content sources or your generated CSS will be missing styles.
+warn - https://tailwindcss.com/docs/content-configuration
+
+ Test Files  91 passed (91)
+      Tests  283 passed (283)
+   Start at  03:06:43
+   Duration  118.79s (transform 9.18s, setup 0ms, import 32.65s, tests 8.85s, environment 161.33s)
+

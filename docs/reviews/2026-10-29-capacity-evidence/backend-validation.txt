@@ -1,0 +1,72 @@
+.............WARNING 2026-10-29 11:19:49,664 log Forbidden: /api/social/group-chats/19850157/members/139/role/
+WARNING 2026-10-29 11:19:49,693 log Forbidden: /api/social/group-chats/19850157/members/141/role/
+WARNING 2026-10-29 11:19:49,723 log Forbidden: /api/social/group-chats/19850157/members/138/role/
+WARNING 2026-10-29 11:19:49,759 log Forbidden: /api/social/group-chats/19850157/members/140/role/
+WARNING 2026-10-29 11:19:49,785 log Forbidden: /api/social/group-chats/19850157/ban_user/
+.WARNING 2026-10-29 11:19:49,981 log Forbidden: /api/social/group-chats/46457114/members/bulk-add/
+WARNING 2026-10-29 11:19:50,033 log Bad Request: /api/social/group-chats/46457114/members/bulk-add/
+.WARNING 2026-10-29 11:19:50,224 log Forbidden: /api/social/group-chats/10831372/members/bulk-remove/
+WARNING 2026-10-29 11:19:50,246 log Bad Request: /api/social/group-chats/10831372/members/bulk-remove/
+.WARNING 2026-10-29 11:19:50,441 log Forbidden: /api/social/chat-invite-links/
+.WARNING 2026-10-29 11:19:50,596 log Bad Request: /api/social/chat-tags/
+WARNING 2026-10-29 11:19:50,654 log Bad Request: /api/social/chat-tag-assignments/
+WARNING 2026-10-29 11:19:50,663 log Not Found: /api/social/chat-tag-assignments/1/
+.WARNING 2026-10-29 11:19:50,901 log Not Found: /api/social/chat-join-requests/1/
+..WARNING 2026-10-29 11:19:51,309 log Forbidden: /api/social/group-chats/57292248/roles/
+WARNING 2026-10-29 11:19:51,424 log Bad Request: /api/social/group-chats/57292248/roles/4/
+.WARNING 2026-10-29 11:19:51,668 log Forbidden: /api/social/chat-slow-modes/
+WARNING 2026-10-29 11:19:51,707 log Bad Request: /api/social/chat-slow-modes/1/
+WARNING 2026-10-29 11:19:51,762 log Bad Request: /api/social/chat-slow-modes/1/
+.WARNING 2026-10-29 11:19:51,977 log Forbidden: /api/social/messages/7/attachments/upload/
+WARNING 2026-10-29 11:19:52,068 log Bad Request: /api/social/messages/7/attachments/upload/
+.WARNING 2026-10-29 11:19:52,246 log Forbidden: /api/social/chats/80000002/events/
+.....WARNING 2026-10-29 11:19:53,001 log Not Found: /api/social/chat-folders/1/
+....WARNING 2026-10-29 11:19:53,550 log Bad Request: /api/social/group-chats/80000002/
+WARNING 2026-10-29 11:19:53,577 log Forbidden: /api/social/group-chats/80000002/
+WARNING 2026-10-29 11:19:53,605 log Forbidden: /api/social/group-chats/80000002/delete_group_chat/
+......WARNING 2026-10-29 11:19:54,792 log Not Found: /api/social/chat-invite-links/2/revoke/
+WARNING 2026-10-29 11:19:54,811 log Not Found: /api/social/chat-invite-links/2/
+WARNING 2026-10-29 11:19:54,913 log Bad Request: /api/social/chat-invite-links/2/
+.WARNING 2026-10-29 11:19:55,181 log Bad Request: /api/social/group-chats/80000002/ban_user/
+...WARNING 2026-10-29 11:19:55,770 log Bad Request: /api/social/messages/26/edit/
+.WARNING 2026-10-29 11:19:55,864 log Not Found: /api/social/chat-bans/7/
+WARNING 2026-10-29 11:19:55,877 log Not Found: /api/social/chat-bans/7/
+WARNING 2026-10-29 11:19:55,945 log Bad Request: /api/social/chat-bans/7/
+...WARNING 2026-10-29 11:19:58,063 log Conflict: /api/social/messages/29/edit/
+....WARNING 2026-10-29 11:19:59,176 log Bad Request: /api/social/private-chats/80000001/settings/
+........WARNING 2026-10-29 11:20:01,400 log Not Found: /api/social/messages/search/
+................WARNING 2026-10-29 11:20:08,670 log Forbidden: /api/social/posts/8/comments/7/
+.......WARNING 2026-10-29 11:20:09,536 log Bad Request: /api/social/follow/toggle/325/
+.....WARNING 2026-10-29 11:20:09,811 log Forbidden: /api/social/chats/48/messages/
+...WARNING 2026-10-29 11:20:10,061 log Bad Request: /api/social/posts/17/like/
+..........WARNING 2026-10-29 11:20:10,580 log Unauthorized: /api/social/posts/
+.WARNING 2026-10-29 11:20:10,620 log Bad Request: /api/social/posts/
+.WARNING 2026-10-29 11:20:10,642 log Unauthorized: /api/social/posts/
+.......WARNING 2026-10-29 11:20:11,426 log Forbidden: /api/social/posts/39/
+......WARNING 2026-10-29 11:20:11,894 log Method Not Allowed: /api/anime/audit-anime/
+WARNING 2026-10-29 11:20:11,898 log Method Not Allowed: /api/anime/audit-anime/
+.WARNING 2026-10-29 11:20:12,065 log Unauthorized: /api/users/profile/
+WARNING 2026-10-29 11:20:12,071 log Unauthorized: /api/users/token/refresh/
+..WARNING 2026-10-29 11:20:12,144 log Bad Request: /api/users/clear-cache/
+...WARNING 2026-10-29 11:20:13,026 log Forbidden: /api/social/messages/111/forward/
+...WARNING 2026-10-29 11:20:13,106 log Not Found: /api/users/profile-media/avatars/hidden-avatar.txt
+WARNING 2026-10-29 11:20:13,109 log Not Found: /data/media/avatars/hidden-avatar.txt
+..WARNING 2026-10-29 11:20:13,227 log Unauthorized: /api/users/profile/
+.WARNING 2026-10-29 11:20:13,236 log Not Found: /api/users/profile/99999999/
+..WARNING 2026-10-29 11:20:13,370 log Unauthorized: /api/users/profile/
+...WARNING 2026-10-29 11:20:13,446 log Gone: /api/users/realtime/
+...WARNING 2026-10-29 11:20:13,499 log Conflict: /api/users/sync-settings/
+.WARNING 2026-10-29 11:20:13,522 log Unauthorized: /api/users/token/refresh/
+.WARNING 2026-10-29 11:20:13,543 log Not Found: /api/social/news/4/
+...............WARNING 2026-10-29 11:20:14,827 log Bad Request: /api/anime/franchises/
+..WARNING 2026-10-29 11:20:14,892 log Unauthorized: /api/anime/43/clip/
+.WARNING 2026-10-29 11:20:14,904 log Not Found: /api/anime/no-such-title/
+.....ERROR 2026-10-29 11:20:14,995 log Service Unavailable: /health/ready/
+......Socket authorization batch failed; access denied
+..........................
+----------------------------------------------------------------------
+Ran 191 tests in 137.732s
+
+OK
+Found 191 test(s).
+System check identified no issues (0 silenced).

@@ -1,0 +1,608 @@
+{
+  "repeats": [
+    {
+      "path": "/anime?section=catalog",
+      "calls": [
+        "GET /api/anime/?page=1&page_size=50&ordering=-score&group_franchises=true",
+        "GET /api/seo/page/?path=%2Fanime%3Fsection%3Dcatalog",
+        "GET /api/social/posts/?pending=true&page_size=100",
+        "GET /api/users/profile/",
+        "GET /api/anime/catalog-settings/",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/users/theme-settings/",
+        "POST /api/users/heartbeat/",
+        "GET /api/playlists/favorites/anime/ids/",
+        "GET /api/anime/genres/",
+        "GET /api/anime/types/",
+        "GET /api/notifications/settings/",
+        "GET /api/social/chats/unread/"
+      ],
+      "trace": [
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/anime/?page=1&page_size=50&ordering=-score&group_franchises=true",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/seo/page/?path=%2Fanime%3Fsection%3Dcatalog",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/social/posts/?pending=true&page_size=100",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/users/profile/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/anime/catalog-settings/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/users/heartbeat/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/users/privacy-settings/me/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/users/theme-settings/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/playlists/favorites/anime/ids/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/anime/genres/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/anime/types/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/notifications/settings/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/social/chats/unread/",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "path": "/anime?section=ongoings",
+      "calls": [
+        "GET /api/social/posts/?pending=true&page_size=100",
+        "GET /api/users/profile/",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/users/theme-settings/",
+        "POST /api/users/heartbeat/",
+        "GET /api/notifications/settings/",
+        "GET /api/notifications/notifications/count/",
+        "GET /api/notifications/notifications/recent/",
+        "GET /api/notifications/reminders/upcoming/",
+        "GET /api/social/chats/unread/",
+        "GET /api/seo/page/?path=%2Fanime%3Fsection%3Dongoings",
+        "GET /api/anime/?page=1&page_size=50&ordering=-score&status=ongoing",
+        "GET /api/playlists/favorites/anime/ids/",
+        "GET /api/anime/genres/",
+        "GET /api/anime/types/"
+      ],
+      "trace": [
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/social/posts/?pending=true&page_size=100",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/users/profile/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/users/privacy-settings/me/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/users/theme-settings/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/users/heartbeat/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/notifications/settings/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/notifications/notifications/count/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/notifications/notifications/recent/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/notifications/reminders/upcoming/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/social/chats/unread/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/seo/page/?path=%2Fanime%3Fsection%3Dongoings",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/anime/?page=1&page_size=50&ordering=-score&status=ongoing",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/playlists/favorites/anime/ids/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/anime/genres/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/anime/types/",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "path": "/anime?section=calendar",
+      "calls": [
+        "GET /api/anime/calendar/?timezone=Europe%2FMoscow",
+        "GET /api/social/posts/?pending=true&page_size=100",
+        "GET /api/users/profile/",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/users/theme-settings/",
+        "POST /api/users/heartbeat/",
+        "GET /api/notifications/settings/",
+        "GET /api/social/chats/unread/",
+        "GET /api/notifications/notifications/count/",
+        "GET /api/notifications/notifications/recent/",
+        "GET /api/notifications/reminders/upcoming/",
+        "GET /api/seo/page/?path=%2Fanime%3Fsection%3Dcalendar",
+        "GET /api/notifications/reminders/?page_size=50"
+      ],
+      "trace": [
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/anime/calendar/?timezone=Europe%2FMoscow",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/social/posts/?pending=true&page_size=100",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/users/profile/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/users/privacy-settings/me/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/users/theme-settings/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/users/heartbeat/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/notifications/settings/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/social/chats/unread/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/notifications/notifications/count/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/notifications/notifications/recent/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/notifications/reminders/upcoming/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/seo/page/?path=%2Fanime%3Fsection%3Dcalendar",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/notifications/reminders/?page_size=50",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "path": "/feed",
+      "calls": [
+        "GET /api/social/feed/extended/?page=1&page_size=20&sort=new&date_range=all",
+        "GET /api/users/profile/",
+        "GET /api/social/posts/?pending=true&page_size=100",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/users/theme-settings/",
+        "POST /api/users/heartbeat/",
+        "GET /api/notifications/settings/",
+        "GET /api/social/chats/unread/",
+        "GET /api/notifications/notifications/count/",
+        "GET /api/notifications/notifications/recent/",
+        "GET /api/notifications/reminders/upcoming/",
+        "GET /api/seo/page/?path=%2Ffeed",
+        "GET /api/social/feed/matching-channels/?limit=5"
+      ],
+      "trace": [
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/social/feed/extended/?page=1&page_size=20&sort=new&date_range=all",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/users/profile/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/social/posts/?pending=true&page_size=100",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/users/privacy-settings/me/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/users/heartbeat/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/users/theme-settings/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/notifications/settings/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/social/chats/unread/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/notifications/notifications/count/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/notifications/notifications/recent/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/notifications/reminders/upcoming/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/seo/page/?path=%2Ffeed",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/social/feed/matching-channels/?limit=5",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "path": "/chats",
+      "calls": [
+        "GET /api/social/private-chats/",
+        "GET /api/users/profile/",
+        "GET /api/social/posts/?pending=true&page_size=100",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/users/theme-settings/",
+        "POST /api/users/heartbeat/",
+        "GET /api/notifications/settings/",
+        "GET /api/social/chats/unread/",
+        "GET /api/notifications/notifications/count/",
+        "GET /api/notifications/notifications/recent/",
+        "GET /api/notifications/reminders/upcoming/",
+        "GET /api/seo/page/?path=%2Fchats",
+        "GET /api/social/group-chats/"
+      ],
+      "trace": [
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/social/private-chats/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/users/profile/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/social/posts/?pending=true&page_size=100",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/users/privacy-settings/me/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/users/theme-settings/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/users/heartbeat/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/notifications/settings/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/social/chats/unread/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/notifications/notifications/count/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/notifications/notifications/recent/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/notifications/reminders/upcoming/",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/seo/page/?path=%2Fchats",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:4398/api/social/group-chats/",
+          "status": 200
+        }
+      ]
+    }
+  ],
+  "overflow": [
+    {
+      "path": "/admin",
+      "width": 390,
+      "scroll": 390,
+      "offenders": [
+        {
+          "tag": "BUTTON",
+          "class": "tab-btn",
+          "right": 495,
+          "width": 109
+        },
+        {
+          "tag": "svg",
+          "class": {},
+          "right": 421,
+          "width": 18
+        },
+        {
+          "tag": "path",
+          "class": {},
+          "right": 418,
+          "width": 13
+        },
+        {
+          "tag": "SPAN",
+          "class": "",
+          "right": 479,
+          "width": 51
+        },
+        {
+          "tag": "BUTTON",
+          "class": "tab-btn",
+          "right": 640,
+          "width": 140
+        },
+        {
+          "tag": "svg",
+          "class": {},
+          "right": 533,
+          "width": 18
+        },
+        {
+          "tag": "path",
+          "class": {},
+          "right": 528,
+          "width": 7
+        },
+        {
+          "tag": "path",
+          "class": {},
+          "right": 530,
+          "width": 11
+        }
+      ]
+    },
+    {
+      "path": "/admin/complaints",
+      "width": 390,
+      "scroll": 390,
+      "offenders": [
+        {
+          "tag": "BUTTON",
+          "class": "tab-btn",
+          "right": 495,
+          "width": 109
+        },
+        {
+          "tag": "svg",
+          "class": {},
+          "right": 421,
+          "width": 18
+        },
+        {
+          "tag": "path",
+          "class": {},
+          "right": 418,
+          "width": 13
+        },
+        {
+          "tag": "SPAN",
+          "class": "",
+          "right": 479,
+          "width": 51
+        },
+        {
+          "tag": "BUTTON",
+          "class": "tab-btn",
+          "right": 640,
+          "width": 140
+        },
+        {
+          "tag": "svg",
+          "class": {},
+          "right": 533,
+          "width": 18
+        },
+        {
+          "tag": "path",
+          "class": {},
+          "right": 528,
+          "width": 7
+        },
+        {
+          "tag": "path",
+          "class": {},
+          "right": 530,
+          "width": 11
+        }
+      ]
+    },
+    {
+      "path": "/admin/franchises",
+      "width": 390,
+      "scroll": 390,
+      "offenders": [
+        {
+          "tag": "BUTTON",
+          "class": "tab-btn",
+          "right": 495,
+          "width": 109
+        },
+        {
+          "tag": "svg",
+          "class": {},
+          "right": 421,
+          "width": 18
+        },
+        {
+          "tag": "path",
+          "class": {},
+          "right": 418,
+          "width": 13
+        },
+        {
+          "tag": "SPAN",
+          "class": "",
+          "right": 479,
+          "width": 51
+        },
+        {
+          "tag": "BUTTON",
+          "class": "tab-btn",
+          "right": 640,
+          "width": 140
+        },
+        {
+          "tag": "svg",
+          "class": {},
+          "right": 533,
+          "width": 18
+        },
+        {
+          "tag": "path",
+          "class": {},
+          "right": 528,
+          "width": 7
+        },
+        {
+          "tag": "path",
+          "class": {},
+          "right": 530,
+          "width": 11
+        }
+      ]
+    }
+  ]
+}

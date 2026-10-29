@@ -1,0 +1,12 @@
+WARNING 2026-10-29 13:23:09,048 log Not Found: /unknown/does-not-exist
+................Socket authorization batch failed; access denied
+..........................
+----------------------------------------------------------------------
+Ran 246 tests in 292.775s
+
+OK
+Found 246 test(s).
+System check identified no issues (0 silenced).
+CHAT_RESTORE_SQL 101 messages: preview=23, restore=68
+CHAT_LIST_SQL private: 1 chat=9, 8 chats=9
+CHAT_LIST_SQL group: 1 chat=11, 8 chats=11

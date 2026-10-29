@@ -1,0 +1,202 @@
+{
+  "date": "2026-10-29",
+  "certified_for_6000_active_users": false,
+  "budget_rub_per_month": 10000,
+  "backend": {
+    "mysql_tests": 246,
+    "passed": true,
+    "seconds": 292.775,
+    "final_retained_code": true,
+    "extra_global_auth_projection_and_fanout_before_final_suite": {
+      "tests": 21,
+      "passed": true,
+      "seconds": 13.091
+    },
+    "final_modules": [
+      "core",
+      "apps.social.application.test_conversations",
+      "apps.social.application.test_live_projection",
+      "apps.social.application.test_consumer_isolation",
+      "apps.social.application.test_chat_startup",
+      "apps.social.application.test_chat_extensions",
+      "apps.social.application.test_chat_query_budgets",
+      "apps.users.test_privacy_data_management",
+      "apps.users.test_review_regressions",
+      "apps.users.test_release_auth",
+      "apps.users.test_query_budgets",
+      "apps.anime.test_performance_regressions",
+      "apps.seo.tests"
+    ],
+    "result_log": "backend-final-regressions.txt"
+  },
+  "frontend": {
+    "full_suite_before_final_pending_watcher_fix": {
+      "files": 91,
+      "tests": 283,
+      "passed": true
+    },
+    "final_targeted_after_fix": {
+      "files": 4,
+      "tests": 21,
+      "passed": true
+    },
+    "types_build_lint": true,
+    "bundle": {
+      "entry_js_bytes": 148227,
+      "entry_css_bytes": 70960,
+      "passed": true
+    }
+  },
+  "deployment_validation": {
+    "compose_roles": [
+      "app",
+      "data",
+      "workers",
+      "edge"
+    ],
+    "compose_config_quiet": true,
+    "nginx_gateway_and_rendered_tls_edge_syntax": true,
+    "remote_deployment": false,
+    "environment_examples_visible_to_git": true
+  },
+  "migration": {
+    "name": "social.0038_post_feed_sort_index",
+    "rehearsed_on_posts": 60000,
+    "model_state_drift": false,
+    "local_applied": true,
+    "local_migration_and_schema_checks": true
+  },
+  "backup": {
+    "path": "backend/data/backups/before-capacity-fixes-20261029-104424.sql",
+    "bytes": 84830859,
+    "sha256": "28B635C6E61BD186CAB85878D4AE8985B60705D5BAEC85CF7145A19F3D057299",
+    "git_ignored": true
+  },
+  "local_http_smoke": [
+    {
+      "Url": "http://127.0.0.1:8000/health/ready/",
+      "Status": 200,
+      "Milliseconds": 777.4
+    },
+    {
+      "Url": "http://localhost:5173/health/ready/",
+      "Status": 200,
+      "Milliseconds": 156.3
+    },
+    {
+      "Url": "http://localhost:5173/api/anime/?page_size=20",
+      "Status": 200,
+      "Milliseconds": 161.9
+    }
+  ],
+  "load": {
+    "final_result": "mixed-120-in-large-room-group-expiry.json",
+    "target_users": 120,
+    "first_stage_passed": true,
+    "second_stage_passed": false,
+    "6000_ramp_before_last_optimizations": "ramp-6000.json",
+    "production_soak_passed": false,
+    "room_members": 2000,
+    "large_room_ramp_before_group_expiry_fix": "ramp-large-rooms-parallel-db.json",
+    "load_snapshot_before_final_expiry_guard_and_revocation_test": true
+  },
+  "cleanup": {
+    "isolated_containers_network_volume_removed": true,
+    "working_services_and_backups_preserved": true,
+    "temporary_credential_and_dummy_certificate_files_removed": false,
+    "temporary_files_removal_blocked_reason": "Automatic approval review: blocked by policy (both broad and individual-file deletion rejected)",
+    "temporary_schema_dump_inside_actual_mysql_removed": true
+  },
+  "source_sha256": {
+    "backend/core/socket_auth.py": "ee8635520f771b50f3efda4453b508155f4b98929e6a83c7beac305aa5da437b",
+    "backend/core/socket_credentials.py": "48136670af34ebd8261fd5f3bea815b34c8b2bb6087fc02377a42221301f0124",
+    "backend/core/socket_limits.py": "40ede035f29f5a938f4e2bc7a5d97609bac4cceb6029aadc3ffb2039bff0e16e",
+    "backend/core/group_events.py": "234fe24d8c910c5b6a1067b22113cee35bf9d42dfecb349a3e0d04f8a889d219",
+    "backend/core/asgi_limits.py": "4d820c9283bc0878521bf5ba04cf4f1fb95d434d5513f2f38773e40f30c9a878",
+    "backend/apps/social/application/live_projection.py": "383c07f120cd41f5f731e582334da7c4835aaa5cce226a4299facf987c5f0c87",
+    "backend/apps/social/application/conversations.py": "73fe30eabea2c208d425f15f903cb164f3d9e9a26e53bcc580253b9c65c2ef2a",
+    "backend/apps/social/application/conversation_consumer.py": "27846d8f89548b465f90434d6f3430e01f35faaf9710f9d63acb0c592f4fa5d5",
+    "backend/apps/social/application/consumers.py": "f21acaf204d47b9b735dc3153038981de9640e174ffddbcbe4695add67fe8b5f",
+    "backend/apps/social/application/tasks_chat.py": "5102fc11ba3c00493a4ab12da0b3269c2fd055a71a7c2cacc861403f8fcb2e20",
+    "backend/apps/social/application/post_feed.py": "150d0626a95c1279de71ef3c06089c40bed8c0a2b3807001078cd1772106a957",
+    "backend/apps/social/migrations/0038_post_feed_sort_index.py": "af1e6d80788281fa8e8c09fb9f5687b9bfd127f640e33d6d815a8b9c8c42fe0d",
+    "frontend/src/lib/chatSummaryEvents.ts": "62ce4f40508466c6104602427bebea4e47551578b6cc1e178406f04b6068335b",
+    "frontend/src/lib/chatTimeline.ts": "0b9291087490198a07cf254de098c5b0b94fe24f96ee72cd426a2c39f3f0763f",
+    "frontend/src/stores/posts.ts": "0245db3ed6f4428b7b0ff5e0e4574e1d7f03a6c283a6553f2764b56622bb1c05",
+    "frontend/src/composables/useGlobalWebSocket.ts": "bfc25df78e3c2df17ad71fa65f9d7a51f5890ce843467e4c6fef179c73dbbdc6",
+    "frontend/src/composables/useOnlineHeartbeat.ts": "bce152a8cdb0d13b40bce0a62c84e86db8bf351c94e780f53a660ce6f7311b59",
+    "frontend/src/components/page/feed/FeedView.vue": "a16ace272bee5b323be9873eda1084134056b7b96b384291a1bd64120a302a8a",
+    "backend/core/mysql_tls.py": "170dfd9c7023c03d708068a58c5ebb8a50eeff07b872e3cffc5e16473378cb60",
+    "backend/core/db/backends/mysql/base.py": "8fe29d2cb09631a89e2ede76b69aa458ef97cb84330f4ebd3774a633ecaa7f29",
+    "backend/core/channel_layer.py": "fe02549996b21bb076f6f9fb49aae748ddba09983fe67f6f8203a7048dae8706",
+    "backend/core/test_mysql_tls.py": "8ee6c5a4d07d4910f881f3efc55ec522ea283d09c84fa1e80d7893b00f1403c9",
+    "backend/core/test_group_events.py": "2a940e2b900890f62121d585a52b445fc7998a7efe00425bfe6829c47798e7e5",
+    "backend/apps/social/application/test_consumer_isolation.py": "3dc6359629267eac1fdb7ab26d07a82e2d5265c200c494542ac013a71ba7f08c",
+    "backend/config/settings.py": "eac083ac8446be1908cfd93be5c96e45be488354032c4e9aa7ec49dfee25186a",
+    "backend/config/settings_chat_test.py": "4c05574c302fd05deb0f9427ef7aec87b372701227b015fa5a2e171f5b097b7e",
+    ".gitignore": "32f940a2c05dce3dbbd98eced76843d38914327c7420b65532b8d3fcc69d7255",
+    ".env.example": "e7a428c6939bf63a652db204917e4ab56f146692a0268dfb44ce0a7909867f25",
+    "backend/apps/social/application/test_conversations.py": "7dd8fc2ae68a6f22c08118570d2f7a68782b8c870bde387ed03f7bfeb3bb7df6",
+    "backend/apps/social/application/test_live_projection.py": "dba33143d44d3d353f8f568403918d32cc75bc5bc0420936737a5780c4a729e9",
+    "deploy/env/app.env.example": "cc9377996e169b912f5471b80f425c616030dc5634bb121396fa6314934c9318",
+    "deploy/env/workers.env.example": "fc57d3d37fe80caf216ab6873bb76bcc8fb9a91f0444c87875a31ba0da96a971",
+    "deploy/env/data.env.example": "033cfad6b6501e31d3dbf3bcd432c967f1837d42871e3ae1c68d5f95824e1f8d",
+    "deploy/env/edge.env.example": "30361f3ed1f5fdbbfd39079b7d08a26b18386c066b80e16c3ff047031560df2c"
+  },
+  "budget_is_optimization_constraint": false,
+  "chat_profile": "Several rooms with thousands of members and rooms with hundreds; optimize common bottlenecks without unnecessary complexity.",
+  "tls_connection_benchmark": {
+    "file": "tls-connection-comparison.json",
+    "new_connections_each": 20,
+    "cpu_before_ms": 938.2901,
+    "cpu_after_ms": 262.58380000000005,
+    "cpu_reduction_percent": 72.01,
+    "tls_policy_preserved": true,
+    "scope": "New connection and SELECT 1/close only; not whole-site speedup"
+  },
+  "redis_fanout_benchmark": {
+    "file": "group-fanout-comparison.json",
+    "groups": 2000,
+    "live_groups": 120,
+    "recipient_checks_each_round": true,
+    "median_before_ms": 704.4666090077953,
+    "median_after_ms": 98.13037299318239,
+    "scope": "Unique-prefix Redis transport; not HTTP/Celery/DB end-to-end"
+  },
+  "group_lifecycle": {
+    "expiry_seconds": 300,
+    "refresh_threshold_seconds": 90,
+    "minimum_configured_expiry_seconds": 120,
+    "live_groups_refreshed_on_authenticated_serialized_heartbeat": true,
+    "real_redis_expired_and_renewed_members_test": true,
+    "rolling_upgrade_two_phase_required": true,
+    "production_redis_flushed": false
+  },
+  "local_runtime": {
+    "engine": "core.db.backends.mysql",
+    "connection": "CachedTLSConnection",
+    "socket": "SSLSocket",
+    "conn_max_age": 0,
+    "group_expiry": 300,
+    "model_migration_state_drift": false,
+    "restarted_services": [
+      "anilux_backend",
+      "anilux_celery_worker",
+      "anilux_celery_beat",
+      "animecore-download_worker-1",
+      "animecore-catalog_import_worker-1"
+    ],
+    "active_application_jobs_before_restart": 0
+  },
+  "discarded_experiments": [
+    "20 ms auth window",
+    "Custom Channels dispatch",
+    "Combined auth/ACL/projection callback: fewer SQL did not improve end-to-end SLO"
+  ],
+  "runtime_versions": {
+    "Django": "5.2.18",
+    "PyMySQL": "1.2.3",
+    "channels": "4.3.2",
+    "channels-redis": "4.3.0"
+  }
+}

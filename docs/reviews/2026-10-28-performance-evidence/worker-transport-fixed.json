@@ -1,0 +1,21 @@
+{
+  "downloadAdmission": 202,
+  "download": {
+    "statuses": [
+      200
+    ],
+    "bytes": 1620
+  },
+  "importAdmission": 202,
+  "import": {
+    "status": "ready",
+    "current": 2,
+    "total": 2
+  },
+  "nginxRange": {
+    "status": 206,
+    "contentRange": "bytes 2-4/10",
+    "body": "234"
+  },
+  "internalDirectStatus": 404
+}

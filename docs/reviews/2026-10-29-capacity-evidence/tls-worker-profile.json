@@ -1,0 +1,368 @@
+{
+  "identity": "animecore-capacity-isolated",
+  "node": "api1",
+  "profile": [
+    {
+      "function": "~:0:<method 'poll' of 'select.epoll' objects>",
+      "calls": 4321,
+      "self_ms": 22867.456517000002,
+      "cumulative_ms": 22867.456517000002
+    },
+    {
+      "function": "~:0:<method 'send' of '_socket.socket' objects>",
+      "calls": 1521,
+      "self_ms": 5104.984591,
+      "cumulative_ms": 5104.984591
+    },
+    {
+      "function": "~:0:<method 'recv' of '_socket.socket' objects>",
+      "calls": 2327,
+      "self_ms": 1406.081419,
+      "cumulative_ms": 1406.081419
+    },
+    {
+      "function": "/usr/local/lib/python3.11/asyncio/base_events.py:1859:_run_once",
+      "calls": 4321,
+      "self_ms": 270.42899400000005,
+      "cumulative_ms": 35012.805177
+    },
+    {
+      "function": "~:0:<method 'modify' of 'select.epoll' objects>",
+      "calls": 1010,
+      "self_ms": 206.506038,
+      "cumulative_ms": 206.506038
+    },
+    {
+      "function": "~:0:<method 'shutdown' of '_socket.socket' objects>",
+      "calls": 65,
+      "self_ms": 169.431317,
+      "cumulative_ms": 169.431317
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/redis/asyncio/connection.py:630:pack_command",
+      "calls": 1016,
+      "self_ms": 164.481795,
+      "cumulative_ms": 214.908978
+    },
+    {
+      "function": "/usr/local/lib/python3.11/asyncio/selector_events.py:737:_process_events",
+      "calls": 4321,
+      "self_ms": 99.283073,
+      "cumulative_ms": 109.994979
+    },
+    {
+      "function": "/usr/local/lib/python3.11/selectors.py:451:select",
+      "calls": 4321,
+      "self_ms": 91.93586300000001,
+      "cumulative_ms": 22984.135293000003
+    },
+    {
+      "function": "/usr/local/lib/python3.11/pprint.py:554:_safe_repr",
+      "calls": 14820,
+      "self_ms": 88.933642,
+      "cumulative_ms": 134.01549400000002
+    },
+    {
+      "function": "~:0:<method 'run' of '_contextvars.Context' objects>",
+      "calls": 13875,
+      "self_ms": 88.619244,
+      "cumulative_ms": 11560.883354000001
+    },
+    {
+      "function": "~:0:<function socket.close at 0x7e99e7f35800>",
+      "calls": 65,
+      "self_ms": 74.37806200000001,
+      "cumulative_ms": 74.37806200000001
+    },
+    {
+      "function": "~:0:<method 'unregister' of 'select.epoll' objects>",
+      "calls": 65,
+      "self_ms": 67.755982,
+      "cumulative_ms": 67.755982
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/django/db/models/base.py:616:__getstate__",
+      "calls": 479,
+      "self_ms": 61.602963,
+      "cumulative_ms": 76.988082
+    },
+    {
+      "function": "/usr/local/lib/python3.11/asyncio/base_events.py:781:_call_soon",
+      "calls": 11482,
+      "self_ms": 57.336866,
+      "cumulative_ms": 110.467777
+    },
+    {
+      "function": "/usr/local/lib/python3.11/asyncio/events.py:35:__init__",
+      "calls": 12438,
+      "self_ms": 56.941498,
+      "cumulative_ms": 63.328992
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/redis/asyncio/connection.py:1139:get_connection",
+      "calls": 1016,
+      "self_ms": 56.441085,
+      "cumulative_ms": 285.157661
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/redis/asyncio/retry.py:37:call_with_retry",
+      "calls": 2031,
+      "self_ms": 53.72329200000001,
+      "cumulative_ms": 5010.421102
+    },
+    {
+      "function": "~:0:<built-in method _nvx_xormasker.nvx_xormask_set_impl>",
+      "calls": 93,
+      "self_ms": 53.046915,
+      "cumulative_ms": 53.046915
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/asgiref/sync.py:457:__call__",
+      "calls": 1644,
+      "self_ms": 52.28584,
+      "cumulative_ms": 333.509762
+    },
+    {
+      "function": "/usr/local/lib/python3.11/asyncio/events.py:82:_run",
+      "calls": 13803,
+      "self_ms": 52.060902000000006,
+      "cumulative_ms": 11612.944256
+    },
+    {
+      "function": "/usr/local/lib/python3.11/asyncio/base_events.py:752:call_soon",
+      "calls": 11482,
+      "self_ms": 51.966485000000006,
+      "cumulative_ms": 188.109891
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/click/termui.py:641:style",
+      "calls": 3444,
+      "self_ms": 49.14596,
+      "cumulative_ms": 63.61407500000001
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/redis/asyncio/client.py:667:execute_command",
+      "calls": 2031,
+      "self_ms": 48.185922000000005,
+      "cumulative_ms": 5436.667092000001
+    },
+    {
+      "function": "/usr/local/lib/python3.11/asyncio/base_futures.py:14:isfuture",
+      "calls": 8476,
+      "self_ms": 47.84916700000001,
+      "cumulative_ms": 59.794125
+    }
+  ],
+  "worker_profile": [
+    {
+      "function": "~:0:<method 'read' of '_ssl._SSLSocket' objects>",
+      "calls": 2654,
+      "self_ms": 4410.967697,
+      "cumulative_ms": 4410.967697
+    },
+    {
+      "function": "~:0:<method 'write' of '_ssl._SSLSocket' objects>",
+      "calls": 2762,
+      "self_ms": 4379.9392960000005,
+      "cumulative_ms": 4379.9392960000005
+    },
+    {
+      "function": "/capacity/capacity_asgi.py:15:count_sql",
+      "calls": 1457,
+      "self_ms": 4049.6050710000004,
+      "cumulative_ms": 11907.884531999998
+    },
+    {
+      "function": "~:0:<method 'do_handshake' of '_ssl._SSLSocket' objects>",
+      "calls": 256,
+      "self_ms": 2518.2486930000005,
+      "cumulative_ms": 2518.2486930000005
+    },
+    {
+      "function": "~:0:<built-in method _socket.getaddrinfo>",
+      "calls": 256,
+      "self_ms": 972.1243120000001,
+      "cumulative_ms": 975.6308060000002
+    },
+    {
+      "function": "~:0:<method 'connect' of '_socket.socket' objects>",
+      "calls": 256,
+      "self_ms": 663.457131,
+      "cumulative_ms": 663.457131
+    },
+    {
+      "function": "~:0:<method 'sendall' of '_socket.socket' objects>",
+      "calls": 401,
+      "self_ms": 608.8717689999997,
+      "cumulative_ms": 608.8717689999997
+    },
+    {
+      "function": "~:0:<method '_wrap_socket' of '_ssl._SSLContext' objects>",
+      "calls": 256,
+      "self_ms": 546.0908310000001,
+      "cumulative_ms": 546.0908310000001
+    },
+    {
+      "function": "~:0:<method 'settimeout' of '_socket.socket' objects>",
+      "calls": 1300,
+      "self_ms": 449.2077320000001,
+      "cumulative_ms": 449.2077320000001
+    },
+    {
+      "function": "~:0:<function socket.close at 0x7e99e7f35800>",
+      "calls": 512,
+      "self_ms": 438.66114100000004,
+      "cumulative_ms": 438.66114100000004
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/pymysql/connections.py:1429:_read_row_from_packet",
+      "calls": 3451,
+      "self_ms": 379.97896100000014,
+      "cumulative_ms": 955.5446349999999
+    },
+    {
+      "function": "/usr/local/lib/python3.11/socket.py:220:__init__",
+      "calls": 512,
+      "self_ms": 366.1984509999998,
+      "cumulative_ms": 366.1984509999998
+    },
+    {
+      "function": "~:0:<method 'acquire' of '_thread.lock' objects>",
+      "calls": 148,
+      "self_ms": 363.525977,
+      "cumulative_ms": 363.525977
+    },
+    {
+      "function": "~:0:<method 'recv_into' of '_socket.socket' objects>",
+      "calls": 256,
+      "self_ms": 362.0789200000001,
+      "cumulative_ms": 362.0789200000001
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/pymysql/protocol.py:163:read_length_coded_string",
+      "calls": 446330,
+      "self_ms": 352.6218039999998,
+      "cumulative_ms": 875.311549
+    },
+    {
+      "function": "~:0:<method 'recv' of '_socket.socket' objects>",
+      "calls": 277,
+      "self_ms": 285.23954200000014,
+      "cumulative_ms": 285.23954200000014
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/pymysql/connections.py:763:_read_packet",
+      "calls": 39286,
+      "self_ms": 276.658237,
+      "cumulative_ms": 6284.548500000002
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/pymysql/protocol.py:61:read",
+      "calls": 306362,
+      "self_ms": 262.44170299999985,
+      "cumulative_ms": 295.16956999999996
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/django/db/models/sql/compiler.py:230:get_select",
+      "calls": 1503,
+      "self_ms": 251.17301099999995,
+      "cumulative_ms": 1754.2566080000004
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/django/db/models/base.py:462:__init__",
+      "calls": 4418,
+      "self_ms": 245.54413600000004,
+      "cumulative_ms": 591.5913409999997
+    },
+    {
+      "function": "~:0:<built-in method builtins.getattr>",
+      "calls": 319548,
+      "self_ms": 239.4977520000003,
+      "cumulative_ms": 501.0775340000001
+    },
+    {
+      "function": "/capacity/capacity_asgi.py:23:validate",
+      "calls": 106,
+      "self_ms": 235.93292599999998,
+      "cumulative_ms": 11636.343365000002
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/pymysql/protocol.py:144:read_length_encoded_integer",
+      "calls": 449140,
+      "self_ms": 231.4363340000001,
+      "cumulative_ms": 231.99472700000013
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/django/db/models/expressions.py:538:identity",
+      "calls": 6163,
+      "self_ms": 218.31818199999998,
+      "cumulative_ms": 588.5015380000002
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/django/db/models/sql/query.py:1465:build_filter",
+      "calls": 2983,
+      "self_ms": 199.47888599999996,
+      "cumulative_ms": 1386.3422590000007
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/pymysql/connections.py:1448:_get_descriptions",
+      "calls": 1178,
+      "self_ms": 181.84903699999987,
+      "cumulative_ms": 1527.3606020000002
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/pymysql/protocol.py:236:_parse_field_descriptor",
+      "calls": 30717,
+      "self_ms": 171.793888,
+      "cumulative_ms": 785.0538979999999
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/django/db/models/expressions.py:1319:as_sql",
+      "calls": 35414,
+      "self_ms": 165.10733399999998,
+      "cumulative_ms": 406.84627199999994
+    },
+    {
+      "function": "/app/core/socket_auth.py:53:validate_batch",
+      "calls": 106,
+      "self_ms": 162.658524,
+      "cumulative_ms": 11400.213236999998
+    },
+    {
+      "function": "~:0:<built-in method builtins.isinstance>",
+      "calls": 463816,
+      "self_ms": 161.50857600000006,
+      "cumulative_ms": 214.42307199999993
+    },
+    {
+      "function": "~:0:<method '__reduce_ex__' of 'object' objects>",
+      "calls": 6934,
+      "self_ms": 148.24369099999998,
+      "cumulative_ms": 177.64362400000005
+    },
+    {
+      "function": "/usr/local/lib/python3.11/inspect.py:3059:_bind",
+      "calls": 6163,
+      "self_ms": 147.12214999999998,
+      "cumulative_ms": 195.1004110000001
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/django/db/models/sql/query.py:1974:trim_joins",
+      "calls": 4299,
+      "self_ms": 146.69478900000004,
+      "cumulative_ms": 160.56959899999995
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/django/db/models/sql/compiler.py:572:compile",
+      "calls": 43244,
+      "self_ms": 145.9755420000001,
+      "cumulative_ms": 1615.0286099999998
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/django/db/models/sql/query.py:378:clone",
+      "calls": 7976,
+      "self_ms": 139.97830100000004,
+      "cumulative_ms": 433.47963200000015
+    }
+  ]
+}

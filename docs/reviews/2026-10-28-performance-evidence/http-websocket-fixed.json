@@ -1,0 +1,103 @@
+{
+  "environment": {
+    "appCpuLimit": 2,
+    "mysqlCpuLimit": 2,
+    "users": 100,
+    "anime": 10000
+  },
+  "phases": [
+    {
+      "name": "cached guest catalog",
+      "requests": 375,
+      "elapsedSeconds": 14.978163900000002,
+      "requestsPerSecond": 25.036446556710462,
+      "p50Ms": 21.680699999999888,
+      "p95Ms": 45.5403,
+      "p99Ms": 74.96540000000005,
+      "statuses": {
+        "200": 375
+      }
+    },
+    {
+      "name": "cached authenticated catalog 25rps",
+      "requests": 250,
+      "elapsedSeconds": 9.986260300000001,
+      "requestsPerSecond": 25.034396509772527,
+      "p50Ms": 50.44130000000223,
+      "p95Ms": 151.23579999999856,
+      "p99Ms": 202.88839999999982,
+      "statuses": {
+        "200": 250
+      }
+    },
+    {
+      "name": "cached authenticated catalog 50rps",
+      "requests": 500,
+      "elapsedSeconds": 10.601823499999998,
+      "requestsPerSecond": 47.16169817390377,
+      "p50Ms": 414.0601999999999,
+      "p95Ms": 978.6617000000042,
+      "p99Ms": 1049.5930000000008,
+      "statuses": {
+        "200": 500
+      }
+    },
+    {
+      "name": "cached authenticated catalog 100rps",
+      "requests": 1000,
+      "elapsedSeconds": 10.5356941,
+      "requestsPerSecond": 94.91543608882873,
+      "p50Ms": 368.3972999999969,
+      "p95Ms": 1579.3349000000017,
+      "p99Ms": 1839.1140000000014,
+      "statuses": {
+        "200": 442,
+        "503": 558
+      }
+    },
+    {
+      "name": "authenticated contact-only user search",
+      "requests": 200,
+      "elapsedSeconds": 10.029904900000002,
+      "requestsPerSecond": 19.940368527322722,
+      "p50Ms": 66.6394999999975,
+      "p95Ms": 182.20190000000002,
+      "p99Ms": 230.17289999999775,
+      "statuses": {
+        "200": 200
+      }
+    },
+    {
+      "name": "uncached catalog keys",
+      "requests": 25,
+      "elapsedSeconds": 5.0356434000000005,
+      "requestsPerSecond": 4.964608891884599,
+      "p50Ms": 180.30279999999766,
+      "p95Ms": 402.8935999999958,
+      "p99Ms": 515.4288000000015,
+      "statuses": {
+        "200": 25
+      }
+    }
+  ],
+  "websockets": {
+    "opened": 100,
+    "openAndDeliveryMs": 10733.434499999996,
+    "socketErrors": [],
+    "stillOpen": 100,
+    "targetReceived": 30,
+    "otherReceived": 0,
+    "sessionValidationDelta": 30
+  },
+  "resources": {
+    "session_validations": 1523,
+    "max_rss_mib": 251.3125,
+    "threads": 15,
+    "cpu_seconds": 111.8403411
+  },
+  "asyncRange": {
+    "status": 206,
+    "contentRange": "bytes 2-4/10",
+    "body": "234"
+  }
+}

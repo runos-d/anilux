@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-29",
+  "backend_tests_passed": 114,
+  "frontend_tests_passed": 269,
+  "targeted_after_bootstrap_change": 11,
+  "build": true,
+  "typecheck": true,
+  "lint": true,
+  "entry_js_bytes": 146955,
+  "entry_css_bytes": 70960,
+  "local_backup_bytes": 83784982,
+  "local_backup_restored_and_migrations_rehearsed": true,
+  "local_migrations_applied": true,
+  "local_readiness": {
+    "database": "ok",
+    "cache": "ok",
+    "channels": "ok"
+  },
+  "dedicated_queues_consumed": true,
+  "test_environment_removed": true,
+  "local_backup_sha256": "bbcbd298caa655cb01409f593dea6c9c574214916f634e50771fbc45b501206d",
+  "local_api_proxy_verified": true,
+  "latest_targeted_tests_passed": 15,
+  "local_websocket_proxy_guest_status": 403
+}

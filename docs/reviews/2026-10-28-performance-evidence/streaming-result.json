@@ -1,0 +1,1 @@
+{"chunks_produced_before_first_send": 128, "total_bytes_consumed": 8388608, "first_chunk_bytes": 65536, "warnings": ["StreamingHttpResponse must consume synchronous iterators in order to serve them asynchronously. Use an asynchronous iterator instead."]}

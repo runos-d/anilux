@@ -1,0 +1,17 @@
+[
+  {
+    "Url": "http://127.0.0.1:8000/health/ready/",
+    "Status": 200,
+    "Milliseconds": 777.4
+  },
+  {
+    "Url": "http://localhost:5173/health/ready/",
+    "Status": 200,
+    "Milliseconds": 156.3
+  },
+  {
+    "Url": "http://localhost:5173/api/anime/?page_size=20",
+    "Status": 200,
+    "Milliseconds": 161.9
+  }
+]

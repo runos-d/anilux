@@ -1,0 +1,4 @@
+Operations to perform:
+  Apply all migrations: admin, anime, auth, contenttypes, django_celery_results, dubs, ideas, notifications, playlists, reactor, seo, sessions, social, studios, token_blacklist, users
+Running migrations:
+  Applying social.0038_post_feed_sort_index... OK

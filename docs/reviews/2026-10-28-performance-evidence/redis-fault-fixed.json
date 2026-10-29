@@ -1,0 +1,46 @@
+{
+  "down": {
+    "ready": {
+      "status": 503,
+      "ms": 1603.06,
+      "retryAfter": null
+    },
+    "live": {
+      "status": 200,
+      "ms": 38.26,
+      "retryAfter": null
+    },
+    "apiFirst": {
+      "status": 503,
+      "ms": 69.54,
+      "retryAfter": "5"
+    },
+    "apiSecond": {
+      "status": 503,
+      "ms": 29.22,
+      "retryAfter": "5"
+    }
+  },
+  "recovered": {
+    "ready": {
+      "status": 200,
+      "ms": 154.38,
+      "retryAfter": null
+    },
+    "live": {
+      "status": 200,
+      "ms": 34.87,
+      "retryAfter": null
+    },
+    "apiFirst": {
+      "status": 200,
+      "ms": 327.96,
+      "retryAfter": null
+    },
+    "apiSecond": {
+      "status": 200,
+      "ms": 46.1,
+      "retryAfter": null
+    }
+  }
+}

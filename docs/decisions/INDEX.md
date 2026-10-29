@@ -26,3 +26,6 @@ D0023,Подписка на серии следует членству в кол
 D0024,Календарное напоминание связано с устойчивым релизом,"catalog, notifications, api-contracts",active
 D0028,Общая живая SEO-проекция Django для HTTP и Vue,"seo, catalog, access-control",active
 D0029,Первая версия закрывает необязательные модули и использует email-only auth,"release, access-control, api-contracts",active
+D0030,Внешняя аналитика требует явного согласия и не использует идентификацию пользователя,"frontend, integrations, access-control, data-integrity, api-contracts",active
+D0031,Пакетировать текущие WS-проверки без кеширования решений доступа,"realtime, access-control, performance, api-contracts",active
+D0032,Переиспользовать неизменяемый TLS context MySQL без кеширования соединений,"performance, data-integrity, verification",active

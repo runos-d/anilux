@@ -1,0 +1,32 @@
+[
+  {
+    "base": "http://localhost:8000",
+    "status": 200,
+    "ms": 2227
+  },
+  {
+    "base": "http://localhost:8000",
+    "status": 200,
+    "ms": 2076
+  },
+  {
+    "base": "http://127.0.0.1:8000",
+    "status": 200,
+    "ms": 18
+  },
+  {
+    "base": "http://127.0.0.1:8000",
+    "status": 200,
+    "ms": 46
+  },
+  {
+    "base": "http://localhost:5173",
+    "status": 200,
+    "ms": 102
+  },
+  {
+    "base": "http://localhost:5173",
+    "status": 200,
+    "ms": 20
+  }
+]

@@ -1,0 +1,310 @@
+{
+  "errors": [],
+  "routes": [
+    {
+      "path": "/",
+      "requests": [
+        "GET /api/anime/home/?v=episodes-v1",
+        "GET /api/seo/page/?path=%2F",
+        "GET /api/anime/1/",
+        "GET /api/social/posts/?pending=true&page_size=100",
+        "GET /api/users/profile/",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/users/theme-settings/",
+        "POST /api/users/heartbeat/",
+        "GET /api/playlists/favorites/anime/ids/",
+        "GET /api/notifications/settings/",
+        "GET /api/social/chats/unread/"
+      ],
+      "dom": 431,
+      "overflow": false,
+      "longTasks": [
+        786,
+        519,
+        605,
+        190
+      ],
+      "paint": [
+        {
+          "name": "first-paint",
+          "ms": 168
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 1128
+        }
+      ]
+    },
+    {
+      "path": "/anime?section=catalog",
+      "requests": [
+        "GET /api/anime/?page=1&page_size=50&ordering=-score&group_franchises=true",
+        "GET /api/seo/page/?path=%2Fanime%3Fsection%3Dcatalog",
+        "GET /api/social/posts/?pending=true&page_size=100",
+        "GET /api/users/profile/",
+        "GET /api/anime/catalog-settings/",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/users/theme-settings/",
+        "POST /api/users/heartbeat/",
+        "GET /api/playlists/favorites/anime/ids/",
+        "GET /api/anime/genres/",
+        "GET /api/anime/types/",
+        "GET /api/notifications/settings/",
+        "GET /api/social/chats/unread/"
+      ],
+      "dom": 393,
+      "overflow": false,
+      "longTasks": [
+        318,
+        50,
+        113,
+        67,
+        59,
+        135,
+        222
+      ],
+      "paint": [
+        {
+          "name": "first-paint",
+          "ms": 308
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 728
+        }
+      ]
+    },
+    {
+      "path": "/anime?section=calendar",
+      "requests": [
+        "GET /api/anime/calendar/?timezone=Europe%2FMoscow",
+        "GET /api/social/posts/?pending=true&page_size=100",
+        "GET /api/users/profile/",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/users/theme-settings/",
+        "POST /api/users/heartbeat/",
+        "GET /api/notifications/notifications/count/",
+        "GET /api/notifications/notifications/recent/",
+        "GET /api/notifications/reminders/upcoming/",
+        "GET /api/notifications/settings/",
+        "GET /api/seo/page/?path=%2Fanime%3Fsection%3Dcalendar",
+        "GET /api/notifications/reminders/?page_size=50",
+        "GET /api/social/chats/unread/"
+      ],
+      "dom": 451,
+      "overflow": false,
+      "longTasks": [
+        201,
+        599,
+        80,
+        103,
+        77,
+        141
+      ],
+      "paint": [
+        {
+          "name": "first-paint",
+          "ms": 500
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 1160
+        }
+      ]
+    },
+    {
+      "path": "/feed",
+      "requests": [
+        "GET /api/social/feed/extended/?page=1&page_size=20&sort=new&date_range=all",
+        "GET /api/users/profile/",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/playlists/favorites/anime/ids/",
+        "GET /api/social/posts/?pending=true&page_size=100",
+        "GET /api/users/theme-settings/",
+        "POST /api/users/heartbeat/",
+        "GET /api/notifications/notifications/count/",
+        "GET /api/notifications/notifications/recent/",
+        "GET /api/notifications/reminders/upcoming/",
+        "GET /api/seo/page/?path=%2Ffeed",
+        "GET /api/social/feed/matching-channels/?limit=5",
+        "GET /api/notifications/settings/",
+        "GET /api/social/chats/unread/"
+      ],
+      "dom": 436,
+      "overflow": false,
+      "longTasks": [
+        358,
+        86,
+        470,
+        255
+      ],
+      "paint": [
+        {
+          "name": "first-paint",
+          "ms": 348
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 784
+        }
+      ]
+    },
+    {
+      "path": "/chats",
+      "requests": [
+        "GET /api/social/private-chats/",
+        "GET /api/users/profile/",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/playlists/favorites/anime/ids/",
+        "GET /api/social/posts/?pending=true&page_size=100",
+        "GET /api/users/theme-settings/",
+        "POST /api/users/heartbeat/",
+        "GET /api/notifications/settings/",
+        "GET /api/notifications/notifications/count/",
+        "GET /api/notifications/notifications/recent/",
+        "GET /api/notifications/reminders/upcoming/",
+        "GET /api/seo/page/?path=%2Fchats",
+        "GET /api/social/chats/unread/",
+        "GET /api/social/group-chats/"
+      ],
+      "dom": 302,
+      "overflow": false,
+      "longTasks": [
+        479,
+        72,
+        61,
+        98
+      ],
+      "paint": [
+        {
+          "name": "first-paint",
+          "ms": 332
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 888
+        }
+      ]
+    },
+    {
+      "path": "/settings",
+      "requests": [
+        "GET /api/users/profile/",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/playlists/favorites/anime/ids/",
+        "GET /api/social/posts/?pending=true&page_size=100",
+        "GET /api/users/theme-settings/",
+        "POST /api/users/heartbeat/",
+        "GET /api/notifications/notifications/count/",
+        "GET /api/notifications/notifications/recent/",
+        "GET /api/notifications/reminders/upcoming/",
+        "GET /api/seo/page/?path=%2Fsettings",
+        "GET /api/users/me/",
+        "GET /api/notifications/settings/",
+        "GET /api/social/chats/unread/"
+      ],
+      "dom": 373,
+      "overflow": false,
+      "longTasks": [
+        450,
+        61,
+        123,
+        143
+      ],
+      "paint": [
+        {
+          "name": "first-paint",
+          "ms": 248
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 748
+        }
+      ]
+    },
+    {
+      "path": "/anime/1-fioletovyy-sad/watch?episode=5",
+      "requests": [
+        "GET /api/seo/page/?path=%2Fanime%2F1-fioletovyy-sad%2Fwatch%3Fepisode%3D5",
+        "GET /api/anime/1-fioletovyy-sad/",
+        "GET /api/social/posts/?pending=true&page_size=100",
+        "GET /api/users/profile/",
+        "GET /api/anime/1/kodik_translations/",
+        "GET /api/anime/1/custom_dubs/",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/users/theme-settings/",
+        "POST /api/users/heartbeat/",
+        "GET /api/playlists/favorites/anime/ids/",
+        "GET /api/notifications/settings/",
+        "POST /api/anime/active-tab/",
+        "GET /api/anime/franchises/1/",
+        "GET /api/social/chats/unread/"
+      ],
+      "dom": 649,
+      "overflow": false,
+      "longTasks": [
+        498,
+        119,
+        64,
+        72,
+        60,
+        127,
+        286,
+        60,
+        330
+      ],
+      "paint": [
+        {
+          "name": "first-paint",
+          "ms": 240
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 912
+        }
+      ]
+    }
+  ],
+  "feed": [
+    {
+      "step": 0,
+      "batches": 1,
+      "cards": 9,
+      "dom": 1184,
+      "longTasks": [
+        64
+      ],
+      "heap": 12715489
+    },
+    {
+      "step": 4,
+      "batches": 3,
+      "cards": 9,
+      "dom": 1184,
+      "longTasks": [
+        64
+      ],
+      "heap": 14756146
+    },
+    {
+      "step": 9,
+      "batches": 6,
+      "cards": 9,
+      "dom": 1184,
+      "longTasks": [
+        64
+      ],
+      "heap": 17009052
+    },
+    {
+      "step": 15,
+      "batches": 9,
+      "cards": 9,
+      "dom": 1184,
+      "longTasks": [
+        64
+      ],
+      "heap": 23782883
+    }
+  ]
+}

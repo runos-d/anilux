@@ -1,0 +1,480 @@
+{
+  "errors": [],
+  "routes": [
+    {
+      "path": "/",
+      "requests": [
+        "GET /api/anime/home/?v=episodes-v1",
+        "GET /api/social/posts/?pending=true&page_size=100",
+        "GET /api/users/profile/",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/users/theme-settings/",
+        "POST /api/users/heartbeat/",
+        "GET /api/notifications/notifications/count/",
+        "GET /api/notifications/notifications/recent/",
+        "GET /api/notifications/reminders/upcoming/",
+        "GET /api/seo/page/?path=%2F",
+        "GET /api/anime/home/?v=episodes-v1",
+        "GET /api/notifications/settings/",
+        "GET /api/social/posts/?pending=true&page_size=100"
+      ],
+      "dom": 415,
+      "overflow": false,
+      "longTasks": [
+        73,
+        73,
+        442,
+        442,
+        2656,
+        55,
+        2656,
+        55,
+        94,
+        60,
+        74,
+        66,
+        812,
+        89,
+        135,
+        51,
+        94,
+        60,
+        74,
+        66,
+        812,
+        89,
+        135,
+        51,
+        66,
+        138,
+        1582,
+        66,
+        138,
+        1582,
+        269,
+        96,
+        185,
+        68,
+        53,
+        62,
+        74,
+        269,
+        96,
+        185,
+        68,
+        53,
+        62,
+        74,
+        1730,
+        1816,
+        76,
+        116,
+        66,
+        92,
+        1730,
+        1816,
+        76,
+        116,
+        66,
+        92,
+        401,
+        136,
+        279,
+        140,
+        208,
+        277,
+        5111,
+        521,
+        401,
+        136,
+        279,
+        140,
+        208,
+        277,
+        5111,
+        521
+      ],
+      "paint": [
+        {
+          "name": "first-paint",
+          "ms": 4188
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 7616
+        }
+      ]
+    },
+    {
+      "path": "/anime?section=catalog",
+      "requests": [
+        "GET /api/anime/?page=1&page_size=50&ordering=-score&group_franchises=true",
+        "GET /api/social/posts/?pending=true&page_size=100",
+        "GET /api/users/profile/",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/users/theme-settings/",
+        "POST /api/users/heartbeat/",
+        "GET /api/notifications/settings/",
+        "GET /api/notifications/notifications/count/",
+        "GET /api/notifications/notifications/recent/",
+        "GET /api/notifications/reminders/upcoming/"
+      ],
+      "dom": 382,
+      "overflow": false,
+      "longTasks": [
+        574,
+        574,
+        53,
+        62,
+        53,
+        62,
+        2687,
+        2687,
+        67,
+        67,
+        210,
+        210,
+        170,
+        50,
+        170,
+        50,
+        123,
+        123,
+        515,
+        72,
+        59,
+        515,
+        72,
+        59,
+        903,
+        75,
+        903,
+        75
+      ],
+      "paint": [
+        {
+          "name": "first-paint",
+          "ms": 6548
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 9964
+        }
+      ]
+    },
+    {
+      "path": "/anime?section=calendar",
+      "requests": [
+        "GET /api/anime/calendar/?timezone=Europe%2FMoscow",
+        "GET /api/social/posts/?pending=true&page_size=100",
+        "GET /api/users/profile/",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/users/theme-settings/",
+        "POST /api/users/heartbeat/",
+        "GET /api/notifications/settings/",
+        "GET /api/notifications/notifications/count/",
+        "GET /api/notifications/notifications/recent/",
+        "GET /api/notifications/reminders/upcoming/",
+        "GET /api/seo/page/?path=%2Fanime%3Fsection%3Dcalendar",
+        "GET /api/notifications/reminders/?page_size=50",
+        "GET /api/anime/calendar/?timezone=Europe%2FMoscow",
+        "GET /api/social/chats/unread/"
+      ],
+      "dom": 441,
+      "overflow": false,
+      "longTasks": [
+        792,
+        792,
+        227,
+        227,
+        687,
+        687
+      ],
+      "paint": [
+        {
+          "name": "first-paint",
+          "ms": 680
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 1840
+        }
+      ]
+    },
+    {
+      "path": "/feed",
+      "requests": [
+        "GET /api/social/feed/extended/?page=1&page_size=20&sort=new&date_range=all",
+        "GET /api/users/profile/",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/playlists/favorites/anime/ids/",
+        "GET /api/social/posts/?pending=true&page_size=100",
+        "GET /api/users/profile/",
+        "GET /api/users/theme-settings/",
+        "POST /api/users/heartbeat/",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/notifications/settings/",
+        "GET /api/notifications/notifications/count/",
+        "GET /api/notifications/notifications/recent/",
+        "GET /api/notifications/reminders/upcoming/"
+      ],
+      "dom": 426,
+      "overflow": false,
+      "longTasks": [
+        105,
+        105,
+        2021,
+        2021,
+        404,
+        142,
+        404,
+        142,
+        69,
+        69,
+        391,
+        391,
+        68,
+        79,
+        152,
+        68,
+        79,
+        152,
+        627,
+        627
+      ],
+      "paint": [
+        {
+          "name": "first-paint",
+          "ms": 1624
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 4020
+        }
+      ]
+    },
+    {
+      "path": "/chats",
+      "requests": [
+        "GET /api/social/private-chats/",
+        "GET /api/users/profile/",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/playlists/favorites/anime/ids/",
+        "GET /api/social/posts/?pending=true&page_size=100",
+        "GET /api/users/profile/",
+        "GET /api/users/theme-settings/",
+        "POST /api/users/heartbeat/",
+        "GET /api/notifications/settings/",
+        "GET /api/notifications/notifications/count/",
+        "GET /api/notifications/notifications/recent/",
+        "GET /api/notifications/reminders/upcoming/",
+        "GET /api/users/privacy-settings/me/"
+      ],
+      "dom": 285,
+      "overflow": false,
+      "longTasks": [
+        126,
+        126,
+        1016,
+        1016,
+        299,
+        299,
+        87,
+        87,
+        149,
+        149,
+        62,
+        62,
+        490,
+        55,
+        181,
+        490,
+        55,
+        181,
+        393,
+        393
+      ],
+      "paint": [
+        {
+          "name": "first-paint",
+          "ms": 1532
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 2860
+        }
+      ]
+    },
+    {
+      "path": "/settings",
+      "requests": [
+        "GET /api/users/profile/",
+        "POST /api/users/heartbeat/",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/playlists/favorites/anime/ids/",
+        "GET /api/social/posts/?pending=true&page_size=100",
+        "GET /api/users/profile/",
+        "GET /api/users/theme-settings/",
+        "GET /api/notifications/settings/",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/notifications/notifications/count/",
+        "GET /api/notifications/notifications/recent/",
+        "GET /api/notifications/reminders/upcoming/",
+        "GET /api/seo/page/?path=%2Fsettings",
+        "GET /api/users/me/",
+        "GET /api/social/chats/unread/"
+      ],
+      "dom": 362,
+      "overflow": false,
+      "longTasks": [
+        1790,
+        1790,
+        103,
+        103,
+        63,
+        63,
+        201,
+        201,
+        349,
+        349
+      ],
+      "paint": [
+        {
+          "name": "first-paint",
+          "ms": 640
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 2968
+        }
+      ]
+    },
+    {
+      "path": "/anime/1-fioletovyy-sad/watch?episode=5",
+      "requests": [
+        "GET /api/social/posts/?pending=true&page_size=100",
+        "GET /api/users/profile/",
+        "GET /api/users/privacy-settings/me/",
+        "GET /api/users/theme-settings/",
+        "POST /api/users/heartbeat/",
+        "GET /api/notifications/notifications/count/",
+        "GET /api/notifications/notifications/recent/",
+        "GET /api/notifications/reminders/upcoming/",
+        "GET /api/notifications/settings/",
+        "GET /api/seo/page/?path=%2Fanime%2F1-fioletovyy-sad%2Fwatch%3Fepisode%3D5",
+        "GET /api/playlists/favorites/anime/ids/",
+        "GET /api/anime/1-fioletovyy-sad/",
+        "GET /api/users/library/check_anime/?anime_id=1",
+        "GET /api/anime/1/kodik_translations/",
+        "GET /api/social/chats/unread/",
+        "GET /api/anime/1/custom_dubs/",
+        "GET /api/social/posts/?pending=true&page_size=100",
+        "GET /api/anime/1/episode-progress/"
+      ],
+      "dom": 507,
+      "overflow": false,
+      "longTasks": [
+        62,
+        62,
+        598,
+        598,
+        114,
+        114,
+        274,
+        94,
+        274,
+        94,
+        213,
+        213,
+        240,
+        176,
+        240,
+        176,
+        150,
+        150,
+        90,
+        90
+      ],
+      "paint": [
+        {
+          "name": "first-paint",
+          "ms": 1060
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 1760
+        }
+      ]
+    }
+  ],
+  "feed": [
+    {
+      "step": 0,
+      "batches": 2,
+      "cards": 20,
+      "dom": 1973,
+      "longTasks": [
+        103,
+        103,
+        151,
+        151,
+        66,
+        66,
+        50,
+        50
+      ],
+      "heap": 13134203
+    },
+    {
+      "step": 4,
+      "batches": 4,
+      "cards": 60,
+      "dom": 4853,
+      "longTasks": [
+        193,
+        153,
+        193,
+        153,
+        186,
+        161,
+        186,
+        161
+      ],
+      "heap": 17184961
+    },
+    {
+      "step": 9,
+      "batches": 6,
+      "cards": 100,
+      "dom": 7733,
+      "longTasks": [
+        234,
+        153,
+        234,
+        153,
+        168,
+        169,
+        168,
+        169
+      ],
+      "heap": 21529983
+    },
+    {
+      "step": 15,
+      "batches": 9,
+      "cards": 160,
+      "dom": 12053,
+      "longTasks": [
+        53,
+        53,
+        341,
+        144,
+        341,
+        144,
+        68,
+        68
+      ],
+      "heap": 25589764
+    }
+  ]
+}

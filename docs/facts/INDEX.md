@@ -45,3 +45,8 @@ F0043,Release-функции закрыты fail-closed флагами на back
 F0044,Жалоба сохраняет доказательства и применяет единое решение модерации,"posts, notifications, data-integrity, frontend, verification",active
 F0045,Полностью избранная франшиза сворачивается в одну карточку коллекции,"catalog, data-integrity, api-contracts, frontend, verification",active
 F0046,Доска идей связывает публичный просмотр с управляемым статусным процессом,"frontend, api-contracts, access-control, data-integrity, seo, verification",active
+F0047,"Аналитика работает только после согласия, а данные аккаунта имеют единый lifecycle","frontend, integrations, api-contracts, access-control, data-integrity, verification, documentation",active
+F0048,JWT отзывается вместе с серверной сессией,"access-control, realtime, verification",active
+F0049,Повторное ревью производительности 28 октября 2026,"performance, verification",active
+F0050,Исправлены узкие места повторного ревью и первая навигация Vite,"performance, frontend, realtime, verification, release",active
+F0051,Подготовка к 6000 активных пользователей пока не прошла смешанную нагрузку,"performance, realtime, verification",active

@@ -1,0 +1,174 @@
+{
+  "target_users": 6000,
+  "fixture": {
+    "rooms": 100,
+    "posts": 60000,
+    "anime": 10000
+  },
+  "limits": {
+    "api_processes": 4,
+    "cpu_each": 1,
+    "memory_each_mib": 1024
+  },
+  "stages": [],
+  "generator": {
+    "event_loop_p95_ms": 33.619967,
+    "event_loop_max_ms": 620.232703,
+    "rss_mib": 190.6796875
+  },
+  "stop_reason": "Connection ramp exceeded 2% failures/closures",
+  "ramp_seconds": 296.45027719999996,
+  "connections": {
+    "users": 4544,
+    "opens": 8880,
+    "initialized_chat": 4433,
+    "currently_open": 8880,
+    "failures": 208,
+    "closes": 208,
+    "handshake": {
+      "count": 8880,
+      "p50_ms": 708.9308999999998,
+      "p95_ms": 1995.5530000000144,
+      "max_ms": 5407.9295000000275
+    },
+    "snapshot": {
+      "count": 4433,
+      "p50_ms": 2407.5319000000018,
+      "p95_ms": 4763.204299999983,
+      "max_ms": 8751.655499999993
+    },
+    "nodes": [
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api1",
+        "sql": 31675,
+        "auth_batches": 2247,
+        "auth_records": 30614,
+        "max_rss_mib": 256.07421875,
+        "threads": 15,
+        "cpu_seconds": 271.1376886,
+        "active": {
+          "http": 0,
+          "websocket": 2201
+        },
+        "pending_handshakes": 0
+      },
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api2",
+        "sql": 30923,
+        "auth_batches": 2427,
+        "auth_records": 30459,
+        "max_rss_mib": 254.921875,
+        "threads": 15,
+        "cpu_seconds": 264.8330445,
+        "active": {
+          "http": 0,
+          "websocket": 2203
+        },
+        "pending_handshakes": 0
+      },
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api3",
+        "sql": 31188,
+        "auth_batches": 2350,
+        "auth_records": 30697,
+        "max_rss_mib": 255.41015625,
+        "threads": 15,
+        "cpu_seconds": 268.1291991,
+        "active": {
+          "http": 0,
+          "websocket": 2204
+        },
+        "pending_handshakes": 0
+      },
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api4",
+        "sql": 32064,
+        "auth_batches": 2319,
+        "auth_records": 30767,
+        "max_rss_mib": 261.6796875,
+        "threads": 15,
+        "cpu_seconds": 274.5673071,
+        "active": {
+          "http": 0,
+          "websocket": 2272
+        },
+        "pending_handshakes": 0
+      }
+    ]
+  },
+  "final": {
+    "opens": 8880,
+    "init": 4433,
+    "failures": 208,
+    "closes": 208,
+    "frameErrors": 0,
+    "deliveries": 0,
+    "open_sockets": 8880,
+    "nodes": [
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api1",
+        "sql": 31675,
+        "auth_batches": 2248,
+        "auth_records": 30716,
+        "max_rss_mib": 256.07421875,
+        "threads": 15,
+        "cpu_seconds": 271.1569103,
+        "active": {
+          "http": 0,
+          "websocket": 2201
+        },
+        "pending_handshakes": 0
+      },
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api2",
+        "sql": 30929,
+        "auth_batches": 2428,
+        "auth_records": 30498,
+        "max_rss_mib": 254.921875,
+        "threads": 15,
+        "cpu_seconds": 264.94779,
+        "active": {
+          "http": 0,
+          "websocket": 2203
+        },
+        "pending_handshakes": 0
+      },
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api3",
+        "sql": 31191,
+        "auth_batches": 2350,
+        "auth_records": 30697,
+        "max_rss_mib": 255.41015625,
+        "threads": 15,
+        "cpu_seconds": 268.156004,
+        "active": {
+          "http": 0,
+          "websocket": 2204
+        },
+        "pending_handshakes": 0
+      },
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api4",
+        "sql": 32067,
+        "auth_batches": 2319,
+        "auth_records": 30767,
+        "max_rss_mib": 261.6796875,
+        "threads": 15,
+        "cpu_seconds": 274.5830419,
+        "active": {
+          "http": 0,
+          "websocket": 2272
+        },
+        "pending_handshakes": 0
+      }
+    ]
+  }
+}

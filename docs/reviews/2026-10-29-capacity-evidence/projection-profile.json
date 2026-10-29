@@ -1,0 +1,8 @@
+{
+  "users": 60,
+  "before_queries": 1021,
+  "after_queries": 7,
+  "before_ms": 1716.2299219926354,
+  "after_ms": 33.745685999747366,
+  "equal": true
+}

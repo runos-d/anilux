@@ -1,0 +1,273 @@
+{
+  "target_users": 2000,
+  "fixture": {
+    "rooms": 100,
+    "posts": 60000,
+    "anime": 10000
+  },
+  "limits": {
+    "api_processes": 4,
+    "cpu_each": 1,
+    "memory_each_mib": 1024
+  },
+  "stages": [
+    {
+      "http_rps": 30,
+      "chat_messages_per_second": 2,
+      "seconds": 20,
+      "http_sent": 600,
+      "http_errors": 473,
+      "statuses": {
+        "200": 127,
+        "503": 341,
+        "network": 132
+      },
+      "chat_sent": 40,
+      "chat_errors": 0,
+      "deliveries": 23,
+      "http": {
+        "count": 600,
+        "p50_ms": 28.337799999979325,
+        "p95_ms": 8010.728499999997,
+        "max_ms": 8017.595499999996
+      },
+      "ack": {
+        "count": 5,
+        "p50_ms": 3002.864600000001,
+        "p95_ms": 8781.670400000003,
+        "max_ms": 8781.670400000003
+      },
+      "delivery": {
+        "count": 23,
+        "p50_ms": 25514.632899999997,
+        "p95_ms": 29891.9473,
+        "max_ms": 29990.988299999997
+      },
+      "nodes": [
+        {
+          "identity": "animecore-capacity-isolated",
+          "node": "api1",
+          "sql": 17165,
+          "auth_batches": 1845,
+          "auth_records": 10537,
+          "max_rss_mib": 246.42578125,
+          "threads": 73,
+          "cpu_seconds": 193.0154586,
+          "active": {
+            "http": 2,
+            "websocket": 1000
+          },
+          "pending_handshakes": 0
+        },
+        {
+          "identity": "animecore-capacity-isolated",
+          "node": "api2",
+          "sql": 17712,
+          "auth_batches": 1832,
+          "auth_records": 10319,
+          "max_rss_mib": 244.83984375,
+          "threads": 76,
+          "cpu_seconds": 194.8863233,
+          "active": {
+            "http": 2,
+            "websocket": 1000
+          },
+          "pending_handshakes": 0
+        },
+        {
+          "identity": "animecore-capacity-isolated",
+          "node": "api3",
+          "sql": 17541,
+          "auth_batches": 1862,
+          "auth_records": 10397,
+          "max_rss_mib": 246.6953125,
+          "threads": 68,
+          "cpu_seconds": 195.592057,
+          "active": {
+            "http": 1,
+            "websocket": 1000
+          },
+          "pending_handshakes": 0
+        },
+        {
+          "identity": "animecore-capacity-isolated",
+          "node": "api4",
+          "sql": 17849,
+          "auth_batches": 1858,
+          "auth_records": 10422,
+          "max_rss_mib": 245.79296875,
+          "threads": 74,
+          "cpu_seconds": 195.7787543,
+          "active": {
+            "http": 4,
+            "websocket": 1000
+          },
+          "pending_handshakes": 0
+        }
+      ],
+      "open_sockets": 4000
+    }
+  ],
+  "generator": {
+    "event_loop_p95_ms": 34.537471,
+    "event_loop_max_ms": 602.931199,
+    "rss_mib": 128.82421875
+  },
+  "ramp_seconds": 206.1439945,
+  "connections": {
+    "users": 2000,
+    "opens": 4000,
+    "initialized_chat": 2000,
+    "currently_open": 4000,
+    "failures": 0,
+    "closes": 0,
+    "handshake": {
+      "count": 4000,
+      "p50_ms": 289.6860999999917,
+      "p95_ms": 719.9061999999976,
+      "max_ms": 1638.7467000000033
+    },
+    "snapshot": {
+      "count": 2000,
+      "p50_ms": 924.8153999999922,
+      "p95_ms": 1768.115300000005,
+      "max_ms": 2941.731599999999
+    },
+    "nodes": [
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api1",
+        "sql": 16463,
+        "auth_batches": 1809,
+        "auth_records": 9232,
+        "max_rss_mib": 190.30078125,
+        "threads": 15,
+        "cpu_seconds": 180.8117007,
+        "active": {
+          "http": 0,
+          "websocket": 1000
+        },
+        "pending_handshakes": 0
+      },
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api2",
+        "sql": 17042,
+        "auth_batches": 1793,
+        "auth_records": 9137,
+        "max_rss_mib": 191.46484375,
+        "threads": 15,
+        "cpu_seconds": 183.6096871,
+        "active": {
+          "http": 0,
+          "websocket": 1000
+        },
+        "pending_handshakes": 0
+      },
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api3",
+        "sql": 16913,
+        "auth_batches": 1831,
+        "auth_records": 9204,
+        "max_rss_mib": 191.92578125,
+        "threads": 15,
+        "cpu_seconds": 183.9793107,
+        "active": {
+          "http": 0,
+          "websocket": 1000
+        },
+        "pending_handshakes": 0
+      },
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api4",
+        "sql": 17164,
+        "auth_batches": 1821,
+        "auth_records": 9205,
+        "max_rss_mib": 190.54296875,
+        "threads": 15,
+        "cpu_seconds": 183.7973061,
+        "active": {
+          "http": 0,
+          "websocket": 1000
+        },
+        "pending_handshakes": 0
+      }
+    ]
+  },
+  "stop_reason": "Stage exceeded SLO: errors 1%, p95 1 second, or missing ACK/recipient delivery",
+  "final": {
+    "opens": 4000,
+    "init": 2000,
+    "failures": 0,
+    "closes": 0,
+    "connectionErrors": {},
+    "closeCodes": {},
+    "frameErrors": 0,
+    "deliveries": 23,
+    "open_sockets": 4000,
+    "nodes": [
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api1",
+        "sql": 17165,
+        "auth_batches": 1845,
+        "auth_records": 10537,
+        "max_rss_mib": 246.42578125,
+        "threads": 73,
+        "cpu_seconds": 193.0168125,
+        "active": {
+          "http": 2,
+          "websocket": 1000
+        },
+        "pending_handshakes": 0
+      },
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api2",
+        "sql": 17712,
+        "auth_batches": 1832,
+        "auth_records": 10319,
+        "max_rss_mib": 244.83984375,
+        "threads": 76,
+        "cpu_seconds": 194.8877962,
+        "active": {
+          "http": 2,
+          "websocket": 1000
+        },
+        "pending_handshakes": 0
+      },
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api3",
+        "sql": 17542,
+        "auth_batches": 1862,
+        "auth_records": 10397,
+        "max_rss_mib": 246.6953125,
+        "threads": 68,
+        "cpu_seconds": 195.6095316,
+        "active": {
+          "http": 1,
+          "websocket": 1000
+        },
+        "pending_handshakes": 0
+      },
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api4",
+        "sql": 17849,
+        "auth_batches": 1859,
+        "auth_records": 10497,
+        "max_rss_mib": 245.79296875,
+        "threads": 74,
+        "cpu_seconds": 195.8079135,
+        "active": {
+          "http": 4,
+          "websocket": 1000
+        },
+        "pending_handshakes": 0
+      }
+    ]
+  }
+}

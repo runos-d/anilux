@@ -1,0 +1,156 @@
+{
+  "identity": "animecore-capacity-isolated",
+  "node": "api1",
+  "profile": [
+    {
+      "function": "~:0:<method 'poll' of 'select.epoll' objects>",
+      "calls": 4607,
+      "self_ms": 22967.827436,
+      "cumulative_ms": 22967.827436
+    },
+    {
+      "function": "~:0:<method 'send' of '_socket.socket' objects>",
+      "calls": 1375,
+      "self_ms": 1374.1457810000002,
+      "cumulative_ms": 1374.1457810000002
+    },
+    {
+      "function": "~:0:<method 'recv' of '_socket.socket' objects>",
+      "calls": 2347,
+      "self_ms": 276.152481,
+      "cumulative_ms": 276.152481
+    },
+    {
+      "function": "/usr/local/lib/python3.11/asyncio/base_events.py:1859:_run_once",
+      "calls": 4597,
+      "self_ms": 138.017737,
+      "cumulative_ms": 27918.355883
+    },
+    {
+      "function": "~:0:<method 'acquire' of '_thread.lock' objects>",
+      "calls": 585,
+      "self_ms": 78.608039,
+      "cumulative_ms": 78.608039
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/asgiref/sync.py:457:__call__",
+      "calls": 1576,
+      "self_ms": 77.87914400000001,
+      "cumulative_ms": 427.113351
+    },
+    {
+      "function": "~:0:<method 'modify' of 'select.epoll' objects>",
+      "calls": 822,
+      "self_ms": 72.537305,
+      "cumulative_ms": 72.537305
+    },
+    {
+      "function": "/usr/local/lib/python3.11/pprint.py:554:_safe_repr",
+      "calls": 7410,
+      "self_ms": 71.116971,
+      "cumulative_ms": 104.199782
+    },
+    {
+      "function": "~:0:<method 'run' of '_contextvars.Context' objects>",
+      "calls": 13273,
+      "self_ms": 67.917879,
+      "cumulative_ms": 4655.010832
+    },
+    {
+      "function": "/usr/local/lib/python3.11/selectors.py:451:select",
+      "calls": 4607,
+      "self_ms": 56.437418,
+      "cumulative_ms": 23038.617607000004
+    },
+    {
+      "function": "/usr/local/lib/python3.11/concurrent/futures/thread.py:161:submit",
+      "calls": 723,
+      "self_ms": 54.716784000000004,
+      "cumulative_ms": 187.53181800000002
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/redis/_parsers/resp2.py:87:_read_response",
+      "calls": 2761,
+      "self_ms": 51.272867,
+      "cumulative_ms": 141.14078000000003
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/channels_redis/core.py:375:receive_single",
+      "calls": 959,
+      "self_ms": 42.855948000000005,
+      "cumulative_ms": 1202.9728350000003
+    },
+    {
+      "function": "/usr/local/lib/python3.11/asyncio/events.py:35:__init__",
+      "calls": 11761,
+      "self_ms": 41.509132,
+      "cumulative_ms": 47.387521
+    },
+    {
+      "function": "~:0:<built-in method builtins.isinstance>",
+      "calls": 84184,
+      "self_ms": 39.990503000000004,
+      "cumulative_ms": 48.416664000000004
+    },
+    {
+      "function": "/usr/local/lib/python3.11/asyncio/events.py:82:_run",
+      "calls": 13181,
+      "self_ms": 35.955218,
+      "cumulative_ms": 4690.485482000001
+    },
+    {
+      "function": "/usr/local/lib/python3.11/asyncio/base_events.py:781:_call_soon",
+      "calls": 11021,
+      "self_ms": 30.561931,
+      "cumulative_ms": 75.145584
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/redis/asyncio/connection.py:630:pack_command",
+      "calls": 934,
+      "self_ms": 30.476542000000002,
+      "cumulative_ms": 56.392071
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/autobahn/util.py:985:hltype",
+      "calls": 597,
+      "self_ms": 29.489509,
+      "cumulative_ms": 59.970742
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/channels_redis/core.py:251:receive",
+      "calls": 1570,
+      "self_ms": 28.567579000000002,
+      "cumulative_ms": 1305.923185
+    },
+    {
+      "function": "~:0:<built-in method posix.stat>",
+      "calls": 100,
+      "self_ms": 28.140429,
+      "cumulative_ms": 28.140429
+    },
+    {
+      "function": "~:0:<built-in method builtins.getattr>",
+      "calls": 21329,
+      "self_ms": 26.666302,
+      "cumulative_ms": 70.262943
+    },
+    {
+      "function": "/usr/local/lib/python3.11/json/encoder.py:205:iterencode",
+      "calls": 348,
+      "self_ms": 26.505749,
+      "cumulative_ms": 26.505749
+    },
+    {
+      "function": "/opt/venv/lib/python3.11/site-packages/click/termui.py:641:style",
+      "calls": 2208,
+      "self_ms": 25.595343000000003,
+      "cumulative_ms": 33.19762
+    },
+    {
+      "function": "/usr/local/lib/python3.11/asyncio/base_events.py:430:create_task",
+      "calls": 1854,
+      "self_ms": 25.375020000000003,
+      "cumulative_ms": 50.096323000000005
+    }
+  ]
+}

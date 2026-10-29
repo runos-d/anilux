@@ -1,0 +1,180 @@
+{
+  "target_users": 6000,
+  "transport": "subprotocol",
+  "unique_recipient_checks": true,
+  "ramp_batch": 32,
+  "fixture": {
+    "rooms": 3,
+    "room_size": 2000,
+    "posts": 60000,
+    "anime": 10000
+  },
+  "limits": {
+    "api_processes": 4,
+    "cpu_each": 1,
+    "memory_each_mib": 1024
+  },
+  "stages": [],
+  "generator": {
+    "event_loop_p95_ms": 35.192831,
+    "event_loop_max_ms": 1364.197375,
+    "rss_mib": 161.2109375
+  },
+  "stop_reason": "Connection ramp exceeded 2% failures/closures",
+  "ramp_seconds": 277.0180123,
+  "connections": {
+    "users": 3616,
+    "opens": 7124,
+    "initialized_chat": 3545,
+    "currently_open": 7124,
+    "failures": 108,
+    "closes": 108,
+    "handshake": {
+      "count": 7124,
+      "p50_ms": 389.32200000001467,
+      "p95_ms": 1216.7895000000135,
+      "max_ms": 6768.540099999998
+    },
+    "snapshot": {
+      "count": 3545,
+      "p50_ms": 1077.8177000000069,
+      "p95_ms": 3060.3528000000224,
+      "max_ms": 11231.265899999999
+    },
+    "nodes": [
+      {
+        "unavailable": true
+      },
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api2",
+        "sql": 36060,
+        "auth_batches": 2863,
+        "auth_records": 28103,
+        "max_rss_mib": 252.46484375,
+        "threads": 15,
+        "cpu_seconds": 231.9932266,
+        "active": {
+          "http": 0,
+          "websocket": 2339
+        },
+        "pending_handshakes": 0,
+        "sync_queue": 0
+      },
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api3",
+        "sql": 22420,
+        "auth_batches": 3158,
+        "auth_records": 20100,
+        "max_rss_mib": 187.3046875,
+        "threads": 15,
+        "cpu_seconds": 155.7088266,
+        "active": {
+          "http": 0,
+          "websocket": 1127
+        },
+        "pending_handshakes": 0,
+        "sync_queue": 0
+      },
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api4",
+        "sql": 35641,
+        "auth_batches": 2839,
+        "auth_records": 28100,
+        "max_rss_mib": 251.65625,
+        "threads": 15,
+        "cpu_seconds": 230.6740905,
+        "active": {
+          "http": 0,
+          "websocket": 2335
+        },
+        "pending_handshakes": 0,
+        "sync_queue": 0
+      }
+    ]
+  },
+  "final": {
+    "opens": 7124,
+    "init": 3545,
+    "failures": 108,
+    "closes": 108,
+    "connectionErrors": {
+      "Unexpected server response: 502": 107,
+      "connect ENOBUFS 127.0.0.1:4386 - Local (undefined:undefined)": 1
+    },
+    "closeCodes": {
+      "1006": 108
+    },
+    "frameErrors": 0,
+    "deliveries": 0,
+    "open_sockets": 7124,
+    "nodes": [
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api1",
+        "sql": 19041,
+        "auth_batches": 1469,
+        "auth_records": 9734,
+        "max_rss_mib": 201.515625,
+        "threads": 15,
+        "cpu_seconds": 128.6747571,
+        "active": {
+          "http": 0,
+          "websocket": 1324
+        },
+        "pending_handshakes": 1,
+        "sync_queue": 0
+      },
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api2",
+        "sql": 36060,
+        "auth_batches": 2863,
+        "auth_records": 28103,
+        "max_rss_mib": 252.46484375,
+        "threads": 15,
+        "cpu_seconds": 231.9949921,
+        "active": {
+          "http": 0,
+          "websocket": 2339
+        },
+        "pending_handshakes": 0,
+        "sync_queue": 0
+      },
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api3",
+        "sql": 22423,
+        "auth_batches": 3159,
+        "auth_records": 20104,
+        "max_rss_mib": 187.3046875,
+        "threads": 15,
+        "cpu_seconds": 155.7196863,
+        "active": {
+          "http": 0,
+          "websocket": 1127
+        },
+        "pending_handshakes": 0,
+        "sync_queue": 0
+      },
+      {
+        "identity": "animecore-capacity-isolated",
+        "node": "api4",
+        "sql": 35641,
+        "auth_batches": 2839,
+        "auth_records": 28100,
+        "max_rss_mib": 251.65625,
+        "threads": 15,
+        "cpu_seconds": 230.6756646,
+        "active": {
+          "http": 0,
+          "websocket": 2335
+        },
+        "pending_handshakes": 0,
+        "sync_queue": 0
+      }
+    ]
+  }
+}

@@ -42,8 +42,8 @@ def page(request, mode='weighted'):
     signature = '&'.join(f'{key}={request.query_params.getlist(key)}' for key in sorted(request.query_params)
                          if key not in ('cursor', 'page', 'page_size', 'include_count'))
     snapshot_mode = mode[:8] + ':' + hashlib.sha256(signature.encode()).hexdigest()[:20]
-    following = set(Follow.objects.filter(follower=user).values_list('following_id', flat=True))
-    groups = set(GroupMembership.objects.filter(user=user).values_list('group_id', flat=True))
+    following = Follow.objects.filter(follower=user).values('following_id')
+    groups = GroupMembership.objects.filter(user=user).values('group_id')
     base = readable_posts(Post.objects.all(), user).exclude(post_type='system').annotate(feed_date=F('feed_sort_at'))
     base = base.exclude(pk__in=UserPostHidden.objects.filter(user=user).values('post_id'))
     base = base.exclude(author_id__in=UserNotInterested.objects.filter(user=user).values('target_user_id'))
@@ -79,7 +79,7 @@ def page(request, mode='weighted'):
     if mode == 'followers':
         base = base.filter(author_id__in=following)
     salt = 'post-feed-bounded-v2'
-    cutoff, boundaries = timezone.now(), {}
+    cutoff, boundaries, position = timezone.now(), {}, {}
     if cursor:
         try:
             position = signing.loads(cursor, salt=salt, max_age=900)
@@ -96,7 +96,7 @@ def page(request, mode='weighted'):
     visible = base.filter(feed_date__lte=cutoff)
     unpinned = visible.exclude(is_pinned=True)
 
-    def read_slice(queryset, key, order):
+    def read_slice(queryset, key, order, size=limit):
         fields = [field.lstrip('-') for field in order]
         boundary = boundaries.get(key)
         if boundary:
@@ -112,12 +112,13 @@ def page(request, mode='weighted'):
                 equal &= Q(**{field: value})
             queryset = queryset.filter(condition)
         offset = 0 if cursor else (old_page - 1) * limit
-        return list(queryset.order_by(*order).values(*fields)[offset:offset + limit + 1])
+        return list(queryset.order_by(*order).values(*fields)[offset:offset + size + 1])
 
     next_boundaries = dict(boundaries)
+    rank_state = {}
     selected, more = [], False
     if mode == 'weighted':
-        own = Q(author_id__in=following | {user.pk})
+        own = Q(author_id=user.pk) | Q(author_id__in=following)
         grouped = Q(group_id__in=groups)
         pools = [read_slice(unpinned.filter(own), '0', ['-feed_date', '-pk']),
                  read_slice(unpinned.exclude(own).filter(grouped), '1', ['-feed_date', '-pk']),
@@ -135,6 +136,27 @@ def page(request, mode='weighted'):
             if len(selected) == previous:
                 break
         more = any(len(pool) > count for pool, count in zip(pools, used))
+    elif order_by[0] not in ('-feed_date', 'feed_date'):
+        # Freeze only a bounded lookahead, not every matching ID. Counter edits
+        # cannot move an unread post out of the next pages in this window. IDs
+        # travel in the signed, viewer-bound cursor; hydration checks live ACL.
+        pending = position.get('rank_pending')
+        if pending is not None and (not isinstance(pending, list) or len(pending) > 200 or
+                                    any(not isinstance(pk, str) or not pk.isdigit() for pk in pending)):
+            raise ValidationError({'cursor': 'Некорректное окно ленты.'})
+        tail = bool(position.get('rank_tail', False))
+        if not pending:
+            rows = read_slice(unpinned, 'all', order_by, size=200)
+            tail = len(rows) > 200
+            rows = rows[:200]
+            pending = [str(row['pk']) for row in rows]
+            if rows:
+                next_boundaries['all'] = [value.isoformat() if hasattr(value, 'isoformat') else str(value) if field == 'pk' else value
+                    for field in [item.lstrip('-') for item in order_by] for value in [rows[-1][field]]]
+        selected = [int(pk) for pk in pending[:limit]]
+        pending = pending[limit:]
+        more = bool(pending or tail)
+        rank_state = {'rank_pending': pending, 'rank_tail': tail}
     else:
         rows = read_slice(unpinned, 'all', order_by)
         more = len(rows) > limit
@@ -147,7 +169,7 @@ def page(request, mode='weighted'):
     ids = [pk for pk in pinned if pk not in selected] + selected
     posts = {post.pk: post for post in read_queryset(visible.filter(pk__in=ids), user)}
     next_cursor = signing.dumps({'mode': snapshot_mode, 'owner': str(user.pk), 'cutoff': cutoff.isoformat(),
-                                 'boundaries': next_boundaries}, salt=salt) if more else None
+                                 'boundaries': next_boundaries, **rank_state}, salt=salt, compress=True) if more else None
     from apps.social.presentation.serializers.social_serializers import FeedPostSerializer
     return {'results': FeedPostSerializer([posts[pk] for pk in ids if pk in posts], many=True, context={'request': request}).data,
             'count': None if request.query_params.get('include_count', 'true').lower() in ('false', '0') else visible.count(),

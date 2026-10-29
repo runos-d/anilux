@@ -532,6 +532,39 @@ class SiteRebuildTests(TestCase):
         ids = [row['id'] for page in (first, second, third) for row in page['results']]
         self.assertEqual(ids, [str(post.pk) for post in reversed(posts)])
 
+    def test_ranked_lookahead_is_bounded_and_continues_beyond_its_window(self):
+        from django.core import signing
+        from apps.social.infrastructure.models.post_lifecycle import PostFeedSnapshot
+        Post.objects.bulk_create([Post(author=self.reader, text=f'rank-window-{i}', likes_count=i) for i in range(230)])
+        expected = [str(pk) for pk in Post.objects.filter(text__startswith='rank-window-')
+                    .order_by('-likes_count').values_list('pk', flat=True)]
+        cursor, ids = None, []
+        for _ in range(3):
+            params = {'page_size': 100, 'include_count': 'false'}
+            if cursor:
+                params['cursor'] = cursor
+            response = self.client.get('/api/social/feed/top/', params)
+            self.assertEqual(response.status_code, 200, response.data)
+            ids.extend(row['id'] for row in response.data['results'])
+            cursor = response.data['next_cursor']
+            if cursor:
+                self.assertLess(len(cursor), 8192)
+                state = signing.loads(cursor, salt='post-feed-bounded-v2')
+                self.assertLessEqual(len(state['rank_pending']), 200)
+        self.assertIsNone(cursor)
+        self.assertEqual(ids, expected)
+        self.assertEqual(PostFeedSnapshot.objects.count(), 0)
+
+    def test_ranked_pending_ids_recheck_visibility_and_cursor_owner(self):
+        posts = [Post.objects.create(author=self.reader, text=str(i), likes_count=i) for i in range(5)]
+        first = self.client.get('/api/social/feed/top/', {'page_size': 2}).data
+        cursor = first['next_cursor']
+        Post.objects.filter(pk=posts[2].pk).update(visibility='private')
+        second = self.client.get('/api/social/feed/top/', {'page_size': 2, 'cursor': cursor})
+        self.assertNotIn(str(posts[2].pk), [row['id'] for row in second.data['results']])
+        self.client.force_authenticate(self.reader)
+        self.assertEqual(self.client.get('/api/social/feed/top/', {'page_size': 2, 'cursor': cursor}).status_code, 400)
+
     def test_private_post_is_not_available_in_favorites_or_report(self):
         from django.contrib.contenttypes.models import ContentType
         from apps.social.infrastructure.models.social import Favorite

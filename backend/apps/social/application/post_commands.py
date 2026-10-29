@@ -376,7 +376,7 @@ def deliver_post_event(event_id):
         from apps.users.infrastructure.models.users import User
         from apps.social.infrastructure.models.social import GroupMembership
         from django.db.models import Q
-        targets = {post.author_id, *[row['user_id'] for row in online_status.get_online_users() if 'user_id' in row]}
+        targets = {post.author_id, *online_status.get_online_ids()}
         if event.payload.get('actor_id'): targets.add(event.payload['actor_id'])
         users = User.objects.filter(pk__in=targets, is_active=True)
         visibility = Q(pk=post.author_id)
@@ -391,7 +391,7 @@ def deliver_post_event(event_id):
         targets = set(users.values_list('pk', flat=True))
         before = event.payload.get('access_before')
         if before and (before['visibility'] != post.visibility or before['group_id'] != post.group_id):
-            old_users = User.objects.filter(pk__in={post.author_id, *[row['user_id'] for row in online_status.get_online_users() if 'user_id' in row]}, is_active=True)
+            old_users = User.objects.filter(pk__in={post.author_id, *online_status.get_online_ids()}, is_active=True)
             previous = Q(pk=post.author_id)
             if before['visibility'] == 'public': previous |= Q(is_active=True)
             elif before['visibility'] == 'followers': previous |= Q(pk__in=Follow.objects.filter(following_id=post.author_id).values('follower_id'))
@@ -432,7 +432,9 @@ def deliver_post_event(event_id):
         if client is None:
             raise ConnectionError('Redis недоступен')
         message = json.dumps({'type': event.kind, 'event_type': event.kind,
-            'event_id': str(event.pk), 'target_users': targets, 'data': event.payload,
+            'event_id': str(event.pk), 'target_users': targets, 'data': {**event.payload,
+                'author_id': post.author_id, 'counter_revision': event.created_at.isoformat(),
+                'counts': {name: getattr(post, name) for name in ('likes_count', 'dislikes_count', 'comments_count', 'reposts_count', 'views_count')}},
             'timestamp': timezone.now().isoformat()})
         pipeline = client.pipeline()
         pipeline.publish('realtime_updates', message)

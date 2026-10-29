@@ -71,9 +71,10 @@ router.register(r"", AnimeViewSet, basename="anime")
 router_urls = router.urls
 
 from .views.seo_hub_view import seo_hub_view
-from .views.excerpt_views import excerpts, excerpt_detail, excerpt_shared
+from .views.excerpt_views import excerpts, excerpt_detail, excerpt_shared, excerpt_checks
 
 urlpatterns = [
+    path('excerpts/check/', excerpt_checks, name='excerpt-checks'),
     path(
         'admin/franchises/rebuild/',
         AdminFranchiseViewSet.as_view({'post': 'rebuild'}),

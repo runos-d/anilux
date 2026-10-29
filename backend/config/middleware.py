@@ -51,11 +51,18 @@ class SecurityResponseHeadersMiddleware:
         response.setdefault(
             "Content-Security-Policy",
             "default-src 'self'; base-uri 'self'; object-src 'none'; "
-            "frame-ancestors 'none'; img-src 'self' data: blob: https:; "
-            "media-src 'self' blob: https:; connect-src 'self' https: wss:; "
+            "frame-ancestors 'none'; "
+            "img-src 'self' data: blob: https://mc.yandex.ru https://www.google-analytics.com "
+            "https://shikimori.io https://shikimori.one; "
+            "media-src 'self' blob: https://kodikres.com; "
+            "frame-src 'self' https://kodikplayer.com; "
+            "connect-src 'self' wss: https://kodikres.com https://mc.yandex.ru "
+            "https://mc.yandex.com https://www.google-analytics.com "
+            "https://region1.google-analytics.com; "
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
             "font-src 'self' data: https://fonts.gstatic.com; "
-            f"script-src 'self' 'nonce-{request.csp_nonce}'",
+            f"script-src 'self' 'nonce-{request.csp_nonce}' https://mc.yandex.ru "
+            "https://www.googletagmanager.com",
         )
         return response
 
@@ -65,10 +72,10 @@ class OnlineStatusMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        
+
         if request.path.startswith('/data/') or request.path.startswith('/media/') or request.path.startswith('/static/'):
             response['Cross-Origin-Resource-Policy'] = 'cross-origin'
-        
+
         if request.path.startswith('/api/social/chat-media/'):
             response['Cross-Origin-Resource-Policy'] = 'same-site'
         elif response.get('Content-Type', '').startswith('image/'):
@@ -91,23 +98,23 @@ class OnlineStatusMiddleware:
             response['Cache-Control'] = 'private, no-cache, no-store, must-revalidate'
             patch_vary_headers(response, ['Authorization', 'Cookie'])
             return
-        
+
         if path.startswith('/media/') or path.startswith('/data/media/'):
             response['Cache-Control'] = 'public, max-age=2592000, immutable'
-            
+
         elif path.startswith('/static/'):
             response['Cache-Control'] = 'public, max-age=31536000, immutable'
-            
+
         elif path.startswith('/api/') and request.method == 'GET':
-            if not (hasattr(request, 'user') and request.user.is_authenticated and 
+            if not (hasattr(request, 'user') and request.user.is_authenticated and
                    any(p in path for p in ['/users/me', '/notifications', '/chat', '/messages', '/library'])):
                 response['Cache-Control'] = 'public, max-age=300, stale-while-revalidate=60'
             else:
                 response['Cache-Control'] = 'private, no-cache, no-store, must-revalidate'
-                
+
         elif path.startswith('/api/') and request.method in ['POST', 'PUT', 'PATCH', 'DELETE']:
             response['Cache-Control'] = 'no-store, private'
-            
+
         else:
             response['Cache-Control'] = 'no-store, private'
 
@@ -143,7 +150,7 @@ class OnlineStatusMiddleware:
                     }
                 )
             except Exception:
-                pass  
+                pass
 
     def get_client_ip(self, request):
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')

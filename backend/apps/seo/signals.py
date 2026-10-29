@@ -10,7 +10,9 @@ from .models import SEO_PATH_MAX_LENGTH, SeoAlias
 @receiver(pre_save, sender=Franchise)
 def remember_slug(sender, instance, **kwargs):
     if instance.pk:
-        instance._seo_old_slug = sender.objects.filter(pk=instance.pk).values_list('slug', flat=True).first()
+        old = sender.objects.filter(pk=instance.pk).values('slug', 'title_ru').first() if sender is Anime else None
+        instance._seo_old_slug = old['slug'] if old else sender.objects.filter(pk=instance.pk).values_list('slug', flat=True).first()
+        instance._seo_old_title = old['title_ru'] if old else None
 
 
 @receiver(post_save, sender=Anime)
@@ -18,6 +20,11 @@ def remember_slug(sender, instance, **kwargs):
 def record_alias(sender, instance, **kwargs):
     from .service import anime_path
     old = getattr(instance, '_seo_old_slug', None)
+    if sender is Anime and (kwargs.get('created') or getattr(instance, '_seo_old_title', None) != instance.title_ru):
+        from apps.anime.application.search_utils import legacy_anime_slug
+        slug = legacy_anime_slug(instance.title_ru or '')
+        if slug and len('/anime/' + slug) <= SEO_PATH_MAX_LENGTH:
+            SeoAlias.objects.get_or_create(path='/anime/' + slug, defaults={'kind': 'anime', 'object_id': str(instance.pk)})
     if old and old != instance.slug:
         paths = [f'/anime/{old}', f'/anime/{instance.pk}-{old}'] if sender is Anime else [f'/franchise/{old}', f'/anime/franchise/{old}']
         for path in paths:

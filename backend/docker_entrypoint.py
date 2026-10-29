@@ -41,7 +41,7 @@ def main(argv=None):
         raise SystemExit('No container command specified')
     if os.path.basename(command[0]) in ('daphne', 'celery'):
         check_schema()
-    if os.path.basename(command[0]) == 'daphne':
+    if os.path.basename(command[0]) == 'daphne' and os.environ.get('NATIVE_AUTO_BUILD_ON_START', 'true').lower() in ('true', '1', 'yes'):
         try:
             from apps.native_apps.releases import schedule_build
             schedule_build()

@@ -14,6 +14,8 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.conf.imports = (
     'apps.native_apps.tasks',
     'apps.anime.application.tasks',
+    'apps.anime.application.metadata_tasks',
+    'apps.anime.application.background_tasks',
     'apps.anime.application.tasks_kodik_dumps',
     'apps.social.application.tasks',
     'apps.social.application.tasks_chat',
@@ -25,10 +27,14 @@ app.conf.imports = (
     'apps.social.application.post_file_gc',
     'apps.notifications.application.celery_tasks',
     'apps.users.application.email_tasks',
+    'apps.users.application.user_data_tasks',
     'apps.seo.tasks',
 )
 
 app.conf.beat_schedule = {
+    'missing-screenshots': {'task': 'anime.refresh_missing_screenshots', 'schedule': 60.0},
+    'presence-index-expiry': {'task': 'anime.prune_presence_index', 'schedule': 60.0},
+    'background-work-cleanup': {'task': 'anime.cleanup_background_work', 'schedule': 60.0},
     'episode-events': {'task': 'notifications.process_episode_events', 'schedule': 60.0},
     'shikimori-franchise-sync': {'task': 'anime.sync_franchises', 'schedule': 90.0},
     'catalog-first-page': {'task': 'anime.warm_public_catalog', 'schedule': 120.0},
@@ -42,6 +48,7 @@ app.conf.beat_schedule = {
     'chat-expired-bans': {'task': 'social.cleanup_expired_bans', 'schedule': 60.0},
     'chat-expired-restrictions': {'task': 'social.cleanup_expired_restrictions', 'schedule': 60.0},
     'chat-expired-invites': {'task': 'social.cleanup_expired_invite_links', 'schedule': 60.0},
+    'user-data-export-expiry': {'task': 'users.expire_data_exports', 'schedule': crontab(minute='17', hour='3')},
     'kodik-catalog-import': {
         'task': 'apps.anime.import_kodik_dumps',
         'schedule': crontab(minute='24,54'),

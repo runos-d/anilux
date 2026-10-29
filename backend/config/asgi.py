@@ -3,6 +3,8 @@ import os
 from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
+from django.conf import settings
+from core.asgi_limits import BoundedApplication
 
 from config.ws_middleware import WebSocketCORSMiddleware
 
@@ -24,3 +26,4 @@ application = ProtocolTypeRouter({
         )
     ),
 })
+application = BoundedApplication(application, settings.ASGI_HTTP_CONCURRENCY, settings.ASGI_WEBSOCKET_CONNECTIONS, settings.ASGI_WEBSOCKET_HANDSHAKES)

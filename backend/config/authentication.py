@@ -7,6 +7,12 @@ logger = logging.getLogger(__name__)
 
 
 class SoftJWTAuthentication(JWTAuthentication):
+    def get_user(self, validated_token):
+        from apps.users.application.token_sessions import validate_token_session
+        user = super().get_user(validated_token)
+        validate_token_session(validated_token, user)
+        return user
+
     def authenticate(self, request):
         try:
             return super().authenticate(request)

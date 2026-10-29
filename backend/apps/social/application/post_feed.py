@@ -4,7 +4,6 @@ from collections import deque
 from django.core import signing
 import hashlib
 from django.db.models import Prefetch, Q, Exists, OuterRef, F
-from django.db.models.functions import Coalesce
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from rest_framework.exceptions import ValidationError
@@ -41,11 +40,11 @@ def page(request, mode='weighted'):
     user = request.user
     cursor = request.query_params.get('cursor')
     signature = '&'.join(f'{key}={request.query_params.getlist(key)}' for key in sorted(request.query_params)
-                         if key not in ('cursor', 'page', 'page_size'))
+                         if key not in ('cursor', 'page', 'page_size', 'include_count'))
     snapshot_mode = mode[:8] + ':' + hashlib.sha256(signature.encode()).hexdigest()[:20]
     following = set(Follow.objects.filter(follower=user).values_list('following_id', flat=True))
     groups = set(GroupMembership.objects.filter(user=user).values_list('group_id', flat=True))
-    base = readable_posts(Post.objects.all(), user).exclude(post_type='system').annotate(feed_date=Coalesce('published_at', 'created_at'))
+    base = readable_posts(Post.objects.all(), user).exclude(post_type='system').annotate(feed_date=F('feed_sort_at'))
     base = base.exclude(pk__in=UserPostHidden.objects.filter(user=user).values('post_id'))
     base = base.exclude(author_id__in=UserNotInterested.objects.filter(user=user).values('target_user_id'))
     order_by = ['-feed_date', '-pk']
@@ -79,103 +78,81 @@ def page(request, mode='weighted'):
         order_by = orders[params.get('sort', 'new')]
     if mode == 'followers':
         base = base.filter(author_id__in=following)
-    if mode == 'extended' and request.query_params.get('sort', 'new') == 'new':
-        direct_salt = 'post-feed-direct-v1'
-        cutoff = timezone.now()
-        boundary = None
-        if cursor:
-            try:
-                position = signing.loads(cursor, salt=direct_salt, max_age=900)
-                if position.get('mode') != snapshot_mode:
-                    raise ValueError()
-                cutoff = parse_datetime(position['cutoff'])
-                boundary_date = parse_datetime(position['date'])
-                if not cutoff or not boundary_date:
-                    raise ValueError()
-                boundary = (boundary_date, position['id'])
-            except (signing.BadSignature, KeyError, ValueError, TypeError):
-                raise ValidationError({'cursor': 'Курсор устарел или недействителен. Обновите ленту.'})
-        visible = base.filter(feed_date__lte=cutoff)
-        unpinned = visible.exclude(is_pinned=True)
-        if boundary:
-            unpinned = unpinned.filter(
-                Q(feed_date__lt=boundary[0]) | Q(feed_date=boundary[0], pk__lt=boundary[1])
-            )
-        offset = 0 if cursor else (old_page - 1) * limit
-        rows = list(unpinned.order_by('-feed_date', '-pk').values_list('pk', 'feed_date')[offset:offset + limit + 1])
-        more = len(rows) > limit
-        rows = rows[:limit]
-        selected = [pk for pk, _ in rows]
-        pinned = list(visible.filter(is_pinned=True).order_by('-pinned_at', '-pk').values_list('pk', flat=True)[:20]) \
-            if not cursor and old_page == 1 else []
-        pinned = [pk for pk in pinned if pk not in selected]
-        queryset = read_queryset(visible.filter(pk__in=pinned + selected), user)
-        posts = {post.pk: post for post in queryset}
-        next_cursor = None
-        if more and rows:
-            last_id, last_date = rows[-1]
-            next_cursor = signing.dumps({
-                'mode': snapshot_mode, 'cutoff': cutoff.isoformat(),
-                'date': last_date.isoformat(), 'id': str(last_id),
-            }, salt=direct_salt)
-        from apps.social.presentation.serializers.social_serializers import FeedPostSerializer
-        return {
-            'results': FeedPostSerializer(
-                [posts[pk] for pk in pinned + selected if pk in posts],
-                many=True, context={'request': request},
-            ).data,
-            'count': visible.count(),
-            'next_cursor': next_cursor,
-            'next': old_page + 1 if next_cursor else None,
-            'previous': old_page - 1 if old_page > 1 else None,
-        }
+    salt = 'post-feed-bounded-v2'
+    cutoff, boundaries = timezone.now(), {}
     if cursor:
         try:
-            position = signing.loads(cursor, salt='post-feed-v1', max_age=900)
-            snapshot = PostFeedSnapshot.objects.get(pk=position['snapshot'], owner=user, mode=snapshot_mode)
-            offset = int(position['offset'])
-            if not 0 <= offset <= len(snapshot.ids):
+            position = signing.loads(cursor, salt=salt, max_age=900)
+            if position['mode'] != snapshot_mode or position['owner'] != str(user.pk):
                 raise ValueError()
-        except (signing.BadSignature, KeyError, ValueError, PostFeedSnapshot.DoesNotExist):
+            cutoff = parse_datetime(position['cutoff'])
+            boundaries = position['boundaries']
+            if not cutoff or not isinstance(boundaries, dict):
+                raise ValueError()
+        except (signing.BadSignature, KeyError, ValueError, TypeError):
             raise ValidationError({'cursor': 'Курсор устарел или недействителен. Обновите ленту.'})
+    elif old_page > 100:
+        raise ValidationError({'page': 'Для дальнейшей загрузки используйте cursor.'})
+    visible = base.filter(feed_date__lte=cutoff)
+    unpinned = visible.exclude(is_pinned=True)
+
+    def read_slice(queryset, key, order):
+        fields = [field.lstrip('-') for field in order]
+        boundary = boundaries.get(key)
+        if boundary:
+            if not isinstance(boundary, list) or len(boundary) != len(fields):
+                raise ValidationError({'cursor': 'Некорректный курсор.'})
+            condition, equal = Q(pk__in=[]), Q()
+            for field, value, ordering in zip(fields, boundary, order):
+                if field == 'feed_date':
+                    value = parse_datetime(value)
+                    if value is None:
+                        raise ValidationError({'cursor': 'Некорректная дата курсора.'})
+                condition |= equal & Q(**{field + ('__lt' if ordering.startswith('-') else '__gt'): value})
+                equal &= Q(**{field: value})
+            queryset = queryset.filter(condition)
+        offset = 0 if cursor else (old_page - 1) * limit
+        return list(queryset.order_by(*order).values(*fields)[offset:offset + limit + 1])
+
+    next_boundaries = dict(boundaries)
+    selected, more = [], False
+    if mode == 'weighted':
+        own = Q(author_id__in=following | {user.pk})
+        grouped = Q(group_id__in=groups)
+        pools = [read_slice(unpinned.filter(own), '0', ['-feed_date', '-pk']),
+                 read_slice(unpinned.exclude(own).filter(grouped), '1', ['-feed_date', '-pk']),
+                 read_slice(unpinned.exclude(own).exclude(grouped), '2', ['-feed_date', '-pk'])]
+        used = [0, 0, 0]
+        while len(selected) < limit:
+            previous = len(selected)
+            for index, quota in ((0, 14), (1, 3), (2, 3)):
+                count = min(quota, limit - len(selected), len(pools[index]) - used[index])
+                rows = pools[index][used[index]:used[index] + count]
+                selected.extend(row['pk'] for row in rows)
+                used[index] += count
+                if rows:
+                    next_boundaries[str(index)] = [rows[-1]['feed_date'].isoformat(), str(rows[-1]['pk'])]
+            if len(selected) == previous:
+                break
+        more = any(len(pool) > count for pool, count in zip(pools, used))
     else:
-        snapshot = None
-        if old_page > 1:
-            snapshot = PostFeedSnapshot.objects.filter(owner=user, mode=snapshot_mode, expires_at__gt=timezone.now()).order_by('-created_at').first()
-        if snapshot is None:
-            rows = list(base.exclude(is_pinned=True).order_by(*order_by).values('pk', 'author_id', 'group_id').iterator(chunk_size=2000))
-            if mode == 'weighted':
-                buckets = [deque(), deque(), deque()]
-                for row in rows:
-                    index = 0 if row['author_id'] in following or row['author_id'] == user.pk else 1 if row['group_id'] in groups else 2
-                    buckets[index].append(row['pk'])
-                order = []
-                while any(buckets):
-                    for index, amount in ((0, 14), (1, 3), (2, 3)):
-                        for _ in range(amount):
-                            if buckets[index]:
-                                order.append(buckets[index].popleft())
-                ids = order
-            else:
-                ids = [row['pk'] for row in rows]
-            snapshot = PostFeedSnapshot.objects.create(owner=user, mode=snapshot_mode, ids=ids,
-                                                       expires_at=timezone.now()+timedelta(minutes=15))
-        offset = (old_page-1)*limit
-    selected = []
-    while offset < len(snapshot.ids) and len(selected) < limit:
-        candidates = snapshot.ids[offset:offset + limit - len(selected)]
-        visible = set(base.filter(pk__in=candidates).values_list('pk', flat=True))
-        offset += len(candidates)
-        selected.extend(pk for pk in candidates if pk in visible)
-    pinned = list(base.filter(is_pinned=True).order_by('-pinned_at', '-pk').values_list('pk', flat=True)[:20]) if not cursor and old_page == 1 else []
-    pinned = [pk for pk in pinned if pk not in selected]
-    queryset = read_queryset(base.filter(pk__in=pinned+selected), user)
-    posts = {post.pk: post for post in queryset}
-    next_cursor = signing.dumps({'snapshot': str(snapshot.pk), 'offset': offset}, salt='post-feed-v1') if offset < len(snapshot.ids) else None
+        rows = read_slice(unpinned, 'all', order_by)
+        more = len(rows) > limit
+        rows = rows[:limit]
+        selected = [row['pk'] for row in rows]
+        if rows:
+            next_boundaries['all'] = [value.isoformat() if hasattr(value, 'isoformat') else str(value) if field == 'pk' else value
+                                      for field in [item.lstrip('-') for item in order_by] for value in [rows[-1][field]]]
+    pinned = list(visible.filter(is_pinned=True).order_by('-pinned_at', '-pk').values_list('pk', flat=True)[:20]) if not cursor and old_page == 1 else []
+    ids = [pk for pk in pinned if pk not in selected] + selected
+    posts = {post.pk: post for post in read_queryset(visible.filter(pk__in=ids), user)}
+    next_cursor = signing.dumps({'mode': snapshot_mode, 'owner': str(user.pk), 'cutoff': cutoff.isoformat(),
+                                 'boundaries': next_boundaries}, salt=salt) if more else None
     from apps.social.presentation.serializers.social_serializers import FeedPostSerializer
-    return {'results': FeedPostSerializer([posts[pk] for pk in pinned+selected if pk in posts], many=True, context={'request': request}).data,
-            'count': base.filter(feed_date__lte=snapshot.created_at).count(), 'next_cursor': next_cursor,
-            'next': old_page+1 if next_cursor else None, 'previous': old_page-1 if old_page>1 else None}
+    return {'results': FeedPostSerializer([posts[pk] for pk in ids if pk in posts], many=True, context={'request': request}).data,
+            'count': None if request.query_params.get('include_count', 'true').lower() in ('false', '0') else visible.count(),
+            'next_cursor': next_cursor, 'next': old_page + 1 if next_cursor else None,
+            'previous': old_page - 1 if old_page > 1 else None}
 
 
 def chronological_page(request, queryset, scope, *, include_own_pending=False):

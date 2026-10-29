@@ -10,6 +10,7 @@ ONLINE_KEY_PREFIX = 'user_online:'
 ONLINE_TTL = 120
 AWAY_TTL = 60
 PRESENCE_SESSIONS_PREFIX = 'user_presence_sessions:'
+PRESENCE_INDEX = 'presence:index:v1'
 
 TOUCH_CONNECTION = """
 local was_online = redis.call('EXISTS', KEYS[1])
@@ -17,6 +18,7 @@ redis.call('ZREMRANGEBYSCORE', KEYS[2], '-inf', ARGV[1])
 redis.call('ZADD', KEYS[2], ARGV[2], ARGV[3])
 redis.call('EXPIRE', KEYS[2], ARGV[4])
 redis.call('SETEX', KEYS[1], ARGV[4], ARGV[5])
+redis.call('ZADD', KEYS[3], tonumber(ARGV[1]) + tonumber(ARGV[4]), KEYS[1])
 return 1 - was_online
 """
 REMOVE_CONNECTION = """
@@ -24,6 +26,7 @@ redis.call('ZREMRANGEBYSCORE', KEYS[2], '-inf', ARGV[1])
 redis.call('ZREM', KEYS[2], ARGV[2])
 if redis.call('ZCARD', KEYS[2]) == 0 then
     redis.call('DEL', KEYS[2])
+    redis.call('ZREM', KEYS[3], KEYS[1])
     return redis.call('DEL', KEYS[1])
 end
 return 0
@@ -36,6 +39,7 @@ end
 local was_online = redis.call('EXISTS', KEYS[1])
 local ttl = math.max(tonumber(ARGV[1]), redis.call('TTL', KEYS[1]))
 redis.call('SETEX', KEYS[1], ttl, ARGV[2])
+redis.call('ZADD', KEYS[3], tonumber(ARGV[4]) + ttl, KEYS[1])
 return 1 - was_online
 """
 
@@ -71,13 +75,13 @@ class RedisOnlineStatus:
                 'is_active': is_active,
                 **(extra_data or {})
             }
-            if client.eval(REFRESH_PRESENCE, 2, key, f'{PRESENCE_SESSIONS_PREFIX}{user_id}',
+            if client.eval(REFRESH_PRESENCE, 3, key, f'{PRESENCE_SESSIONS_PREFIX}{user_id}', PRESENCE_INDEX,
                            ttl, json.dumps(data), int(require_connection), now.timestamp()) == 1:
                 self._send_online_event(user_id, username, True)
         except Exception as e:
             logger.debug(f"Redis set_online error (ignored): {e}")
 
-    def touch_connection(self, user_id, username, connection_id):
+    def touch_connection(self, user_id, username, connection_id, is_active=True):
         client = self._get_client()
         if client is None:
             return
@@ -85,9 +89,9 @@ class RedisOnlineStatus:
             now = timezone.now()
             data = json.dumps({'user_id': user_id, 'username': username,
                                'last_seen': now.isoformat(), 'last_seen_ts': now.timestamp(),
-                               'is_active': True})
-            changed = client.eval(TOUCH_CONNECTION, 2, f'{ONLINE_KEY_PREFIX}{user_id}',
-                                  f'{PRESENCE_SESSIONS_PREFIX}{user_id}', now.timestamp(),
+                               'is_active': is_active})
+            changed = client.eval(TOUCH_CONNECTION, 3, f'{ONLINE_KEY_PREFIX}{user_id}',
+                                  f'{PRESENCE_SESSIONS_PREFIX}{user_id}', PRESENCE_INDEX, now.timestamp(),
                                   now.timestamp() + ONLINE_TTL, connection_id, ONLINE_TTL, data)
             if changed == 1:
                 self._send_online_event(user_id, username, True)
@@ -99,8 +103,8 @@ class RedisOnlineStatus:
         if client is None:
             return
         try:
-            changed = client.eval(REMOVE_CONNECTION, 2, f'{ONLINE_KEY_PREFIX}{user_id}',
-                                  f'{PRESENCE_SESSIONS_PREFIX}{user_id}',
+            changed = client.eval(REMOVE_CONNECTION, 3, f'{ONLINE_KEY_PREFIX}{user_id}',
+                                  f'{PRESENCE_SESSIONS_PREFIX}{user_id}', PRESENCE_INDEX,
                                   timezone.now().timestamp(), connection_id)
             if changed == 1:
                 self._send_online_event(user_id, username, False)
@@ -109,27 +113,13 @@ class RedisOnlineStatus:
 
     def _send_online_event(self, user_id: int, username: str, is_online: bool) -> None:
         if is_online:
+            from apps.users.infrastructure.models.users import User
+            privacy = User.objects.filter(pk=user_id).values('settings__show_online_status', 'profile_settings__show_online_status').first()
+            is_online = bool(privacy and privacy['settings__show_online_status'] is not False and privacy['profile_settings__show_online_status'] is not False)
+        if is_online:
             publish_user_online_event(user_id, username)
         else:
             publish_user_offline_event(user_id, username)
-        try:
-            from channels.layers import get_channel_layer
-            from asgiref.sync import async_to_sync
-            
-            channel_layer = get_channel_layer()
-            if channel_layer:
-                group_name = f"user_online_{user_id}"
-                async_to_sync(channel_layer.group_send)(
-                    group_name,
-                    {
-                        "type": "user_online",
-                        "user_id": user_id,
-                        "username": username,
-                        "is_online": is_online,
-                    }
-                )
-        except Exception as e:
-            logger.debug(f"Channel layer send error: {e}")
 
     def set_offline(self, user_id: int) -> None:
         client = self._get_client()
@@ -139,6 +129,7 @@ class RedisOnlineStatus:
         try:
             key = f"{ONLINE_KEY_PREFIX}{user_id}"
             changed = client.delete(key, f'{PRESENCE_SESSIONS_PREFIX}{user_id}')
+            client.zrem(PRESENCE_INDEX, key)
             
             from django.contrib.auth import get_user_model
             User = get_user_model()
@@ -196,25 +187,38 @@ class RedisOnlineStatus:
             logger.debug('Redis batch online status error: %s', exc)
             return {}
 
-    def get_online_users(self) -> list:
+    def get_online_users(self, limit=500, offset=0) -> list:
         client = self._get_client()
         if client is None:
             return []
-
         try:
-            pattern = f"{ONLINE_KEY_PREFIX}*"
-            keys = client.keys(pattern)
+            keys = client.zrangebyscore(PRESENCE_INDEX, timezone.now().timestamp(), '+inf',
+                                       start=max(0, offset), num=max(1, min(limit, 500)))
+            if not keys:
+                return []
             users = []
-            for key in keys:
-                data = client.get(key)
-                if data:
+            for raw in client.mget(keys):
+                if raw:
                     try:
-                        users.append(json.loads(data))
-                    except json.JSONDecodeError:
+                        data = json.loads(raw)
+                        if isinstance(data, dict):
+                            users.append(data)
+                    except (TypeError, ValueError):
                         continue
             return users
-        except Exception as e:
-            logger.debug(f"Redis get_online_users error (ignored): {e}")
+        except Exception as exc:
+            logger.debug('Redis online index unavailable: %s', exc)
+            return []
+
+    def get_online_ids(self):
+        """IDs only for internal fanout/directory filters, never a profile snapshot."""
+        client = self._get_client()
+        if client is None:
+            return []
+        try:
+            keys = client.zrangebyscore(PRESENCE_INDEX, timezone.now().timestamp(), '+inf')
+            return [int(key.rsplit(':', 1)[-1]) for key in keys]
+        except Exception:
             return []
 
     def refresh_online(self, user_id: int, username: str) -> None:

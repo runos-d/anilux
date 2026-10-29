@@ -329,6 +329,10 @@ def clear_chat_history(request, chat_id):
 @transaction.atomic
 def forward_message(request, message_id):
     original = service.accessible_message(message_id, request.user)
+    from apps.users.application.privacy import can_forward_message
+    if not can_forward_message(original, request.user):
+        from rest_framework.exceptions import PermissionDenied
+        raise PermissionDenied('Автор запретил пересылку сообщений')
     if original.chat_id and original.chat.restrict_saving_content and original.sender_id != request.user.pk:
         from rest_framework.exceptions import PermissionDenied
         raise PermissionDenied('В этом чате запрещено сохранять и пересылать чужие сообщения')

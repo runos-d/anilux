@@ -60,6 +60,17 @@ class ChatSchemaTests(TestCase):
 
 
 class ChatEntrypointTests(SimpleTestCase):
+    def test_scaled_api_can_disable_automatic_native_build(self):
+        import os
+        with patch.dict(os.environ, {'NATIVE_AUTO_BUILD_ON_START': 'false'}), \
+                patch.object(docker_entrypoint, 'check_schema'), \
+                patch.object(docker_entrypoint.os, 'execvp') as execute, \
+                patch('apps.native_apps.releases.schedule_build') as schedule:
+            command = ['daphne', 'config.asgi:application']
+            docker_entrypoint.main(command)
+            execute.assert_called_once_with('daphne', command)
+            schedule.assert_not_called()
+
     def test_daphne_and_celery_wait_for_schema_preflight(self):
         for command in [['daphne', 'config.asgi:application'], ['celery', '-A', 'config', 'worker'], ['celery', '-A', 'config', 'beat']]:
             with self.subTest(command=command), patch.object(docker_entrypoint, 'check_schema', side_effect=SystemExit(1)), patch.object(docker_entrypoint.os, 'execvp') as execute:

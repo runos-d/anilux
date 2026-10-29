@@ -100,7 +100,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "config.middleware.ReleaseFeatureGateMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "config.middleware.CSRFExemptMiddleware",
@@ -122,7 +122,7 @@ TEMPLATES = [
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         'DIRS': [
             BASE_DIR / 'templates',
-        ],        
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -135,6 +135,11 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
+ASGI_APPLICATION = 'config.asgi.application'
+ASGI_HTTP_CONCURRENCY = max(1, min(int(os.environ.get('ASGI_HTTP_CONCURRENCY', '64')), 256))
+ASGI_WEBSOCKET_CONNECTIONS = max(1, min(int(os.environ.get('ASGI_WEBSOCKET_CONNECTIONS', '2048')), 16384))
+ASGI_WEBSOCKET_HANDSHAKES = max(1, min(int(os.environ.get('ASGI_WEBSOCKET_HANDSHAKES', '64')), 1024))
+WS_ALLOW_QUERY_TOKEN = os.environ.get('WS_ALLOW_QUERY_TOKEN', 'true').lower() in ('true', '1', 'yes')
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
@@ -156,8 +161,14 @@ SIMPLE_JWT = {
     "LEEWAY": 0,
 }
 
+ANALYTICS_CONSENT_POLICY_VERSION = os.environ.get(
+    "ANALYTICS_CONSENT_POLICY_VERSION", "2026-10-27.1"
+)
+
 
 _DB_ENGINE = os.environ.get("DB_ENGINE", "django.db.backends.mysql")
+if _DB_ENGINE == 'django.db.backends.mysql':
+    _DB_ENGINE = 'core.db.backends.mysql'
 if _DB_ENGINE == "django.db.backends.sqlite3":
     DATABASES = {"default": {"ENGINE": _DB_ENGINE, "NAME": os.environ.get("DB_NAME", str(BASE_DIR / "test.sqlite3"))}}
 else:
@@ -169,7 +180,7 @@ else:
             "PASSWORD": os.environ.get("DB_PASSWORD"),
             "HOST": os.environ.get("DB_HOST", "localhost"),
             "PORT": os.environ.get("DB_PORT", "3306"),
-            "CONN_MAX_AGE": 600,
+            "CONN_MAX_AGE": max(0, int(os.environ.get("DB_CONN_MAX_AGE", "0"))),
             "OPTIONS": {
                 "charset": "utf8mb4",
                 "use_unicode": True,
@@ -241,6 +252,8 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = "/data/media/"
 MEDIA_ROOT = DATA_DIR / "media"
+DATA_EXPORT_ROOT = pathlib.Path(os.environ.get("DATA_EXPORT_ROOT") or (DATA_DIR / "user_exports")).resolve()
+DATA_EXPORT_TTL_HOURS = int(os.environ.get("DATA_EXPORT_TTL_HOURS", "168"))
 CHAT_PRIVATE_MEDIA_ROOT = DATA_DIR / "private_chat_media"
 CHAT_MEDIA_TICKET_MAX_AGE = 1800
 CHAT_SETTINGS_IMPORT_MAX_BYTES = 32 * 1024 * 1024
@@ -257,10 +270,15 @@ for _sub in ("media", "staticfiles", "celerybeat", "kodik_dumps"):
         (DATA_DIR / _sub).mkdir(parents=True, exist_ok=True)
     except OSError:
         pass
+try:
+    DATA_EXPORT_ROOT.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'core.cache_backend.api_exception_handler',
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
     ],
@@ -302,16 +320,23 @@ REDIS_PORT = int(os.environ.get("REDIS_PORT", 6379))
 REDIS_DB = int(os.environ.get("REDIS_DB", 0))
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "")
 
+def redis_uri(database):
+    from urllib.parse import quote
+    credentials = ':' + quote(REDIS_PASSWORD, safe='') + '@' if REDIS_PASSWORD else ''
+    host = f'[{REDIS_HOST}]' if ':' in REDIS_HOST and not REDIS_HOST.startswith('[') else REDIS_HOST
+    return f'redis://{credentials}{host}:{REDIS_PORT}/{database}'
+
+
 CACHES = {
     'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB + 1}',
+        'BACKEND': 'core.cache_backend.CircuitRedisCache',
+        'LOCATION': redis_uri(REDIS_DB + 1),
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             'PASSWORD': REDIS_PASSWORD if REDIS_PASSWORD else None,
-            'SOCKET_CONNECT_TIMEOUT': 5,
-            'SOCKET_TIMEOUT': 5,
-            'RETRY_ON_TIMEOUT': True,
+            'SOCKET_CONNECT_TIMEOUT': 0.3,
+            'SOCKET_TIMEOUT': 0.5,
+            'RETRY_ON_TIMEOUT': False,
         },
         'KEY_PREFIX': 'anilux',
         'TIMEOUT': 3600,
@@ -320,12 +345,13 @@ CACHES = {
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "BACKEND": "core.channel_layer.BoundedRedisChannelLayer",
         "CONFIG": {
+            "group_expiry": max(120, int(os.environ.get('WS_GROUP_EXPIRY', '300'))),
             "hosts": [{
-                "address": f"redis://{REDIS_HOST}:{REDIS_PORT}/0",
-                "socket_timeout": 30,
-                "socket_connect_timeout": 30,
+                "address": redis_uri(0),
+                "socket_timeout": 1,
+                "socket_connect_timeout": 1,
             }],
             "capacity": 5000,
             "expiry": 300,
@@ -395,7 +421,7 @@ if ENVIRONMENT == "production":
     SECURE_HSTS_PRELOAD = True
 
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
-GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")  
+GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
 
 PAL24_API_TOKEN = os.environ.get("PAL24_API_TOKEN", "")
 PAL24_SHOP_ID = os.environ.get("PAL24_SHOP_ID", "")
@@ -405,7 +431,7 @@ CRYPTOCLOUD_SHOP_ID = os.environ.get("CRYPTOCLOUD_SHOP_ID", "")
 CRYPTOCLOUD_SECRET_KEY = os.environ.get("CRYPTOCLOUD_SECRET_KEY", "")
 
 
-SUBSCRIPTION_PRICE = 399  
+SUBSCRIPTION_PRICE = 399
 
 SITE_URL = os.environ.get("SITE_URL") or "http://localhost:5173"
 NATIVE_APP_SITE_URL = os.environ.get("NATIVE_APP_SITE_URL", "")
@@ -416,9 +442,12 @@ PHONENUMBER_DEFAULT_REGION = "RU"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
-CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
-CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'  
-CELERY_CACHE_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}/1'
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL') or redis_uri(0)
+CELERY_BROKER_CONNECTION_TIMEOUT = 1
+CELERY_TASK_PUBLISH_RETRY = False
+CELERY_BROKER_TRANSPORT_OPTIONS = {'socket_connect_timeout': 1, 'socket_timeout': 1}
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND') or redis_uri(0)
+CELERY_CACHE_BACKEND = redis_uri(1)
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 300
 CELERY_RESULT_EXTENDED = True

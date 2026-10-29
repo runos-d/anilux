@@ -10,7 +10,7 @@ from apps.anime.infrastructure.clients.kodik_config import (
 
 logger = logging.getLogger(__name__)
 
-KODIK_API_TIMEOUT = (5, 30)
+KODIK_API_TIMEOUT = (2, 8)
 
 
 class KodikAPI:
@@ -25,22 +25,11 @@ class KodikAPI:
         payload: Dict[str, Any] = {"token": self.token}
         if params:
             payload.update(params)
-        attempt = 0
-        while True:
-            attempt += 1
-            response = requests.get(url, params=payload, timeout=KODIK_API_TIMEOUT)
-            if response.status_code == 429:
-                if attempt >= retries:
-                    response.raise_for_status()
-                retry_after = 1
-                try:
-                    retry_after = max(1, int(response.headers.get("Retry-After", "1")))
-                except (TypeError, ValueError):
-                    retry_after = min(2 ** attempt, 30)
-                time.sleep(retry_after)
-                continue
-            response.raise_for_status()
-            return response.json()
+        # One bounded provider request. Job scheduling, rather than sleeping HTTP
+        # workers, owns any retry after a provider rate limit.
+        response = requests.get(url, params=payload, timeout=KODIK_API_TIMEOUT)
+        response.raise_for_status()
+        return response.json()
 
     def get_years(
         self,

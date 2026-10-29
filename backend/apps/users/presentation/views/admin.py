@@ -1,9 +1,9 @@
 from django.contrib import admin
 from apps.users.infrastructure.models.users import (
-    User, UserSettings, UserProfileSettings, TwoFactorAuth, 
-    ActiveSession, NotificationSettings, PrivacySettings, 
-    UserTheme, ChatBackground, SecurityLog, EmailLog, 
-    MessageNotification, UserAnalytics
+    User, UserSettings, UserProfileSettings, TwoFactorAuth,
+    ActiveSession, NotificationSettings, PrivacySettings,
+    UserTheme, ChatBackground, SecurityLog, EmailLog,
+    MessageNotification, UserActivitySummary
 )
 
 
@@ -14,7 +14,7 @@ class UserAdmin(admin.ModelAdmin):
     list_filter = ('is_staff', 'is_active', 'is_online', 'email_verified', 'phone_verified', 'two_factor_enabled')
     ordering = ('-date_joined',)
     readonly_fields = ('date_joined', 'last_login', 'created_at', 'updated_at', 'unique_id')
-    
+
     fieldsets = (
         ('Основная информация', {
             'fields': ('username', 'email', 'password', 'nickname', 'display_name')
@@ -135,8 +135,8 @@ class MessageNotificationAdmin(admin.ModelAdmin):
     readonly_fields = ('notified_at',)
 
 
-@admin.register(UserAnalytics)
-class UserAnalyticsAdmin(admin.ModelAdmin):
+@admin.register(UserActivitySummary)
+class UserActivitySummaryAdmin(admin.ModelAdmin):
     list_display = ('user', 'messages_sent', 'messages_received', 'time_spent', 'primary_device')
     search_fields = ('user__username', 'primary_device', 'last_used_device')
     list_filter = ('favorite_chat_type', 'primary_device', 'last_used_device')

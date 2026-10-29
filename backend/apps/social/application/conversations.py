@@ -144,6 +144,14 @@ def serialize_message(message, user=None):
     return dict(MessageSerializer(message, context={'request': SimpleNamespace(user=user, build_absolute_uri=lambda url: url)} if user else {}).data)
 
 
+def serialize_messages(messages, user=None):
+    """Share DRF fields and viewer context across a history page."""
+    from apps.social.presentation.serializers.social_serializers import MessageSerializer
+    from types import SimpleNamespace
+    context = {'request': SimpleNamespace(user=user, build_absolute_uri=lambda url: url)} if user else {}
+    return list(MessageSerializer(messages, many=True, context=context).data)
+
+
 @transaction.atomic
 def record_event(chat, kind, payload, recipients=None):
     conversation = get_conversation(chat, lock=True)
@@ -184,7 +192,7 @@ def event_for_user(event, user):
         check_access(chat, user)
     except (PermissionDenied, NotFound):
         return None
-    if event.kind == 'unread_updated':
+    if event.kind in ('unread_updated', 'message_deleted'):
         payload['unread_count'] = unread_count(chat, user)
     if event.kind == 'chat_cleared' and not payload.get('for_user'):
         if ChatEvent.objects.filter(conversation_id=event.conversation_id, kind='chat_restored', sequence__gt=event.sequence).exists():
@@ -199,17 +207,21 @@ def event_for_user(event, user):
         if current is None:
             return None
         payload['message'] = serialize_message(current, user)
+        if event.kind == 'new_message':
+            payload['unread_count'] = unread_count(chat, user)
     return payload
 
 
-def user_can_receive(payload, user_id):
+def user_can_receive(payload, user_id, *, user=None):
     if payload.get('action') in ('chat_deleted', 'access_revoked'):
         return True
     conv = Conversation.objects.select_related('private_chat', 'group_chat').filter(pk=payload.get('conversation_id')).first()
     if conv is None:
         return False
     from apps.users.infrastructure.models.users import User
-    user = User.objects.filter(pk=user_id, is_active=True).first()
+    user = user if user is not None else User.objects.filter(pk=user_id, is_active=True).first()
+    if user is None or user.pk != user_id or not user.is_active:
+        return False
     try:
         check_access(conv.chat, user)
         if payload.get('action') in ('new_message', 'message_edited'):
@@ -220,15 +232,16 @@ def user_can_receive(payload, user_id):
         return False
 
 
-def live_event_for_user(payload, user_id):
+def live_event_for_user(payload, user_id, *, user=None):
     from apps.users.infrastructure.models.users import User
-    user = User.objects.filter(pk=user_id, is_active=True).first()
-    if user is None:
+    # Consumers may pass the fresh account returned by their current auth batch.
+    user = user if user is not None else User.objects.filter(pk=user_id, is_active=True).first()
+    if user is None or user.pk != user_id or not user.is_active:
         return None
     if payload.get('event_id'):
         event = ChatEvent.objects.select_related('conversation__private_chat', 'conversation__group_chat').filter(pk=payload['event_id']).first()
         return event_for_user(event, user) if event else None
-    return payload if user_can_receive(payload, user_id) else None
+    return payload if user_can_receive(payload, user_id, user=user) else None
 
 
 def validate_topic(chat, topic_id):

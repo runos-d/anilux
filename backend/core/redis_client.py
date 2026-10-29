@@ -29,6 +29,9 @@ class RedisPubSubManager:
         self._initialized = True
         self._callbacks: Dict[str, List[Tuple[Callable, Optional[asyncio.AbstractEventLoop]]]] = defaultdict(list)
         self._callbacks_lock = threading.Lock()
+        self._pending_callbacks = defaultdict(int)
+        self._pending_total = 0
+        self._overflowed_callbacks = set()
         self._redis_client = None
         self._pubsub_client = None
         self._pubsub = None
@@ -56,9 +59,10 @@ class RedisPubSubManager:
                 db=settings.REDIS_DB,
                 password=settings.REDIS_PASSWORD if settings.REDIS_PASSWORD else None,
                 decode_responses=True,
-                socket_connect_timeout=5,
-                socket_timeout=getattr(settings, "REDIS_SOCKET_TIMEOUT", 2),
+                socket_connect_timeout=0.3,
+                socket_timeout=min(getattr(settings, "REDIS_SOCKET_TIMEOUT", 0.5), 0.5),
                 retry_on_timeout=False,
+                max_connections=100,
             )
         return self._redis_client
 
@@ -70,7 +74,7 @@ class RedisPubSubManager:
                 db=settings.REDIS_DB,
                 password=settings.REDIS_PASSWORD if settings.REDIS_PASSWORD else None,
                 decode_responses=True,
-                socket_connect_timeout=5,
+                socket_connect_timeout=0.5,
                 socket_timeout=None,
                 retry_on_timeout=False,
             )
@@ -128,7 +132,27 @@ class RedisPubSubManager:
                     if loop is None or loop.is_closed() or not loop.is_running():
                         logger.warning("Event loop not available for async callback")
                         continue
-                    asyncio.run_coroutine_threadsafe(callback(event), loop)
+                    with self._callbacks_lock:
+                        if self._pending_callbacks[callback] >= 32 or self._pending_total >= 4096:
+                            if callback not in self._overflowed_callbacks:
+                                self._overflowed_callbacks.add(callback)
+                                owner = getattr(callback, '__self__', None)
+                                if owner and hasattr(owner, 'close'):
+                                    asyncio.run_coroutine_threadsafe(owner.close(code=4008), loop)
+                            continue
+                        self._pending_callbacks[callback] += 1
+                        self._pending_total += 1
+                    future = asyncio.run_coroutine_threadsafe(callback(event), loop)
+                    def completed(result, cb=callback):
+                        with self._callbacks_lock:
+                            self._pending_callbacks[cb] -= 1
+                            self._pending_total -= 1
+                            if not self._pending_callbacks[cb]:
+                                self._pending_callbacks.pop(cb, None)
+                                self._overflowed_callbacks.discard(cb)
+                        if not result.cancelled():
+                            result.exception()
+                    future.add_done_callback(completed)
                 else:
                     callback(event)
             except Exception as e:

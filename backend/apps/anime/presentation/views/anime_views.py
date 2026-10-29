@@ -99,14 +99,14 @@ def split_param(value):
         return []
     return [v.strip() for v in value.split(",") if v.strip()]
 
-class AnimeViewSet(viewsets.ModelViewSet):
+class AnimeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Anime.objects.all()
     serializer_class = AnimeSerializer
     permission_classes = [permissions.AllowAny]
 
     lookup_field = 'slug'
     lookup_url_kwarg = 'slug'
-    
+
     def get_object(self):
         lookup = self.kwargs.get('slug') or ''
         match = re.fullmatch(r'(\d+)-.+', lookup)
@@ -119,19 +119,6 @@ class AnimeViewSet(viewsets.ModelViewSet):
             alias = SeoAlias.objects.filter(path=f'/anime/{lookup}', kind='anime').first()
             if alias:
                 obj = detail_queryset.filter(pk=alias.object_id).first()
-        if obj is None and lookup:
-            legacy_match_id = next(
-                (
-                    anime_id
-                    for anime_id, title_ru in Anime.objects.filter(is_available=True)
-                    .values_list('pk', 'title_ru')
-                    .iterator()
-                    if legacy_anime_slug(title_ru or '') == lookup
-                ),
-                None,
-            )
-            if legacy_match_id is not None:
-                obj = detail_queryset.filter(pk=legacy_match_id).first()
         if obj is None:
             raise Http404()
         self.check_object_permissions(self.request, obj)
@@ -161,7 +148,7 @@ class AnimeViewSet(viewsets.ModelViewSet):
         if slug:
             slug_normalized = normalize_search_string(slug)
             slug_words = slug_normalized.split()
-            
+
             if slug_words:
                 slug_q = Q()
                 for word in slug_words:
@@ -175,20 +162,20 @@ class AnimeViewSet(viewsets.ModelViewSet):
                     if not slug_q:
                         slug_q = word_q
                     else:
-                        slug_q &= word_q  
-                
+                        slug_q &= word_q
+
                 if slug_q:
                     queryset = queryset.filter(slug_q)
-            
+
         search = request.query_params.get("search")
         if search:
             search_normalized = normalize_search_string(search)
             search_words = search_normalized.split()
-            
+
             if search_words:
                 search_q = Q()
                 for word in search_words:
-                    if len(word) < 2:  
+                    if len(word) < 2:
                         continue
                     word_q = (
                         Q(title_ru__icontains=word) |
@@ -199,8 +186,8 @@ class AnimeViewSet(viewsets.ModelViewSet):
                     if not search_q:
                         search_q = word_q
                     else:
-                        search_q &= word_q  
-                
+                        search_q &= word_q
+
                 if search_q:
                     queryset = queryset.filter(search_q)
 
@@ -224,7 +211,7 @@ class AnimeViewSet(viewsets.ModelViewSet):
                 queryset = queryset.none() if any(is_hidden_value('kind', kind) for kind in kinds) else queryset.filter(kind__in=kinds)
 
         genres_param = request.query_params.get("genres")
-        genre_logic = request.query_params.get("genre_logic", "OR").upper()  
+        genre_logic = request.query_params.get("genre_logic", "OR").upper()
         if genres_param:
             genre_values = split_param(genres_param)
             genre_names = []
@@ -386,7 +373,7 @@ class AnimeViewSet(viewsets.ModelViewSet):
             ordering = "-score"
 
         try:
-            page_size = max(1, min(int(request.query_params.get("page_size", 20)), 500))
+            page_size = max(1, min(int(request.query_params.get("page_size", 20)), 100))
         except ValueError:
             page_size = 20
         try:
@@ -479,33 +466,18 @@ class AnimeViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         try:
             from django.core.cache import cache
-            
+
             anime = self.get_object()
-            
-            cache_key = f"anime_screenshots_{anime.id}"
-            screenshots = cache.get(cache_key)
-            
-            if screenshots is None and not anime.screenshots and anime.shikimori_id:
-                try:
-                    result = anime_service.search_by_shikimori_id(
-                        anime.shikimori_id, limit=1
-                    )
-                    if result:
-                        screenshots = result.get("screenshots", [])
-                        if screenshots:
-                            anime.screenshots = screenshots
-                            anime.save(update_fields=["screenshots", "updated_at"])
-                            cache.set(cache_key, screenshots, 3600)
-                except Exception as e:
-                    logging.getLogger(__name__).warning(f"Не удалось загрузить скриншоты: {e}")
-                    cache.set(cache_key, [], 300)
-                    
+
+            # Optional provider metadata is refreshed by a bounded periodic task.
+            # A card read must never wait for, or enqueue work against, a provider.
+
             serializer = AnimeDetailSerializer(anime)
             return Response(serializer.data)
-            
+
         except Http404:
             return Response(
-                {"error": "Аниме не найдено"}, 
+                {"error": "Аниме не найдено"},
                 status=status.HTTP_404_NOT_FOUND
             )
         except Exception as e:
@@ -526,15 +498,15 @@ class AnnouncementViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         queryset = AnimeAnnouncement.objects.all()
-        
+
         status_param = self.request.query_params.get('status')
         if status_param:
             queryset = queryset.filter(status=status_param)
-        
+
         type_param = self.request.query_params.get('type')
         if type_param:
             queryset = queryset.filter(type=type_param)
-        
+
         search = self.request.query_params.get('search')
         if search:
             queryset = queryset.filter(
@@ -552,60 +524,60 @@ class AnnouncementViewSet(viewsets.ReadOnlyModelViewSet):
         queryset = queryset.order_by(ordering)
 
         return queryset
-    
+
     def retrieve(self, request, *args, **kwargs):
         lookup = kwargs.get('pk')
         instance = None
-        
+
         try:
             int(lookup)
             instance = self.queryset.filter(id=lookup).first()
         except (ValueError, TypeError):
             instance = self.queryset.filter(slug=lookup).first()
-            
+
             if not instance:
                 instance = self.queryset.filter(
                     title_en__isnull=False,
                     title_en__icontains=lookup.replace('-', ' ')
                 ).first()
-                
+
                 if not instance:
                     words = lookup.split('-')
                     if len(words) > 1:
                         query = Q()
                         for word in words:
-                            if len(word) > 2:  
+                            if len(word) > 2:
                                 query |= Q(title_en__icontains=word)
                         instance = self.queryset.filter(query).first()
-            
+
             if not instance:
                 instance = self.queryset.filter(
                     title_ru__icontains=lookup.replace('-', ' ')
                 ).first()
-                
+
                 if not instance:
                     words = lookup.split('-')
                     if len(words) > 1:
                         query = Q()
                         for word in words:
-                            if len(word) > 2:  
+                            if len(word) > 2:
                                 query |= Q(title_ru__icontains=word)
                         instance = self.queryset.filter(query).first()
-            
+
         if not instance:
             return Response(
                 {"detail": "Анонс не найден"},
                 status=status.HTTP_404_NOT_FOUND
             )
-        
+
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
-    
+
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        
+
         try:
-            page_size = min(int(request.query_params.get("page_size", 20)), 100)
+            page_size = max(1, min(int(request.query_params.get("page_size", 20)), 100))
         except ValueError:
             page_size = 20
         try:
@@ -638,6 +610,16 @@ class FranchiseViewSet(viewsets.ReadOnlyModelViewSet):
     ).filter(_public_parts_count__gte=2).prefetch_related("entries")
     permission_classes = [permissions.AllowAny]
 
+    def get_queryset(self):
+        from django.db.models import Prefetch
+        from apps.anime.application.catalog_visibility import visible_anime
+        return Franchise.objects.annotate(
+            _public_parts_count=Count('entries', distinct=True),
+        ).filter(_public_parts_count__gte=2).prefetch_related(Prefetch(
+            'entries', queryset=visible_anime().order_by('franchise_order', 'pk'),
+            to_attr='_visible_entries',
+        ))
+
     def get_serializer_class(self):
         if self.action == "retrieve":
             return FranchiseSerializer
@@ -663,8 +645,11 @@ class FranchiseViewSet(viewsets.ReadOnlyModelViewSet):
 
         if search:
             qs = qs.filter(name__icontains=search)
-        page_size = min(int(request.query_params.get("page_size", 20)), 200)
-        page = int(request.query_params.get("page", 1))
+        try:
+            page_size = max(1, min(int(request.query_params.get("page_size", 20)), 50))
+            page = max(1, int(request.query_params.get("page", 1)))
+        except (ValueError, TypeError):
+            return Response({'error': 'Некорректная пагинация'}, status=400)
         start = (page - 1) * page_size
         end = start + page_size
         total = qs.count()
@@ -761,7 +746,7 @@ class SearchAPIView(APIView):
                 {"error": "Требуется параметр поиска q"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         from django.core.cache import cache
         import hashlib
         cache_key = f"anime:search:{hashlib.md5(quote_plus(query).encode()).hexdigest()}:{limit}"
@@ -780,7 +765,7 @@ class SearchAPIView(APIView):
                     "source": "cache",
                 }
             )
-        
+
         try:
             db_results = fuzzy_search_anime(query, limit)
             try:
@@ -788,9 +773,9 @@ class SearchAPIView(APIView):
                     result.pop("match_score", None)
             except Exception:
                 logging.getLogger(__name__).exception("Failed to sanitize db_results")
-            
+
             cache.set(cache_key, db_results, 300)
-            
+
             start = (page - 1) * page_size if paginated else 0
             results = db_results[start:start + page_size] if paginated else db_results
             return Response(
@@ -984,7 +969,7 @@ class KodikSearchCandidatesView(APIView):
             return self._build_standalone_groups(results)
         node_ids = sorted(node_map, key=lambda key: (node_order(node_map[key]), key))[:100]
         nodes = [node_map[key] for key in node_ids]
-        
+
         existing_anime = {}
         if node_ids:
             existing_anime = dict(Anime.objects.filter(shikimori_id__in=node_ids).values_list('shikimori_id', 'slug'))
@@ -1130,7 +1115,7 @@ class KodikSearchCandidatesView(APIView):
         existing_anime = {}
         if seen:
             existing_anime = dict(Anime.objects.filter(shikimori_id__in=seen).values_list('shikimori_id', 'slug'))
-        
+
         for group in groups:
             for item in group["items"]:
                 item["exists_in_db"] = item["shikimori_id"] in existing_anime
@@ -1661,9 +1646,9 @@ class RandomAnimeView(APIView):
 class CurrentlyWatchingView(APIView):
     permission_classes = [permissions.AllowAny]
 
-    PLAYER_WINDOW = 2 * 60  
-    TAB_WINDOW = 10 * 60  
-    PROGRESS_WINDOW = 2 * 60  
+    PLAYER_WINDOW = 2 * 60
+    TAB_WINDOW = 10 * 60
+    PROGRESS_WINDOW = 2 * 60
 
     def get(self, request):
         from django.utils import timezone
@@ -1720,7 +1705,7 @@ class CurrentlyWatchingView(APIView):
                 watching_count = watching_tab_map.get(aid, 0)
                 total = max(
                     player_count, watching_count
-                )  
+                )
 
                 data = AnimeSerializer(a).data
                 data["viewers_count"] = total
@@ -1857,7 +1842,7 @@ class HomeAPIView(APIView):
 
 class PersonalizedRecommendationsView(APIView):
     permission_classes = [permissions.AllowAny]
-    
+
     def get(self, request):
         from apps.anime.application.recommendations import read
         return Response(read(request.user, request.query_params.get('sections')))
@@ -1865,13 +1850,13 @@ class PersonalizedRecommendationsView(APIView):
     def legacy_build(self, request):
         import random
         user = request.user if request.user.is_authenticated else None
-        
+
         user_genres, user_genre_counts, watched_ids = self._get_user_genre_preferences_detailed(user)
-        
+
         rare_genres = self._get_rare_genres(user_genre_counts)
-        
+
         random_genre = random.choice(user_genres) if user_genres else None
-        
+
         result = {
             "based_on_watched": self._get_based_on_watched(user, watched_ids, 20),
             "similar_style": self._get_similar_style(user, watched_ids, 20, random_genre),
@@ -1885,22 +1870,22 @@ class PersonalizedRecommendationsView(APIView):
             "user_genres": user_genres,
             "has_personalization": user is not None and len(watched_ids) > 0,
         }
-        
+
         import re
         CYRILLIC_RE = re.compile(r'[а-яёА-ЯЁ]')
-        
+
         def has_cyrillic(text):
             return bool(CYRILLIC_RE.search(text or ''))
-        
-        for key in ["based_on_watched", "similar_style", "top_rated_in_genres", 
-                    "new_in_genres", "classics", "top_anime", "new_releases", 
+
+        for key in ["based_on_watched", "similar_style", "top_rated_in_genres",
+                    "new_in_genres", "classics", "top_anime", "new_releases",
                     "short", "movies"]:
             if key in result:
                 result[key] = [
                     item for item in result[key]
                     if has_cyrillic(item.get("title", ""))
                 ]
-        
+
         return Response(result)
 
     def post(self, request):
@@ -2074,11 +2059,11 @@ class PersonalizedRecommendationsView(APIView):
         top_genres = [g for g, _ in genre_counter.most_common(15)]
 
         return top_genres, dict(genre_counter), watched_ids
-    
+
     def _get_rare_genres(self, genre_counts: dict):
         if not genre_counts:
             return []
-        
+
         sorted_genres = sorted(genre_counts.items(), key=lambda x: x[1])
         rare_genres = [g for g, _ in sorted_genres[:5]]
         return rare_genres
@@ -2116,7 +2101,7 @@ class PersonalizedRecommendationsView(APIView):
     def _pick_diverse_by_genre(self, candidates, genres_pool, limit, exclude_ids):
         import random
         from collections import defaultdict
-        
+
         if not genres_pool:
             random.shuffle(candidates)
             return self._dedupe_franchises(candidates)[:limit]
@@ -2218,7 +2203,7 @@ class PersonalizedRecommendationsView(APIView):
             )
             type_bonus = 0.05 if any(p["kind"] == anime.kind for p in profiles) else 0
             scored.append((anime, max_sim + type_bonus + (anime.score or 0) * 0.01))
-            
+
         scored.sort(key=lambda x: x[1], reverse=True)
         top = [s[0] for s in scored[:limit * 3]]
         random.shuffle(top)
@@ -3397,7 +3382,11 @@ class KodikVideoUrlView(APIView):
             return Response({"error": "Не удалось загрузить видео", "fallback": "kodik"}, status=503)
 
 
+from .prepared_downloads import DownloadContentNegotiation
+
+
 class KodikClipDownloadView(APIView):
+    content_negotiation_class = DownloadContentNegotiation
     permission_classes = [permissions.IsAuthenticated]
     throttle_classes = [StaffExemptRateThrottle]
 
@@ -3413,127 +3402,10 @@ class KodikClipDownloadView(APIView):
         return anime_service.get_m3u8_url(episode_url, user_ip)
 
     def get(self, request, pk):
-        is_premium = True
-        if hasattr(request.user, 'profile_settings'):
-            is_premium = request.user.profile_settings.is_premium
-        
-        if not is_premium:
-            return Response(
-                {"error": "Доступно только премиум пользователям"}, status=403
-            )
-
-        try:
-            anime = Anime.objects.get(pk=pk)
-        except Anime.DoesNotExist:
-            return Response({"error": "Аниме не найдено"}, status=404)
-
-        episode = int(request.query_params.get("episode", 1))
-        season = int(request.query_params.get("season", 1))
-        translation_id = request.query_params.get("translation_id")
-        start_sec = int(request.query_params.get("start", 0))
-        end_sec = int(request.query_params.get("end", 120))
-        label = request.query_params.get("label", "clip")
-        format_type = request.query_params.get("format", "video")  
-        user_ip = request.META.get("HTTP_X_FORWARDED_FOR", "").split(",")[
-            0
-        ].strip() or request.META.get("REMOTE_ADDR", "1.1.1.1")
-
-        episode_url = self._get_episode_player_url(
-            anime, episode, season, translation_id
-        )
-        if not episode_url:
-            return Response({"error": "Не удалось найти серию"}, status=404)
-
-        m3u8_url = self._get_m3u8_via_api(episode_url, user_ip=user_ip)
-        if not m3u8_url:
-            return Response({"error": "Не удалось получить видео"}, status=404)
-
-        import subprocess
-        import tempfile
-        import os
-        from django.http import HttpResponse
-        import logging
-
-        logger = logging.getLogger(__name__)
-        duration = end_sec - start_sec
-        if duration <= 0:
-            return Response({"error": "end должен быть больше start"}, status=400)
-
-        with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as tmp:
-            tmp_path = tmp.name
-
-        try:
-            if not os.path.exists("/usr/bin/ffmpeg"):
-                logger.error("ffmpeg не найден по пути /usr/bin/ffmpeg")
-                return Response({"error": "Сервис ffmpeg недоступен"}, status=503)
-
-            if format_type == "audio":
-                cmd = [
-                    "/usr/bin/ffmpeg",
-                    "-y",
-                    "-ss", str(start_sec),
-                    "-i", m3u8_url,
-                    "-t", str(duration),
-                    "-vn",  
-                    "-acodec", "libmp3lame",
-                    "-b:a", "192k",
-                    "-f", "mp3",
-                    "pipe:1",
-                ]
-                content_type = "audio/mpeg"
-                extension = "mp3"
-            else:
-                with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as tmp:
-                    tmp_path = tmp.name
-                
-                cmd = [
-                    "/usr/bin/ffmpeg",
-                    "-y",
-                    "-ss", str(start_sec),
-                    "-i", m3u8_url,
-                    "-t", str(duration),
-                    "-c", "copy",
-                    "-movflags", "+faststart",
-                    tmp_path
-                ]
-                content_type = "video/mp4"
-                extension = "mp4"
-            
-            logger.info(f"FFmpeg команда: {' '.join(cmd)}")
-            
-            process = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-                timeout=120
-            )
-            
-            if process.returncode != 0:
-                logger.error(f"FFmpeg stderr: {process.stderr}")
-                return Response(
-                    {"error": f"Ошибка ffmpeg: {process.stderr[:200]}"},
-                    status=500
-                )
-            
-            with open(tmp_path, 'rb') as f:
-                output = f.read()
-            
-            response = HttpResponse(output, content_type=content_type)
-            from django.utils.encoding import escape_uri_path
-            filename = f"{label.replace(' ', '_')}_{pk}_{episode}.{extension}"
-            response["Content-Disposition"] = f"attachment; filename*=UTF-8''{escape_uri_path(filename)}"
-            response["Content-Length"] = len(output)
-            return response
-
-        except subprocess.TimeoutExpired:
-            logger.error("FFmpeg timeout после 120 секунд")
-            return Response({"error": "Нарезка видео заняла слишком много времени"}, status=504)
-        except Exception as e:
-            logger.exception(f"Clip download error: {e}")
-            return Response({"error": f"Внутренняя ошибка сервера: {str(e)}"}, status=500)
-        finally:
-            if os.path.exists(tmp_path):
-                os.unlink(tmp_path)
+        if hasattr(request.user, 'profile_settings') and not request.user.profile_settings.is_premium:
+            return Response({'error': 'Доступно только премиум пользователям'}, status=403)
+        from .prepared_downloads import PreparedDownloadView
+        return PreparedDownloadView().get(request, pk)
 
 
 class AdminTodayAddedAnimeView(APIView):
@@ -3547,7 +3419,7 @@ class AdminTodayAddedAnimeView(APIView):
         )
 
         data = []
-        for anime in animes[:100]:  
+        for anime in animes[:100]:
             data.append(
                 {
                     "id": anime.id,
@@ -3843,123 +3715,34 @@ class KodikUserAddView(APIView):
         super().__init__(*args, **kwargs)
 
     def post(self, request):
+        from rest_framework import serializers
+        from apps.anime.application.background_work import enqueue
+        from apps.anime.application.background_tasks import import_requested_catalog
         if KodikImportView._body_too_large(request):
-            return Response({"error": "request_body_too_large"}, status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
-        shikimori_id = request.data.get("shikimori_id")
-        shikimori_ids = request.data.get("shikimori_ids")
-        title = request.data.get("title", "")
-        download_posters = bool(request.data.get("download_posters", False))
+            return Response({'error': 'request_body_too_large'}, status=413)
+        class Input(serializers.Serializer):
+            shikimori_ids = serializers.ListField(child=serializers.IntegerField(min_value=1, max_value=2147483647), min_length=1, max_length=100, required=False)
+            shikimori_id = serializers.IntegerField(min_value=1, max_value=2147483647, required=False)
+            download_posters = serializers.BooleanField(default=False)
+        values = Input(data=request.data)
+        values.is_valid(raise_exception=True)
+        data = values.validated_data
+        ids = list(dict.fromkeys(data.get('shikimori_ids') or ([data['shikimori_id']] if data.get('shikimori_id') else [])))
+        if not ids:
+            return Response({'error': 'Нет shikimori_id'}, status=400)
+        limited = self._reserve(request, ids)
+        if limited:
+            return limited
+        job = enqueue('import', {'ids': ids, 'download_posters': data['download_posters'], 'actor': self._actor(request)}, import_requested_catalog)
+        result = {**job.result, 'status': job.status, 'progress_token': str(job.pk)}
+        return Response(result, status=200 if job.status == 'ready' else 202)
 
-        if shikimori_ids:
-            if not isinstance(shikimori_ids, list) or not 1 <= len(shikimori_ids) <= 100:
-                return Response({"error": "shikimori_ids должен содержать от 1 до 100 ID"}, status=400)
-            if any(isinstance(value, bool) or not str(value).isdigit() or int(value) <= 0 for value in shikimori_ids):
-                return Response({"error": "Все shikimori_ids должны быть положительными целыми"}, status=400)
-            ids = list(dict.fromkeys(int(value) for value in shikimori_ids))
-            limited = self._reserve(request, ids)
-            if limited:
-                return limited
-
-            existing = set(Anime.objects.filter(shikimori_id__in=ids).values_list("shikimori_id", flat=True))
-            missing_ids = [identifier for identifier in ids if identifier not in existing]
-
-            progress_token = str(uuid.uuid4())
-            progress_cache = {
-                "token": progress_token,
-                "progress_key": f"import_progress:{progress_token}",
-                "total": len(missing_ids),
-                "current": 0,
-                "current_title": "Подготовка...",
-            }
-            safe_cache_set(f"import_progress:{progress_token}", progress_cache, timeout=3600)
-
-            results = []
-            imported_anime = []
-            errors = []
-
-            def _do_import(sid: int):
-                import logging
-                logger = logging.getLogger(__name__)
-                try:
-                    logger.info(f"Starting import for shikimori_id={sid}")
-                    item = self._import_one(sid, download_posters=download_posters, progress_cache=progress_cache)
-                    logger.info(f"Completed import for shikimori_id={sid}")
-                    return {
-                        "shikimori_id": sid,
-                        "title": item.get("title", title),
-                        "slug": item.get("slug"),
-                        "ok": True,
-                        "message": "Аниме импортировано",
-                        "anime_id": item.get("anime_id"),
-                    }
-                except Exception as e:
-                    logger.error(f"Import failed for shikimori_id={sid}: {e}")
-                    return {
-                        "shikimori_id": sid,
-                        "title": title,
-                        "ok": False,
-                        "message": str(e)[:200],
-                        "anime_id": None,
-                    }
-
-            for sid in missing_ids:
-                result = _do_import(sid)
-                results.append({
-                    "shikimori_id": result["shikimori_id"],
-                    "title": result["title"],
-                    "slug": result.get("slug", ""),
-                    "ok": result["ok"],
-                    "message": result["message"],
-                })
-                if result.get("anime_id"):
-                    imported_anime.append(result["anime_id"])
-                if not result["ok"]:
-                    errors.append(result["message"])
-
-            if imported_anime:
-                self._build_franchise_for_ids(ids, imported_anime)
-
-            return Response({
-                "results": results,
-                "message": f"Обработано: {len(results)}; уже существовало: {len(existing)}",
-                "existing": sorted(existing),
-                "progress_token": progress_token,
-            })
-
-        if shikimori_id:
-            try:
-                identifier = int(shikimori_id)
-                if identifier <= 0:
-                    raise ValueError
-                limited = self._reserve(request, [identifier])
-                if limited:
-                    return limited
-                existing = Anime.objects.filter(shikimori_id=identifier).only("id", "slug", "title_ru").first()
-                if existing:
-                    return Response({"results": [{"shikimori_id": identifier, "title": existing.title_ru, "slug": existing.slug, "ok": True, "existing": True}], "message": "Аниме уже существует"})
-                item = self._import_one(identifier, download_posters=download_posters)
-                return Response({
-                    "results": [{
-                        "shikimori_id": int(shikimori_id),
-                        "title": item.get("title", title),
-                        "slug": item.get("slug"),
-                        "ok": True,
-                        "message": "Аниме импортировано",
-                    }],
-                    "message": "Аниме импортировано",
-                })
-            except Exception as e:
-                return Response({
-                    "results": [{
-                        "shikimori_id": shikimori_id,
-                        "title": title,
-                        "ok": False,
-                        "message": str(e)[:200],
-                    }],
-                    "message": str(e)[:200],
-                }, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response({"error": "Нет shikimori_id"}, status=status.HTTP_400_BAD_REQUEST)
+    @staticmethod
+    def _actor(request):
+        if request.user.is_authenticated:
+            return str(request.user.pk)
+        import hashlib
+        return 'guest:' + hashlib.sha256((request.META.get('REMOTE_ADDR') or '').encode()).hexdigest()
 
     @staticmethod
     def _reserve(request, identifiers):
@@ -3975,20 +3758,19 @@ class KodikUserAddView(APIView):
         return None
 
     def get(self, request):
-        token = request.query_params.get("token")
-        if not token:
-            return Response({"error": "Token required"}, status=status.HTTP_400_BAD_REQUEST)
-
-        progress = safe_cache_get(f"import_progress:{token}")
-        if not progress:
-            return Response({"error": "Progress not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        return Response({
-            "total": progress.get("total", 0),
-            "current": progress.get("current", 0),
-            "current_title": progress.get("current_title", ""),
-            "percent": round(progress.get("current", 0) / max(progress.get("total", 1), 1) * 100),
-        })
+        from apps.anime.models import BackgroundJob
+        try:
+            token = uuid.UUID(request.query_params.get('token', ''))
+        except (ValueError, TypeError):
+            return Response({'error': 'Некорректный token'}, status=400)
+        job = BackgroundJob.objects.filter(pk=token, kind='import').first()
+        if not job or job.payload.get('actor') != self._actor(request):
+            return Response({'error': 'Progress not found'}, status=404)
+        result = job.result or {}
+        current = result.get('current', 0)
+        total = result.get('total', len(job.payload['ids']))
+        return Response({**result, 'status': job.status, 'error': job.error, 'current': current, 'total': total,
+                         'percent': 100 if job.status == 'ready' else round(current / max(total, 1) * 100)})
 
     def _import_one(self, shikimori_id: int, download_posters: bool = False, progress_cache: dict = None) -> dict:
         item = anime_service.get_by_shikimori_id(shikimori_id)

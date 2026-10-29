@@ -390,6 +390,27 @@ class FeedTests(TestCase):
         self.client.force_authenticate(user=self.user)
         Follow.objects.create(follower=self.user, following=self.followed)
 
+    def test_publication_order_and_cursor_work_without_a_total_count(self):
+        from datetime import timedelta
+        from django.utils import timezone
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+        now = timezone.now()
+        republished = Post.objects.create(author=self.followed, text='Republished', status='published', visibility='public')
+        older_publication = Post.objects.create(author=self.followed, text='Older publication', status='published', visibility='public')
+        Post.objects.filter(pk=republished.pk).update(created_at=now-timedelta(days=20), published_at=now-timedelta(hours=1))
+        Post.objects.filter(pk=older_publication.pk).update(created_at=now-timedelta(minutes=10), published_at=now-timedelta(days=2))
+        with CaptureQueriesContext(connection) as queries:
+            first = self.client.get('/api/social/feed/', {'page_size':1, 'include_count':'false'})
+        self.assertEqual(first.status_code, 200)
+        self.assertIsNone(first.data['count'])
+        self.assertEqual(str(first.data['results'][0]['id']), str(republished.pk))
+        self.assertFalse(any('SELECT COUNT(' in item['sql'].upper() for item in queries.captured_queries))
+        second = self.client.get('/api/social/feed/', {'page_size':1, 'cursor':first.data['next_cursor']})
+        self.assertEqual(second.status_code, 200)
+        self.assertEqual(second.data['count'], 2)
+        self.assertEqual(str(second.data['results'][0]['id']), str(older_publication.pk))
+
     def test_feed_returns_posts(self):
         Post.objects.create(
             author=self.followed,

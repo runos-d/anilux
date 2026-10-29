@@ -652,6 +652,7 @@ class UserLibraryViewSet(viewsets.GenericViewSet,
             item = UserLibrary.objects.get(user=request.user, anime_id=anime_id)
             return Response({
                 'in_library': True,
+                'item': _serialize_library_item(item),
                 'status': item.status,
                 'current_season': item.current_season or 1,
                 'current_episode': item.current_episode,

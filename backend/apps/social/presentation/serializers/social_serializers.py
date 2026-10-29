@@ -3251,7 +3251,12 @@ class NewsSerializer(serializers.ModelSerializer):
     author_id = serializers.IntegerField(source="author.id", read_only=True)
     author_username = serializers.CharField(source="author.username", read_only=True)
     author_display_name = serializers.CharField(source="author.display_name", read_only=True, default=None)
-    author_avatar = serializers.CharField(source="author.avatar.url", read_only=True, default=None)
+    author_avatar = serializers.SerializerMethodField()
+
+    def get_author_avatar(self, obj):
+        from apps.users.application.privacy import can_view_field
+        viewer = getattr(self.context.get("request"), "user", None)
+        return obj.author.avatar.url if obj.author.avatar and can_view_field(obj.author, viewer, "who_can_see_profile_photo") else None
     priority_display = serializers.CharField(source="get_priority_display", read_only=True)
     cover_url_final = serializers.SerializerMethodField()
 

@@ -8,10 +8,12 @@ import pyotp
 import qrcode
 from io import BytesIO
 from django.core.files import File
+from apps.users.infrastructure.profile_storage import profile_storage
 
 
 
 class User(AbstractUser):
+    token_version = models.PositiveIntegerField(default=0)
     email = models.EmailField(_("email address"), unique=True, null=True, blank=True)
 
     unique_id = models.CharField(
@@ -19,7 +21,7 @@ class User(AbstractUser):
     )
 
 
-    avatar = models.ImageField(upload_to="avatars/", null=True, blank=True)
+    avatar = models.ImageField(upload_to="avatars/", storage=profile_storage, null=True, blank=True)
     cover_image = models.ImageField(
         upload_to="covers/", null=True, blank=True, verbose_name=_("Profile cover")
     )
@@ -148,11 +150,11 @@ class User(AbstractUser):
         if self.unique_id:
             return self.unique_id
 
-    
+
         while True:
             unique_id = "".join(random.choices(string.digits, k=12))
 
-        
+
             if not User.objects.filter(unique_id=unique_id).exists():
                 self.unique_id = unique_id
                 self.save(update_fields=["unique_id"])
@@ -310,7 +312,7 @@ class UserProfileSettings(models.Model):
     suggest_frequent_contacts = models.BooleanField(default=True)
 
 
-    avatar = models.ImageField(upload_to="avatars/", null=True, blank=True)
+    avatar = models.ImageField(upload_to="avatars/", storage=profile_storage, null=True, blank=True)
     theme = models.CharField(
         max_length=20,
         choices=[
@@ -436,15 +438,15 @@ class TwoFactorAuth(models.Model):
     secret_key = models.CharField(max_length=32, blank=True)
 
 
-    backup_codes = models.JSONField(default=list)  
-    phone_number = models.CharField(max_length=20, blank=True)  
-    email_enabled = models.BooleanField(default=True)  
+    backup_codes = models.JSONField(default=list)
+    phone_number = models.CharField(max_length=20, blank=True)
+    email_enabled = models.BooleanField(default=True)
 
 
     require_on_new_device = models.BooleanField(default=True)
     remember_device_days = models.IntegerField(
         default=30
-    )  
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     last_used = models.DateTimeField(null=True, blank=True)
@@ -469,7 +471,7 @@ class TwoFactorAuth(models.Model):
             name=self.user.email, issuer_name="Messenger App"
         )
 
-    
+
         qr = qrcode.make(provisioning_uri)
         buffer = BytesIO()
         qr.save(buffer, format="PNG")
@@ -482,13 +484,13 @@ class TwoFactorAuth(models.Model):
 
         totp = pyotp.TOTP(self.secret_key)
 
-    
+
         if totp.verify(code):
             self.last_used = timezone.now()
             self.save()
             return True
 
-    
+
         if code in self.backup_codes:
             self.backup_codes.remove(code)
             self.save()
@@ -500,7 +502,7 @@ class TwoFactorAuth(models.Model):
 class ActiveSession(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sessions")
     session_key = models.CharField(max_length=40, unique=True)
-    device_info = models.JSONField(default=dict)  
+    device_info = models.JSONField(default=dict)
     ip_address = models.GenericIPAddressField()
     user_agent = models.TextField()
 
@@ -539,7 +541,7 @@ class NotificationSettings(models.Model):
     push_enabled = models.BooleanField(default=True)
     push_sound = models.BooleanField(default=True)
     push_vibration = models.BooleanField(default=True)
-    push_preview = models.BooleanField(default=True)  
+    push_preview = models.BooleanField(default=True)
 
 
     email_enabled = models.BooleanField(default=True)
@@ -558,8 +560,8 @@ class NotificationSettings(models.Model):
     mute_until = models.DateTimeField(null=True, blank=True)
     do_not_disturb_start = models.TimeField(
         null=True, blank=True
-    )  
-    do_not_disturb_end = models.TimeField(null=True, blank=True)  
+    )
+    do_not_disturb_end = models.TimeField(null=True, blank=True)
 
 
     override_chat_settings = models.BooleanField(default=False)
@@ -568,6 +570,11 @@ class NotificationSettings(models.Model):
 
 
 class PrivacySettings(models.Model):
+    ANALYTICS_CONSENT_CHOICES = [
+        ("unknown", "Не выбрано"),
+        ("granted", "Разрешено"),
+        ("denied", "Отклонено"),
+    ]
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="privacy_settings"
     )
@@ -617,6 +624,13 @@ class PrivacySettings(models.Model):
         default="everyone",
     )
 
+    analytics_consent_state = models.CharField(
+        max_length=10, choices=ANALYTICS_CONSENT_CHOICES, default="unknown"
+    )
+    analytics_consent_version = models.CharField(max_length=32, blank=True)
+    analytics_consent_updated_at = models.DateTimeField(null=True, blank=True)
+    analytics_consent_source = models.CharField(max_length=24, blank=True)
+
 
 class UserTheme(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="themes")
@@ -634,7 +648,7 @@ class UserTheme(models.Model):
     border_color = models.CharField(max_length=7, default="#414868")
 
 
-    message_bubble_radius = models.IntegerField(default=12)  
+    message_bubble_radius = models.IntegerField(default=12)
     show_message_time = models.BooleanField(default=True)
     compact_mode = models.BooleanField(default=False)
 
@@ -642,7 +656,7 @@ class UserTheme(models.Model):
     chat_background = models.ImageField(
         upload_to="chat_backgrounds/", null=True, blank=True
     )
-    chat_background_opacity = models.FloatField(default=0.1)  
+    chat_background_opacity = models.FloatField(default=0.1)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -656,7 +670,7 @@ class UserTheme(models.Model):
         profile_settings.accent_color = self.primary_color
         profile_settings.save()
 
-    
+
         UserTheme.objects.filter(user=self.user).exclude(id=self.id).update(
             is_active=False
         )
@@ -686,8 +700,8 @@ class FontSettings(models.Model):
 
 
     font_family = models.CharField(max_length=50, default="Inter")
-    font_size = models.IntegerField(default=14)  
-    interface_scale = models.IntegerField(default=100)  
+    font_size = models.IntegerField(default=14)
+    interface_scale = models.IntegerField(default=100)
 
 
     line_height = models.FloatField(default=1.5)
@@ -779,7 +793,7 @@ class DataExport(models.Model):
         User, on_delete=models.CASCADE, related_name="data_exports"
     )
 
-    items = models.JSONField(default=list)  
+    items = models.JSONField(default=list)
     format = models.CharField(
         max_length=10,
         choices=[
@@ -793,17 +807,20 @@ class DataExport(models.Model):
     status = models.CharField(
         max_length=20,
         choices=[
+            ("queued", "В очереди"),
             ("processing", "Обработка"),
             ("ready", "Готов"),
             ("expired", "Истёк"),
             ("failed", "Ошибка"),
+            ("canceled", "Отменён"),
         ],
-        default="processing",
+        default="queued",
     )
 
-    size = models.CharField(max_length=20, blank=True)  
+    size = models.CharField(max_length=20, blank=True)
     download_url = models.URLField(blank=True)
     file_path = models.CharField(max_length=255, blank=True)
+    error_code = models.CharField(max_length=64, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()
@@ -831,7 +848,7 @@ class SecurityLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     action = models.CharField(
         max_length=100
-    )  
+    )
     ip_address = models.GenericIPAddressField()
     user_agent = models.TextField()
     location = models.CharField(max_length=100, blank=True)
@@ -877,9 +894,9 @@ class MessageNotification(models.Model):
         unique_together = ["user", "message", "notified_via"]
 
 
-class UserAnalytics(models.Model):
+class UserActivitySummary(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="analytics"
+        User, on_delete=models.CASCADE, related_name="activity_summary"
     )
 
 
@@ -887,12 +904,12 @@ class UserAnalytics(models.Model):
     messages_received = models.IntegerField(default=0)
     media_sent = models.IntegerField(default=0)
     calls_made = models.IntegerField(default=0)
-    time_spent = models.IntegerField(default=0)  
+    time_spent = models.IntegerField(default=0)
 
 
-    favorite_chat_type = models.CharField(max_length=20, blank=True)  
-    most_active_hour = models.IntegerField(null=True, blank=True)  
-    average_response_time = models.IntegerField(default=0)  
+    favorite_chat_type = models.CharField(max_length=20, blank=True)
+    most_active_hour = models.IntegerField(null=True, blank=True)
+    average_response_time = models.IntegerField(default=0)
 
 
     primary_device = models.CharField(max_length=100, blank=True)
@@ -903,7 +920,8 @@ class UserAnalytics(models.Model):
     collected_since = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name_plural = "User Analytics"
+        verbose_name = "User activity summary"
+        verbose_name_plural = "User activity summaries"
 
     def update_activity(self, activity_type, **kwargs):
         if activity_type == "message_sent":
@@ -949,21 +967,21 @@ class UserAnalytics(models.Model):
 
     def get_time_spent_since(self, since_date):
         sessions = UserSession.objects.filter(
-            user=self.user, start_time__gte=since_date
+            user=self.user, created_at__gte=since_date
         )
 
         total_seconds = sum(
-            (s.end_time or timezone.now() - s.start_time).total_seconds()
+            max(0, (s.last_activity - s.created_at).total_seconds())
             for s in sessions
         )
 
-        return int(total_seconds / 60)  
+        return int(total_seconds / 60)
 
     def get_most_active_day(self, since_date):
-        return "нот релизед"  
+        return "нот релизед"
 
     def get_top_chats(self, since_date, limit=5):
-        return []  
+        return []
 
 
 def validate_rating(value):
@@ -1004,9 +1022,9 @@ class FavoriteTheme(models.Model):
     theme_type = models.CharField(max_length=20, choices=THEME_TYPE_CHOICES)
     episode = models.IntegerField()
     season = models.IntegerField(default=1)
-    title = models.CharField(max_length=255, blank=True)  
-    start_time = models.IntegerField(default=0)  
-    end_time = models.IntegerField(null=True, blank=True)  
+    title = models.CharField(max_length=255, blank=True)
+    start_time = models.IntegerField(default=0)
+    end_time = models.IntegerField(null=True, blank=True)
     added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -1030,7 +1048,7 @@ class FavoriteEpisode(models.Model):
     )
     episode = models.IntegerField()
     season = models.IntegerField(default=1)
-    note = models.CharField(max_length=255, blank=True)  
+    note = models.CharField(max_length=255, blank=True)
     added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -1066,30 +1084,30 @@ class UserLibrary(models.Model):
 
 
     current_season = models.PositiveIntegerField(default=1)
-    current_episode = models.IntegerField(default=0)  
-    episodes_watched = models.IntegerField(default=0)  
-    real_episodes_watched = models.IntegerField(default=0)  
+    current_episode = models.IntegerField(default=0)
+    episodes_watched = models.IntegerField(default=0)
+    real_episodes_watched = models.IntegerField(default=0)
 
 
     rating = models.IntegerField(null=True, blank=True, validators=[validate_rating])
 
 
     added_at = models.DateTimeField(auto_now_add=True)
-    started_at = models.DateTimeField(null=True, blank=True)  
+    started_at = models.DateTimeField(null=True, blank=True)
     completed_at = models.DateTimeField(
         null=True, blank=True
-    )  
+    )
     updated_at = models.DateTimeField(auto_now=True)
 
     user_set_status = models.BooleanField(default=False)
 
-    notes = models.TextField(blank=True)  
+    notes = models.TextField(blank=True)
     is_favorite = models.BooleanField(
         default=False
-    )  
+    )
 
 
-    rewatch_count = models.IntegerField(default=0)  
+    rewatch_count = models.IntegerField(default=0)
     episode_baseline = models.JSONField(null=True, blank=True)
     watched_through = models.PositiveIntegerField(default=0)
 
@@ -1297,7 +1315,7 @@ class Subscription(models.Model):
 
         now = timezone.now()
 
-    
+
         if self.is_active and self.expires_at and self.expires_at > now:
             self.expires_at = self.expires_at + timedelta(days=days)
         else:

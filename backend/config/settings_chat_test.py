@@ -3,7 +3,7 @@ import os
 import tempfile
 
 DATABASES = {'default': {
-    'ENGINE': 'django.db.backends.mysql',
+    'ENGINE': 'core.db.backends.mysql',
     'NAME': 'chat_test',
     'USER': 'root', 'PASSWORD': '',
     'HOST': os.environ.get('CHAT_TEST_DB_HOST', 'anilux-chat-tests'),
@@ -24,3 +24,5 @@ STATICFILES_DIRS = []
 
 CHAT_PRIVATE_MEDIA_ROOT = tempfile.mkdtemp(prefix="chat-private-tests-")
 POST_PRIVATE_MEDIA_ROOT = tempfile.mkdtemp(prefix='post-private-tests-')
+
+DOWNLOAD_ROOT = tempfile.mkdtemp(prefix="download-tests-")

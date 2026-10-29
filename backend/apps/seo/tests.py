@@ -167,7 +167,12 @@ class SeoTests(TestCase):
                 self.assertEqual(html.count('name="robots"'), 1)
                 nonces = set(re.findall(r'<script[^>]+nonce="([^"]+)"', html))
                 self.assertEqual(len(nonces), 1)
-                self.assertIn("'nonce-" + next(iter(nonces)) + "'", response['Content-Security-Policy'])
+                csp = response['Content-Security-Policy']
+                self.assertIn("'nonce-" + next(iter(nonces)) + "'", csp)
+                self.assertIn("script-src 'self'", csp)
+                self.assertIn("https://mc.yandex.ru", csp)
+                self.assertIn("https://www.googletagmanager.com", csp)
+                self.assertNotIn("script-src *", csp)
                 for ua in ['Googlebot', 'YandexBot']:
                     bot_html = self.get(path, HTTP_USER_AGENT=ua).content.decode()
                     without_nonce = lambda value: re.sub(r'nonce="[^"]+"', 'nonce=""', value)

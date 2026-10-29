@@ -32,7 +32,7 @@ class AnimeCatalogSectionView(APIView):
     def get(self, request, section):
         if section == "calendar":
             from apps.anime.presentation.views.anime_views import CalendarView
-            return CalendarView.as_view()(request)
+            return CalendarView.as_view()(request._request)
         valid_sections = {"ongoings", "announcements", "watching"}
         if section not in valid_sections:
             raise Http404()

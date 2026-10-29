@@ -2,12 +2,13 @@ import json
 import asyncio
 from collections import defaultdict
 from datetime import datetime, timedelta
+from functools import partial
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from asgiref.sync import sync_to_async
 from django.db.models import Q
 from django.utils import timezone
 from rest_framework_simplejwt.tokens import AccessToken, TokenError
+from rest_framework.exceptions import AuthenticationFailed
 from apps.users.infrastructure.models.users import User
 from apps.social.infrastructure.models.social import (
     PrivateChat,
@@ -17,9 +18,10 @@ from apps.social.infrastructure.models.social import (
 )
 from apps.social.application.unread_count_service import unread_service
 from core.online_status import online_status, typing_status
+from core.socket_limits import SocketFrameBudget
+from core.socket_credentials import socket_token, accepted_protocol
 from django.conf import settings
 import logging
-from urllib.parse import parse_qs
 from autobahn.exception import Disconnected
 
 
@@ -27,11 +29,7 @@ logger = logging.getLogger(__name__)
 
 
 def _get_token_from_scope(scope):
-    raw = scope.get("query_string", b"")
-    if isinstance(raw, bytes):
-        raw = raw.decode(errors="ignore")
-    params = parse_qs(raw)
-    return params.get("token", [None])[0]
+    return socket_token(scope)
 
 @database_sync_to_async
 def resolve_chat_db_id(chat_id):
@@ -87,6 +85,7 @@ class GlobalEventsConsumer(AsyncWebsocketConsumer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.frames = SocketFrameBudget()
         self.user = None
         self.token_expires = None
         self.user_id = None
@@ -96,6 +95,7 @@ class GlobalEventsConsumer(AsyncWebsocketConsumer):
         self._callback_registered = False
         self._presence_registered = False
         self.chat_groups = set()
+        self.presence_groups = set()
 
 
     async def connect(self):
@@ -128,7 +128,7 @@ class GlobalEventsConsumer(AsyncWebsocketConsumer):
             self._active_connections[self.user_id].add(self.channel_name)
         
         await self.channel_layer.group_add(f"user_{self.user_id}", self.channel_name)
-        await self.accept()
+        await self.accept(subprotocol=accepted_protocol(self.scope))
 
         self.last_ping_time = timezone.now()
         self.ping_check_task = asyncio.create_task(self._check_ping_timeout())
@@ -144,7 +144,7 @@ class GlobalEventsConsumer(AsyncWebsocketConsumer):
         )
         self._callback_registered = True
 
-        await sync_to_async(online_status.touch_connection, thread_sensitive=False)(
+        await database_sync_to_async(online_status.touch_connection, thread_sensitive=False)(
             self.user_id,
             self.user.username,
             self.channel_name,
@@ -169,9 +169,10 @@ class GlobalEventsConsumer(AsyncWebsocketConsumer):
             except asyncio.CancelledError:
                 pass
 
-        for group in self.chat_groups:
+        for group in self.chat_groups | self.presence_groups:
             await self.channel_layer.group_discard(group, self.channel_name)
         self.chat_groups.clear()
+        self.presence_groups.clear()
 
         if self.user_id:
             await self.channel_layer.group_discard(
@@ -188,7 +189,7 @@ class GlobalEventsConsumer(AsyncWebsocketConsumer):
             self._presence_registered = False
             try:
                 await asyncio.wait_for(
-                    sync_to_async(online_status.remove_connection, thread_sensitive=False)(
+                    database_sync_to_async(online_status.remove_connection, thread_sensitive=False)(
                         self.user_id,
                         self.user.username,
                         self.channel_name,
@@ -221,6 +222,9 @@ class GlobalEventsConsumer(AsyncWebsocketConsumer):
 
     async def _send_event_to_client(self, event):
         try:
+            target_users = event.get('target_users')
+            if target_users is not None and self.user_id not in target_users:
+                return
             if not await self.authorized():
                 await self.close(code=4001)
                 return
@@ -248,11 +252,23 @@ class GlobalEventsConsumer(AsyncWebsocketConsumer):
                 if key in data and key not in envelope:
                     envelope[key] = data[key]
 
-            await self.send(text_data=json.dumps(envelope, default=str))
+            await asyncio.wait_for(self.send(text_data=json.dumps(envelope, default=str)), timeout=5)
+        except asyncio.TimeoutError:
+            await self.close(code=4008)
         except Exception as e:
             logger.info(f"Error sending event to client: {e}")
 
-    async def receive(self, text_data):
+    async def legacy_event(self, event):
+        await self._send_event_to_client(event['event'])
+
+    async def user_online(self, event):
+        await self._send_event_to_client(event['event'])
+
+    async def receive(self, text_data=None, bytes_data=None):
+        code = self.frames.reject_code(text_data)
+        if code:
+            await self.close(code=code)
+            return
         try:
             if not await self.authorized():
                 await self.close(code=4001)
@@ -262,13 +278,31 @@ class GlobalEventsConsumer(AsyncWebsocketConsumer):
                 return
             action = data.get("action")
 
-            if action == "ping":
+            if action == 'subscribe_presence':
+                ids = data.get('user_ids', [])
+                if not isinstance(ids, list) or len(ids) > 200 or any(type(pk) is not int or pk <= 0 for pk in ids):
+                    return
+                groups = {f'user_online_{pk}' for pk in ids}
+                for group in self.presence_groups - groups:
+                    await self.channel_layer.group_discard(group, self.channel_name)
+                for group in groups - self.presence_groups:
+                    await self.channel_layer.group_add(group, self.channel_name)
+                self.presence_groups = groups
+                return
+
+            if action in ('ping', 'pong', 'presence'):
+                is_active = data.get('is_active', True)
+                if type(is_active) is not bool:
+                    return
                 self.last_ping_time = timezone.now()
-                await database_sync_to_async(online_status.touch_connection)(self.user_id, self.user.username, self.channel_name)
-                await self.send(text_data=json.dumps({"action": "pong"}))
-            elif action == "pong":
-                self.last_ping_time = timezone.now()
-                await database_sync_to_async(online_status.touch_connection)(self.user_id, self.user.username, self.channel_name)
+                await database_sync_to_async(online_status.touch_connection, thread_sensitive=False)(
+                    self.user_id, self.user.username, self.channel_name, is_active=is_active,
+                )
+                from core.group_events import renew_socket_groups
+                if not await renew_socket_groups(self, {f'user_{self.user_id}'} | self.chat_groups | self.presence_groups):
+                    return
+                if action == 'ping':
+                    await self.send(text_data=json.dumps({'action': 'pong'}))
             elif action in ("subscribe_chat", "unsubscribe_chat"):
                 group = await self.resolve_subscription(data.get("chat_id"))
                 if group:
@@ -282,13 +316,16 @@ class GlobalEventsConsumer(AsyncWebsocketConsumer):
             pass
 
     async def conversation_event(self, event):
+        if self.user_id not in event.get('recipients', []):
+            return
+        if self.token_expires and self.token_expires <= timezone.now().timestamp():
+            await self.close(code=4001)
+            return
         if not await self.authorized():
             await self.close(code=4001)
             return
-        from apps.social.application.conversations import live_event_for_user
-        if self.user_id not in event.get('recipients', []):
-            return
-        payload = await database_sync_to_async(live_event_for_user)(event['payload'], self.user_id)
+        from apps.social.application.live_projection import live_event
+        payload = await live_event(event['payload'], self.user)
         if payload:
             await self.send(text_data=json.dumps(payload, default=str))
 
@@ -304,7 +341,7 @@ class GlobalEventsConsumer(AsyncWebsocketConsumer):
         await self._send_event_to_client({"event_type": event.get("event_type", event.get("event", "new_message")),
                                           "data": data, "target_users": [self.user_id]})
 
-    @database_sync_to_async
+    @partial(database_sync_to_async, thread_sensitive=False)
     def resolve_subscription(self, identifier):
         from apps.social.application.conversations import resolve_chat, check_access
         from rest_framework.exceptions import APIException
@@ -316,7 +353,7 @@ class GlobalEventsConsumer(AsyncWebsocketConsumer):
         except APIException:
             return None
 
-    @database_sync_to_async
+    @partial(database_sync_to_async, thread_sensitive=False)
     def legacy_data_for_user(self, action, data):
         from apps.social.application.conversations import resolve_chat, visible_messages, serialize_message, get_conversation, chat_kind
         from rest_framework.exceptions import APIException
@@ -342,18 +379,25 @@ class GlobalEventsConsumer(AsyncWebsocketConsumer):
             data = dict(data, chat_id=chat.public_id, chat_type=chat_kind(chat))
         return data
 
-    @database_sync_to_async
-    def authorized(self):
-        return (not self.token_expires or self.token_expires > timezone.now().timestamp()) and User.objects.filter(pk=self.user_id, is_active=True).exists()
+    async def authorized(self):
+        if self.token_expires and self.token_expires <= timezone.now().timestamp():
+            return False
+        from core.socket_auth import socket_user
+        user = await socket_user(self.user_id, getattr(self, 'token_claims', None), self.scope)
+        if user is not None:
+            self.user = user
+        return user is not None
 
-    @database_sync_to_async
-    def get_user_from_token(self, token):
+    async def get_user_from_token(self, token):
         try:
+            if len(token) > 4096:
+                return None
             access_token = AccessToken(token)
-            self.token_expires = access_token["exp"]
-            user_id = access_token["user_id"]
-            return User.objects.get(id=user_id, is_active=True)
-        except (TokenError, User.DoesNotExist):
+            self.token_claims = access_token
+            self.token_expires = access_token['exp']
+            from core.socket_auth import socket_user
+            return await socket_user(access_token['user_id'], access_token, self.scope)
+        except (TokenError, AuthenticationFailed, KeyError):
             return None
 
 

@@ -34,6 +34,25 @@ class ConversationTests(TestCase):
         with self.assertRaises(ValidationError):
             service.resolve_chat(self.private.pk, self.a)
 
+    def test_shared_history_serializer_preserves_viewer_and_reply_projection(self):
+        from apps.social.presentation.views.conversation_views import history
+        original = self.send()
+        service.send_message(self.private, self.b, {'text': 'Reply', 'reply_to': original,
+                                                   'client_message_id': 'history-reply'})
+        service.mark_read(self.private, self.b, [original.pk])
+        for viewer in (self.a, self.b):
+            messages, _ = history(self.private, viewer)
+            expected = [service.serialize_message(message, viewer) for message in messages]
+            self.assertEqual(service.serialize_messages(messages, viewer), expected)
+
+    def test_delete_event_projects_current_unread_count(self):
+        first = self.send()
+        self.send(key='later')
+        service.change_message(first.pk, self.a, delete=True)
+        event = ChatEvent.objects.get(kind='message_deleted')
+        self.assertEqual(service.event_for_user(event, self.b)['unread_count'], 1)
+        self.assertIsNone(service.event_for_user(event, self.outsider))
+
     def test_send_retry_is_idempotent_but_identical_text_is_not_deduplicated(self):
         original = self.send()
         self.assertEqual(original.pk, self.send().pk)
@@ -267,6 +286,18 @@ class ConversationTests(TestCase):
                 deliver_chat_event.run(event.pk)
         event.refresh_from_db()
         self.assertIsNone(event.delivered_at)
+
+    def test_outbox_addressed_frames_do_not_repeat_all_recipients(self):
+        from apps.social.application.tasks_chat import deliver_chat_event
+        message = self.send()
+        event = ChatEvent.objects.get(kind='new_message', payload__message__id=message.pk)
+        with patch('channels.layers.get_channel_layer') as layer:
+            layer.return_value.group_send = AsyncMock()
+            deliver_chat_event.run(event.pk)
+            frames = {call.args[0]: call.args[1] for call in layer.return_value.group_send.await_args_list}
+        self.assertCountEqual(frames[f'conversation_{event.conversation_id}']['recipients'], [self.a.pk,self.b.pk])
+        self.assertEqual(frames[f'user_{self.a.pk}']['recipients'], [self.a.pk])
+        self.assertEqual(frames[f'user_{self.b.pk}']['recipients'], [self.b.pk])
 
     def test_malformed_commands_are_validation_errors(self):
         with self.assertRaises(ValidationError):
@@ -564,6 +595,24 @@ class WebSocketConversationTests(TransactionTestCase):
         self.assertEqual(1, Message.objects.count())
         self.assertEqual(1, ChatEvent.objects.filter(kind='new_message').count())
 
+    def test_malformed_json_closes_with_a_protocol_error(self):
+        from asgiref.sync import async_to_sync
+        from channels.testing import WebsocketCommunicator
+        from channels.routing import URLRouter
+        from apps.social.application.routing import websocket_urlpatterns
+        from rest_framework_simplejwt.tokens import AccessToken
+        async def scenario():
+            token = str(AccessToken.for_user(self.a))
+            socket = WebsocketCommunicator(URLRouter(websocket_urlpatterns),
+                f'/ws/chat/{self.chat.public_id}/?type=private&token={token}')
+            self.assertTrue((await socket.connect())[0])
+            await socket.receive_json_from()
+            await socket.send_to(text_data='{')
+            response = await socket.receive_output()
+            self.assertEqual(response, {'type': 'websocket.close', 'code': 1007})
+            await socket.disconnect()
+        async_to_sync(scenario)()
+
     def test_ws_denies_outsider_and_invalid_token(self):
         from asgiref.sync import async_to_sync
         from channels.testing import WebsocketCommunicator
@@ -721,6 +770,42 @@ class GlobalWebSocketTests(TransactionTestCase):
         from rest_framework_simplejwt.tokens import AccessToken
         return WebsocketCommunicator(URLRouter(websocket_urlpatterns), f'/ws/global/?token={token or AccessToken.for_user(self.a)}')
 
+    @override_settings(WS_ALLOW_QUERY_TOKEN=False)
+    def test_global_and_chat_accept_header_credentials_without_echoing_token(self):
+        from asgiref.sync import async_to_sync
+        from channels.testing import WebsocketCommunicator
+        from channels.routing import URLRouter
+        from apps.social.application.routing import websocket_urlpatterns
+        from rest_framework_simplejwt.tokens import AccessToken
+        async def scenario():
+            token = str(AccessToken.for_user(self.a))
+            for path in ('/ws/global/', f'/ws/chat/{self.chat.public_id}/?type=private'):
+                socket = WebsocketCommunicator(URLRouter(websocket_urlpatterns), path,
+                    subprotocols=['animecore.v2', f'auth.{token}'])
+                connected, protocol = await socket.connect()
+                self.assertTrue(connected)
+                self.assertEqual(protocol, 'animecore.v2')
+                if '/chat/' in path:
+                    self.assertEqual((await socket.receive_json_from())['action'], 'init')
+                await socket.send_json_to({'action': 'ping'})
+                self.assertEqual((await socket.receive_json_from())['action'], 'pong')
+                await socket.disconnect()
+            query_socket = self.socket(token)
+            connected, code = await query_socket.connect()
+            self.assertFalse(connected)
+            self.assertEqual(code, 4001)
+            await query_socket.disconnect()
+        async_to_sync(scenario)()
+
+    def test_invalid_header_credential_does_not_fall_back_to_valid_query(self):
+        from asgiref.sync import async_to_sync
+        async def scenario():
+            socket = self.socket()
+            socket.scope['subprotocols'] = ['animecore.v2', 'auth.invalid']
+            self.assertEqual(await socket.connect(), (False, 4001))
+            await socket.disconnect()
+        async_to_sync(scenario)()
+
     def test_invalid_explicit_token_cannot_fall_back_to_cookie(self):
         from asgiref.sync import async_to_sync
         async def scenario():
@@ -738,14 +823,42 @@ class GlobalWebSocketTests(TransactionTestCase):
         from rest_framework_simplejwt.tokens import AccessToken
         from django.utils import timezone
         token = AccessToken.for_user(self.a)
+        message, _ = service.send_message(self.chat, self.b, {'text':'expiry test'})
+        event = ChatEvent.objects.get(kind='new_message',payload__message__id=message.pk)
+        frames = [
+            {'type':'notification_event','notification':{'secret':'must not arrive'}},
+            {'type':'conversation_event','payload':service.event_envelope(event),'recipients':event.recipients},
+        ]
         async def scenario():
-            socket = self.socket(str(token))
+            for pending in frames:
+                socket = self.socket(str(token))
+                self.assertTrue((await socket.connect())[0])
+                with patch('apps.social.application.consumers.timezone.now', return_value=timezone.datetime.fromtimestamp(token['exp'] + 1, tz=timezone.get_current_timezone())):
+                    await get_channel_layer().group_send(f'user_{self.a.pk}', pending)
+                    frame = await socket.receive_output()
+                    self.assertEqual(('websocket.close', 4001), (frame['type'], frame['code']))
+                await socket.disconnect()
+        async_to_sync(scenario)()
+
+    def test_live_delivery_rechecks_revocation_after_a_successful_frame(self):
+        from asgiref.sync import async_to_sync
+        from channels.db import database_sync_to_async
+        from channels.layers import get_channel_layer
+        message, _ = service.send_message(self.chat,self.b,{'text':'live auth'})
+        event = ChatEvent.objects.get(kind='new_message',payload__message__id=message.pk)
+        pending = {'type':'conversation_event','payload':service.event_envelope(event),'recipients':event.recipients}
+        async def scenario():
+            socket = self.socket()
             self.assertTrue((await socket.connect())[0])
-            with patch('apps.social.application.consumers.timezone.now', return_value=timezone.datetime.fromtimestamp(token['exp'] + 1, tz=timezone.get_current_timezone())):
-                await get_channel_layer().group_send(f'user_{self.a.pk}', {'type': 'notification_event', 'notification': {'secret': 'must not arrive'}})
+            try:
+                await get_channel_layer().group_send(f'user_{self.a.pk}',pending)
+                self.assertEqual('new_message',(await socket.receive_json_from())['action'])
+                await database_sync_to_async(User.objects.filter(pk=self.a.pk).update)(token_version=1)
+                await get_channel_layer().group_send(f'user_{self.a.pk}',pending)
                 frame = await socket.receive_output()
-                self.assertEqual(('websocket.close', 4001), (frame['type'], frame['code']))
-            await socket.disconnect()
+                self.assertEqual(('websocket.close',4001),(frame['type'],frame['code']))
+            finally:
+                await socket.disconnect()
         async_to_sync(scenario)()
 
     def test_disabled_account_cannot_keep_alive(self):

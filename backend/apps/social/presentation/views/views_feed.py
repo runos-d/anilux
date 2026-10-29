@@ -14,6 +14,15 @@ import logging
 
 
 logger = logging.getLogger(__name__)
+
+
+def cursor_headers(data):
+    headers = {'X-Next-Cursor': data['next_cursor'] or ''}
+    if data['count'] is not None:
+        headers['X-Total-Count'] = str(data['count'])
+    return headers
+
+
 class FeedViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = FeedPostSerializer
     permission_classes = [IsAuthenticated]
@@ -39,21 +48,21 @@ class FeedViewSet(viewsets.ReadOnlyModelViewSet):
         from apps.social.application.post_feed import ranked
         data = ranked(request, 'hot')
         if 'page_size' in request.query_params or 'cursor' in request.query_params: return Response(data)
-        return Response(data['results'], headers={'X-Next-Cursor': data['next_cursor'] or '', 'X-Total-Count': str(data['count'])})
+        return Response(data['results'], headers=cursor_headers(data))
 
     @action(detail=False, methods=["get"])
     def top(self, request):
         from apps.social.application.post_feed import ranked
         data = ranked(request, 'top')
         if 'page_size' in request.query_params or 'cursor' in request.query_params: return Response(data)
-        return Response(data['results'], headers={'X-Next-Cursor': data['next_cursor'] or '', 'X-Total-Count': str(data['count'])})
+        return Response(data['results'], headers=cursor_headers(data))
 
     @action(detail=False, methods=["get"])
     def trending(self, request):
         from apps.social.application.post_feed import ranked
         data = ranked(request, 'trending')
         if 'page_size' in request.query_params or 'cursor' in request.query_params: return Response(data)
-        return Response(data['results'], headers={'X-Next-Cursor': data['next_cursor'] or '', 'X-Total-Count': str(data['count'])})
+        return Response(data['results'], headers=cursor_headers(data))
 
     @action(detail=False, methods=["get"])
     def followers(self, request):

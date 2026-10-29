@@ -1,6 +1,7 @@
 import asyncio
 import json
 import time
+from functools import partial
 from urllib.parse import parse_qs
 
 from channels.db import database_sync_to_async
@@ -11,6 +12,8 @@ from rest_framework.utils.encoders import JSONEncoder
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.exceptions import TokenError
 from django.utils import timezone
+from core.socket_limits import SocketFrameBudget
+from core.socket_credentials import socket_token, accepted_protocol
 
 from apps.social.application import conversations as service
 from apps.social.infrastructure.models.social import Message
@@ -23,6 +26,7 @@ class ConversationConsumer(AsyncJsonWebsocketConsumer):
         return json.dumps(content, cls=JSONEncoder)
 
     async def connect(self):
+        self.frames = SocketFrameBudget()
         self.room_name = None
         self.watchdog = None
         self.topic_id = None
@@ -38,18 +42,29 @@ class ConversationConsumer(AsyncJsonWebsocketConsumer):
             await self.close(code=4004)
             return
         await self.channel_layer.group_add(self.room_name, self.channel_name)
-        await self.accept()
+        await self.accept(subprotocol=accepted_protocol(self.scope))
         self.watchdog = asyncio.create_task(self.check_timeout())
         await self.send_snapshot()
 
-    @database_sync_to_async
-    def authorize(self):
-        raw = self.params.get('token', [None])[0]
+    async def authorize(self):
+        raw = socket_token(self.scope)
+        if raw and len(raw) > 4096:
+            raise AuthenticationFailed('Invalid token')
         token = AccessToken(raw) if raw else None
+        self.token_claims = token
         self.token_expires = token['exp'] if token else None
-        user = User.objects.get(pk=token['user_id'], is_active=True) if token else self.scope.get('user')
-        if not user or not user.is_authenticated or not user.is_active:
+        from core.socket_auth import socket_user
+        scope_user = self.scope.get('user')
+        user_id = token['user_id'] if token else getattr(scope_user, 'pk', None)
+        user = await socket_user(user_id, token, self.scope)
+        if user is None:
             raise AuthenticationFailed('Требуется авторизация')
+        return await self.authorize_chat(user)
+
+    # Each operation opens and closes its own thread-local DB connection. These
+    # independent conversations must not share Channels' single-thread executor.
+    @partial(database_sync_to_async, thread_sensitive=False)
+    def authorize_chat(self, user):
         chat = service.resolve_chat(self.scope['url_route']['kwargs']['chat_id'], user, self.params.get('type', [None])[0])
         self.topic_id = service.validate_topic(chat, self.params.get('topic_id', [None])[0])
         return user, chat, service.room(chat)
@@ -76,14 +91,14 @@ class ConversationConsumer(AsyncJsonWebsocketConsumer):
         except asyncio.CancelledError:
             return
 
-    @database_sync_to_async
+    @partial(database_sync_to_async, thread_sensitive=False)
     def snapshot(self):
         from apps.social.presentation.views.conversation_views import history, detail_state
         chat = type(self.chat).objects.get(pk=self.chat.pk)
         service.check_access(chat, self.user)
         cursor = service.get_conversation(chat).event_seq
         messages, more = history(chat, self.user, topic=self.topic_id)
-        return {'action': 'init', 'messages': [service.serialize_message(m, self.user) for m in messages],
+        return {'action': 'init', 'messages': service.serialize_messages(messages, self.user),
                 'event_cursor': cursor, 'has_more': more, 'cleared_through_seq': detail_state(chat, self.user),
                 'topic_id': self.topic_id,
                 'next_cursor': messages[0].seq if more else None,
@@ -95,7 +110,7 @@ class ConversationConsumer(AsyncJsonWebsocketConsumer):
         except (APIException, type(self.chat).DoesNotExist):
             await self.close(code=4004)
 
-    @database_sync_to_async
+    @partial(database_sync_to_async, thread_sensitive=False)
     def execute(self, data):
         self.user = User.objects.get(pk=self.user.pk, is_active=True)
         if self.token_expires and self.token_expires <= timezone.now().timestamp():
@@ -118,6 +133,16 @@ class ConversationConsumer(AsyncJsonWebsocketConsumer):
             self.topic_id = service.validate_topic(chat, data.get('topic_id'))
         return None
 
+    async def receive(self, text_data=None, bytes_data=None, **kwargs):
+        code = self.frames.reject_code(text_data)
+        if code:
+            await self.close(code=code)
+            return
+        try:
+            await super().receive(text_data=text_data, bytes_data=bytes_data, **kwargs)
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            await self.close(code=1007)
+
     async def receive_json(self, data, **kwargs):
         if not isinstance(data, dict):
             return
@@ -127,6 +152,9 @@ class ConversationConsumer(AsyncJsonWebsocketConsumer):
             return
         if action == 'ping':
             self.last_ping = time.monotonic()
+            from core.group_events import renew_socket_groups
+            if not await renew_socket_groups(self, [self.room_name]):
+                return
             await self.send_json({'action': 'pong'})
             return
         try:
@@ -154,29 +182,33 @@ class ConversationConsumer(AsyncJsonWebsocketConsumer):
         except (type(self.chat).DoesNotExist, Message.DoesNotExist):
             await self.close(code=4004)
 
-    @database_sync_to_async
-    def active_account(self):
-        return User.objects.filter(pk=self.user.pk, is_active=True).exists()
-
-    @database_sync_to_async
-    def can_receive(self):
-        try:
-            self.user = User.objects.get(pk=self.user.pk, is_active=True)
-            service.check_access(type(self.chat).objects.get(pk=self.chat.pk), self.user)
-            return True
-        except (APIException, type(self.chat).DoesNotExist, User.DoesNotExist):
+    async def active_account(self):
+        if self.token_expired():
             return False
+        from core.socket_auth import socket_user
+        user = await socket_user(self.user.pk, getattr(self, 'token_claims', None), self.scope)
+        if user is not None:
+            self.user = user
+        return user is not None
+
+    async def can_receive(self):
+        if not await self.active_account():
+            return False
+        from apps.social.application.live_projection import can_read_chat
+        return await can_read_chat(self.chat, self.user)
 
     async def conversation_event(self, event):
-        if self.token_expired():
-            await self.close(code=4001)
-            return
-        if not await self.can_receive():
-            await self.close(code=4004)
-            return
         recipients = event.get('recipients')
         if recipients is not None and self.user.pk not in recipients:
             return
-        payload = await database_sync_to_async(service.live_event_for_user)(event['payload'], self.user.pk)
+        if self.token_expired():
+            await self.close(code=4001)
+            return
+        allowed = await self.can_receive()
+        if not allowed:
+            await self.close(code=1013 if allowed is None else 4004)
+            return
+        from apps.social.application.live_projection import live_event
+        payload = await live_event(event['payload'], self.user)
         if payload:
             await self.send_json(payload)

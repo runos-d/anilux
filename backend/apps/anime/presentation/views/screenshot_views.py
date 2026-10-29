@@ -90,7 +90,7 @@ class KodikInstantScreenshotView(APIView):
             cmd = [
                 FFMPEG_PATH,
                 "-y",
-                "-ss", time_str,          
+                "-ss", time_str,
             ]
 
             if not is_mp4:
@@ -102,10 +102,10 @@ class KodikInstantScreenshotView(APIView):
 
             cmd.extend([
                 "-i", video_url,
-                "-frames:v", "1",        
-                "-q:v", "2",             
+                "-frames:v", "1",
+                "-q:v", "2",
                 "-vf", "scale=1280:-1",
-                "-an",                   
+                "-an",
                 "-f", "image2",
                 tmp_path,
             ])
@@ -170,11 +170,11 @@ class KodikClipCreateView(APIView):
         is_full_episode = isinstance(label, str) and label.startswith('Episode_')
         if not is_full_episode and end <= start:
             return Response({"error": "end должен быть больше start"}, status=400)
-        
+
         if not is_full_episode and end - start > 300:
             if not request.user.is_authenticated:
                 return Response({"error": "Требуется авторизация"}, status=401)
-            
+
             from apps.users.infrastructure.models.users import UserProfileSettings
             try:
                 profile = UserProfileSettings.objects.get(user=request.user)
@@ -182,7 +182,7 @@ class KodikClipCreateView(APIView):
                     return Response({"error": "Скачивание фрагментов доступно только для премиум пользователей"}, status=403)
             except UserProfileSettings.DoesNotExist:
                 return Response({"error": "Скачивание фрагментов доступно только для премиум пользователей"}, status=403)
-        
+
         if is_full_episode and end - start > 3600:
             return Response({"error": "Максимальная длительность серии 1 час"}, status=400)
 
@@ -238,170 +238,10 @@ class KodikClipCreateView(APIView):
         }, status=202)
 
 
-class KodikStreamView(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+from .prepared_downloads import PreparedDownloadView
 
-    def get(self, request, pk):
-        import traceback
-        try:
-            Anime.objects.get(pk=pk)
-        except Anime.DoesNotExist:
-            return Response({"error": "Аниме не найдено"}, status=404)
-
-        episode = int(request.GET.get("episode", 1))
-        season = int(request.GET.get("season", 1))
-        translation_id = request.GET.get("translation_id")
-        quality = request.GET.get("quality", "720")
-        fmt = request.GET.get("format", "mp4")
-        filename = request.GET.get("filename", f"Episode_{episode}.{fmt}")
-
-        start = request.GET.get("start")
-        end = request.GET.get("end")
-        
-        is_clip = False
-        if start is not None and end is not None:
-            start_float = float(start)
-            end_float = float(end)
-            if end_float - start_float > 8000:  
-                is_clip = False
-                start = None
-                end = None
-            else:
-                is_clip = True
-                start = start_float
-                end = end_float
-        else:
-            is_clip = False
-            start = None
-            end = None
-
-        if fmt not in ("mp4", "mp3"):
-            fmt = "mp4"
-
-        user_ip = request.META.get("HTTP_X_FORWARDED_FOR", "").split(",")[0].strip() or request.META.get("REMOTE_ADDR", "1.1.1.1")
-
-        try:
-            m3u8_url = anime_service.get_anime_m3u8(
-                anime_id=pk,
-                episode=episode,
-                season=season,
-                translation_id=translation_id,
-                user_ip=user_ip,
-                quality=quality,
-            )
-            logger.debug(f"[STREAM] m3u8_url for anime={pk} ep={episode}: {m3u8_url[:100] if m3u8_url else None}...")
-        except Exception as e:
-            logger.debug(f"[STREAM] anime_service.get_anime_m3u8 error: {e}")
-            logger.debug(traceback.format_exc())
-            return Response({"error": f"Ошибка получения видео: {str(e)}"}, status=500)
-
-        if not m3u8_url:
-            logger.debug(f"[STREAM] No m3u8_url returned for anime={pk} ep={episode}")
-            return Response({"error": "Не удалось получить видео URL из Kodik"}, status=404)
-
-        def generate():
-            tmp_output = None
-            try:
-                tmp_output = tempfile.mktemp(suffix=f".{fmt}")
-                logger.debug(f"[STREAM] Creating temp file: {tmp_output}")
-
-                cmd = [FFMPEG_PATH, "-y"]
-                
-                cmd.extend(["-analyzeduration", "20M"])
-                cmd.extend(["-probesize", "20M"])
-                cmd.extend(["-fflags", "nobuffer"])
-                
-                if is_clip and start is not None and end is not None:
-                    cmd.extend(["-ss", str(start), "-to", str(end)])
-                
-                cmd.extend(["-i", m3u8_url])
-                
-                if fmt == "mp3":
-                    cmd.extend([
-                        "-vn",
-                        "-c:a", "libmp3lame",
-                        "-b:a", "192k",
-                        "-ar", "44100",
-                        "-ac", "2",
-                        "-movflags", "+faststart"
-                    ])
-                else:
-                    cmd.extend([
-                        "-c:v", "copy",
-                        "-c:a", "copy",
-                        "-bsf:a", "aac_adtstoasc",
-                        "-movflags", "+faststart"
-                    ])
-                
-                cmd.append(tmp_output)
-
-                logger.debug(f"[STREAM] Running ffmpeg: {' '.join(cmd)}")
-                logger.debug(f"[STREAM] is_clip={is_clip}, start={start}, end={end}, fmt={fmt}")
-                
-                result = subprocess.run(
-                    cmd,
-                    capture_output=True,
-                    text=True,
-                    timeout=7200  
-                )
-                
-                logger.debug(f"[STREAM] ffmpeg returncode: {result.returncode}")
-                if result.stderr:
-                    logger.debug(f"[STREAM] ffmpeg stderr (last 500 chars): {result.stderr[-500:]}")
-                
-                if result.returncode != 0:
-                    error_msg = f"FFmpeg error: {result.stderr[:1000] if result.stderr else 'Unknown error'}"
-                    logger.debug(f"[STREAM] {error_msg}")
-                    yield error_msg.encode()
-                    return
-
-                if not tmp_output or not os.path.exists(tmp_output):
-                    error_msg = "Error: No output file created"
-                    logger.debug(f"[STREAM] {error_msg}")
-                    yield error_msg.encode()
-                    return
-
-                file_size = os.path.getsize(tmp_output)
-                logger.debug(f"[STREAM] Output file size: {file_size} bytes")
-                
-                if file_size == 0:
-                    error_msg = "Error: Output file is empty"
-                    logger.debug(f"[STREAM] {error_msg}")
-                    yield error_msg.encode()
-                    return
-
-                with open(tmp_output, "rb") as f:
-                    while True:
-                        chunk = f.read(65536)  
-                        if not chunk:
-                            break
-                        yield chunk
-
-            except subprocess.TimeoutExpired:
-                error_msg = "Error: Processing timeout"
-                logger.debug(f"[STREAM] {error_msg}")
-                yield error_msg.encode()
-            except Exception as e:
-                error_msg = f"Error: {str(e)}"
-                logger.debug(f"[STREAM] Exception: {error_msg}")
-                import traceback
-                logger.debug(traceback.format_exc())
-                yield error_msg.encode()
-            finally:
-                if tmp_output and os.path.exists(tmp_output):
-                    try:
-                        os.unlink(tmp_output)
-                        logger.debug("[STREAM] Cleaned up temp file")
-                    except Exception as e:
-                        logger.debug(f"[STREAM] Failed to cleanup: {e}")
-
-        extension = "mp3" if fmt == "mp3" else "mp4"
-        response = StreamingHttpResponse(
-            generate(),
-            content_type="audio/mpeg" if fmt == "mp3" else "video/mp4",
-        )
-        response["Content-Disposition"] = f'attachment; filename="{filename}.{extension}"'
-        return response
+class KodikStreamView(PreparedDownloadView):
+    pass
 
 
 class DirectVideoUrlView(APIView):
@@ -410,7 +250,7 @@ class DirectVideoUrlView(APIView):
     def get(self, request, pk):
         import asyncio
         import traceback
-        
+
         try:
             Anime.objects.get(pk=pk)
         except Anime.DoesNotExist:
@@ -429,17 +269,17 @@ class DirectVideoUrlView(APIView):
                 translation_id=translation_id,
                 quality=quality
             ))
-            
+
             if not result:
                 return Response({"error": "Не удалось получить видео"}, status=404)
-            
+
             return Response({
                 "url": result["url"],
                 "quality": result["quality"],
                 "source": result["source"],
                 "is_m3u8": result.get("is_m3u8", False),
             })
-            
+
         except Exception as e:
             logger.debug(f"[DIRECT_URL] Error: {e}")
             logger.debug(traceback.format_exc())

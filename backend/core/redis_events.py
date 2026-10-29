@@ -34,8 +34,19 @@ class RedisEventPublisher:
                 'target_users': target_users
             }
 
-            channel = 'realtime_updates'
-            client.publish(channel, json.dumps(event))
+            if event_type in ('user_online', 'user_offline') and data.get('user_id'):
+                from channels.layers import get_channel_layer
+                from asgiref.sync import async_to_sync
+                async_to_sync(get_channel_layer().group_send)(f'user_online_{int(data["user_id"])}',
+                    {'type': 'user.online', 'event': event})
+            elif target_users is not None:
+                from channels.layers import get_channel_layer
+                from asgiref.sync import async_to_sync
+                layer = get_channel_layer()
+                for user_id in set(target_users):
+                    async_to_sync(layer.group_send)(f'user_{int(user_id)}', {'type': 'legacy.event', 'event': event})
+            else:
+                client.publish('realtime_updates', json.dumps(event))
 
             queue_key = 'realtime_queue'
             client.lpush(queue_key, json.dumps(event))

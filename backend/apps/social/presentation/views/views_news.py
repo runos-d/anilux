@@ -37,6 +37,11 @@ class NewsDetailView(generics.RetrieveAPIView):
     serializer_class = NewsSerializer
     permission_classes = [permissions.AllowAny]
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+        return queryset if user.is_authenticated and user.is_staff else queryset.filter(is_published=True)
+
 
 class NewsCreateView(generics.CreateAPIView):
     serializer_class = NewsSerializer

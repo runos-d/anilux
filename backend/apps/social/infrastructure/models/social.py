@@ -1,6 +1,7 @@
 from apps.social.infrastructure.chat_storage import chat_private_storage
 from .chat_cascade import chat_cascade
 from django.db import models, IntegrityError, transaction
+from django.db.models.functions import Coalesce
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.utils.text import slugify
@@ -240,6 +241,9 @@ class Post(UUIDv8Model):
 
     edited_at = models.DateTimeField(null=True, blank=True)
     published_at = models.DateTimeField(null=True, blank=True)
+    feed_sort_at = models.GeneratedField(
+        expression=Coalesce('published_at', 'created_at'), output_field=models.DateTimeField(), db_persist=True,
+    )
 
     favorites = GenericRelation('social.Favorite', related_query_name='posts')
 
@@ -251,6 +255,7 @@ class Post(UUIDv8Model):
         indexes = [
             models.Index(fields=['created_at', 'id']),
             models.Index(fields=['is_deleted', 'created_at', 'id', 'status', 'visibility', 'author', 'group', 'post_type', 'is_pinned'], name='post_read_scan'),
+            models.Index(fields=['is_deleted', 'feed_sort_at', 'id', 'status', 'visibility', 'author', 'group', 'post_type', 'is_pinned'], name='post_feed_date_scan'),
             models.Index(fields=['author', 'created_at']),
             models.Index(fields=['group', 'created_at']),
             models.Index(fields=['anime', 'created_at']),

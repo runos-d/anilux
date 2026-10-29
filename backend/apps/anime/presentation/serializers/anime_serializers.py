@@ -527,7 +527,9 @@ class FranchiseSerializer(serializers.ModelSerializer):
             cache = self._entries_cache = {}
         if obj.pk not in cache:
             supplied = self.context.get('entries_by_franchise')
-            if supplied is not None:
+            if hasattr(obj, '_visible_entries'):
+                cache[obj.pk] = obj._visible_entries
+            elif supplied is not None:
                 cache[obj.pk] = list(supplied.get(obj.pk, []))
             else:
                 from apps.seo.service import visible_anime

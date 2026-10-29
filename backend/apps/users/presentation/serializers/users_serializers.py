@@ -18,7 +18,7 @@ from apps.users.infrastructure.models.users import (
     PrivacySettings,
     UserTheme,
     ChatBackground,
-    UserAnalytics,
+    UserActivitySummary,
     EmailLog,
     MessageNotification,
     UserLibrary,
@@ -27,11 +27,27 @@ from apps.users.infrastructure.models.users import (
 )
 
 
-class UserSimpleSerializer(serializers.ModelSerializer):
+class PrivacyListSerializer(serializers.ListSerializer):
+    def to_representation(self, data):
+        from apps.users.application.privacy import prepare_privacy
+        rows = data.all() if hasattr(data, 'all') else data
+        return super().to_representation(prepare_privacy(
+            rows, getattr(self.context.get('request'), 'user', None), self.child.fields,
+        ))
+
+
+class PrivacyProjectionMixin:
+    def to_representation(self, instance):
+        from apps.users.application.privacy import project_user
+        return project_user(super().to_representation(instance), instance, getattr(self.context.get("request"), "user", None))
+
+
+class UserSimpleSerializer(PrivacyProjectionMixin, serializers.ModelSerializer):
     avatar_url = serializers.SerializerMethodField()
     display_name = serializers.SerializerMethodField()
 
     class Meta:
+        list_serializer_class = PrivacyListSerializer
         model = User
         fields = [
             "id",
@@ -48,7 +64,7 @@ class UserSimpleSerializer(serializers.ModelSerializer):
     def get_avatar_url(self, obj):
         if obj.avatar:
             return obj.avatar.url
-        def_ava_dir = settings.MEDIA_ROOT / "def_avatars"
+        def_ava_dir = Path(settings.MEDIA_ROOT) / "def_avatars"
         if def_ava_dir.exists():
             jpg_files = list(def_ava_dir.glob("*.jpg")) + list(def_ava_dir.glob("*.jpeg"))
             if jpg_files:
@@ -61,7 +77,7 @@ class UserSimpleSerializer(serializers.ModelSerializer):
         return obj.display_name or obj.nickname or obj.username
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(PrivacyProjectionMixin, serializers.ModelSerializer):
     avatar_url = serializers.SerializerMethodField()
     cover_image_url = serializers.SerializerMethodField()
     followers_count = serializers.SerializerMethodField()
@@ -78,6 +94,7 @@ class UserSerializer(serializers.ModelSerializer):
     nickname_glow_intensity = serializers.SerializerMethodField()
 
     class Meta:
+        list_serializer_class = PrivacyListSerializer
         model = User
         fields = [
             "id",
@@ -145,13 +162,13 @@ class UserSerializer(serializers.ModelSerializer):
             "comments_count",
             "likes_received",
             "playlists_count",
-            "is_staff",
+            "is_staff", "email", "phone_number", "email_verified", "phone_verified", "two_factor_enabled",
         ]
 
     def get_avatar_url(self, obj):
         if obj.avatar:
             return obj.avatar.url
-        def_ava_dir = settings.MEDIA_ROOT / "def_avatars"
+        def_ava_dir = Path(settings.MEDIA_ROOT) / "def_avatars"
         if def_ava_dir.exists():
             jpg_files = list(def_ava_dir.glob("*.jpg")) + list(def_ava_dir.glob("*.jpeg"))
             if jpg_files:
@@ -227,12 +244,13 @@ class UserSerializer(serializers.ModelSerializer):
             return 1
 
 
-class PublicUserSerializer(serializers.ModelSerializer):
+class PublicUserSerializer(PrivacyProjectionMixin, serializers.ModelSerializer):
     avatar_url = serializers.SerializerMethodField()
     cover_image_url = serializers.SerializerMethodField()
     display_name_computed = serializers.SerializerMethodField()
 
     class Meta:
+        list_serializer_class = PrivacyListSerializer
         model = User
         fields = [
             "id", "username", "nickname", "display_name",
@@ -296,8 +314,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             user.nickname = user.username
         if not user.display_name:
             user.display_name = user.username
-        
-        def_ava_dir = settings.MEDIA_ROOT / "def_avatars"
+
+        def_ava_dir = Path(settings.MEDIA_ROOT) / "def_avatars"
         if def_ava_dir.exists():
             jpg_files = list(def_ava_dir.glob("*.jpg")) + list(def_ava_dir.glob("*.jpeg"))
             if jpg_files:
@@ -305,7 +323,7 @@ class RegisterSerializer(serializers.ModelSerializer):
                 from django.core.files import File
                 with open(selected_avatar, 'rb') as f:
                     user.avatar.save(f"def_{selected_avatar.name}", File(f), save=False)
-        
+
         user.save(update_fields=["nickname", "display_name", "avatar"])
         return user
 
@@ -588,8 +606,8 @@ class NotificationSettingsSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data["enabled"] = True  
-        data["sound_enabled"] = True  
+        data["enabled"] = True
+        data["sound_enabled"] = True
         data["vibration_enabled"] = (
             instance.push_vibration if hasattr(instance, "push_vibration") else True
         )
@@ -649,11 +667,17 @@ class PrivacySettingsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PrivacySettings
-        fields = ["id", "user", "who_can_see_phone", "who_can_see_email", "who_can_see_last_seen", "who_can_see_profile_photo", "blocked_users", "allow_message_forwarding", "who_can_call", "who_can_add_to_groups", "blocked_users_list", "show_online_status", "show_last_seen", "show_typing_status", "allow_calls", "allow_group_invites"]
+        fields = ["id", "user", "who_can_see_phone", "who_can_see_email", "who_can_see_last_seen", "who_can_see_profile_photo", "blocked_users", "allow_message_forwarding", "who_can_call", "who_can_add_to_groups", "blocked_users_list", "show_online_status", "show_last_seen", "show_typing_status", "allow_calls", "allow_group_invites", "analytics_consent_state", "analytics_consent_version", "analytics_consent_updated_at", "analytics_consent_source"]
         read_only_fields = ["user"]
 
     def to_representation(self, instance):
+        from django.conf import settings
+
         data = super().to_representation(instance)
+        if instance.analytics_consent_version != settings.ANALYTICS_CONSENT_POLICY_VERSION:
+            data["analytics_consent_state"] = "unknown"
+            data["analytics_consent_version"] = settings.ANALYTICS_CONSENT_POLICY_VERSION
+            data["analytics_consent_updated_at"] = None
         try:
             profile_settings = instance.user.profile_settings
             data["show_online_status"] = profile_settings.show_online_status
@@ -668,6 +692,41 @@ class PrivacySettingsSerializer(serializers.ModelSerializer):
             data["allow_calls"] = True
             data["allow_group_invites"] = True
         return data
+
+    def validate(self, attrs):
+        from django.conf import settings
+
+        state = attrs.get("analytics_consent_state")
+        version = attrs.get("analytics_consent_version")
+        if state in ("granted", "denied") and version != settings.ANALYTICS_CONSENT_POLICY_VERSION:
+            raise serializers.ValidationError({
+                "analytics_consent_version": "Версия политики согласия устарела."
+            })
+        source = attrs.get("analytics_consent_source")
+        if source and source not in ("banner", "settings", "server", "policy_upgrade"):
+            raise serializers.ValidationError({"analytics_consent_source": "Недопустимый источник."})
+        return attrs
+
+    def update(self, instance, validated_data):
+        from django.db import transaction
+        from django.utils import timezone
+        from apps.users.infrastructure.models.users import UserProfileSettings
+
+        profile_fields = {
+            key: validated_data.pop(key)
+            for key in ("show_online_status", "show_last_seen", "show_typing_status", "allow_calls", "allow_group_invites")
+            if key in validated_data
+        }
+        if "analytics_consent_state" in validated_data:
+            validated_data["analytics_consent_updated_at"] = timezone.now()
+        with transaction.atomic():
+            result = super().update(instance, validated_data)
+            if profile_fields:
+                profile, _ = UserProfileSettings.objects.get_or_create(user=instance.user)
+                for key, value in profile_fields.items():
+                    setattr(profile, key, value)
+                profile.save(update_fields=list(profile_fields))
+        return result
 
     def get_blocked_users_list(self, obj):
         return UserSimpleSerializer(obj.blocked_users.all(), many=True).data
@@ -765,13 +824,20 @@ class TwoFactorSettingsSerializer(serializers.Serializer):
 
 
 class ActiveSessionSerializer(serializers.ModelSerializer):
+    session_key = serializers.CharField(source="pk", read_only=True)
+    ip_address = serializers.CharField(read_only=True)
     device_name = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
-    is_current_device = serializers.BooleanField(source="is_current")
+    is_current_device = serializers.SerializerMethodField()
+
+    def get_is_current_device(self, obj):
+        from apps.users.application.token_sessions import current_session_key
+        request = self.context.get("request")
+        return bool(request and current_session_key(request) == obj.session_key)
 
     class Meta:
         model = ActiveSession
-        exclude = ["session_key"]
+        fields = "__all__"
         read_only_fields = ["user", "created_at", "last_activity"]
 
     def get_device_name(self, obj):
@@ -813,11 +879,11 @@ class MessageNotificationSerializer(serializers.ModelSerializer):
         read_only_fields = ["user", "notified_at"]
 
 
-class UserAnalyticsSerializer(serializers.ModelSerializer):
+class UserActivitySummarySerializer(serializers.ModelSerializer):
     weekly_report = serializers.SerializerMethodField()
 
     class Meta:
-        model = UserAnalytics
+        model = UserActivitySummary
         fields = ["id", "user", "messages_sent", "messages_received", "media_sent", "calls_made", "time_spent", "favorite_chat_type", "most_active_hour", "average_response_time", "primary_device", "last_used_device", "last_updated", "collected_since", "weekly_report"]
         read_only_fields = ["user", "last_updated", "collected_since"]
 

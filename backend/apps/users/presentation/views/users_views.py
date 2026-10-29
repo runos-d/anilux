@@ -1,11 +1,13 @@
+from pathlib import Path
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import update_last_login
 from django.utils import timezone
-from django.http import HttpResponseRedirect
+from django.http import FileResponse, HttpResponseRedirect
 from rest_framework import status, generics, viewsets
 from rest_framework.decorators import api_view, permission_classes, throttle_classes, action
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
+from rest_framework.exceptions import NotFound
 from rest_framework.throttling import SimpleRateThrottle
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -28,7 +30,7 @@ from apps.users.infrastructure.models.users import (
     PrivacySettings,
     UserTheme,
     ChatBackground,
-    UserAnalytics,
+    UserActivitySummary,
 )
 import logging
 import hashlib
@@ -49,6 +51,7 @@ from apps.users.presentation.serializers.users_serializers import (
     PublicUserSerializer,
 )
 from core.redis_events import event_publisher
+from apps.users.application.token_sessions import issue_refresh, current_session_key, revoke_sessions
 
 class CurrentUserView(APIView):
     permission_classes = [IsAuthenticated]
@@ -57,7 +60,7 @@ class CurrentUserView(APIView):
         user = request.user
         from apps.users.presentation.serializers.users_serializers import UserSerializer
 
-        data = UserSerializer(user).data
+        data = UserSerializer(user, context={"request": request}).data
 
         subscription = getattr(user, "subscription", None)
         profile = getattr(user, "profile_settings", None)
@@ -99,26 +102,10 @@ class CurrentUserView(APIView):
         return self._update_profile(request)
 
     def delete(self, request):
-        user = request.user
-
-        if getattr(user, "is_deleted", False):
-            return Response({"error": "Аккаунт уже удалён"}, status=400)
-
-        from apps.users.application.storage_service import StorageService
-        storage = StorageService(user)
-        storage.delete_account_data()
-
-        from rest_framework_simplejwt.tokens import RefreshToken
-        try:
-            RefreshToken.for_user(user)
-        except Exception as exc:
-            import logging
-            logging.getLogger(__name__).error("RefreshToken generation failed: %s", exc)
-            raise
-
-        user.delete()
-
-        return Response({"message": "Аккаунт удалён"})
+        return Response(
+            {"detail": "Используйте подтверждённый POST /api/users/account-deletion/."},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED,
+        )
 
     def _update_profile(self, request):
         user = request.user
@@ -152,7 +139,7 @@ class CurrentUserView(APIView):
         user.save()
         from apps.users.presentation.serializers.users_serializers import UserSerializer
 
-        data = UserSerializer(user).data
+        data = UserSerializer(user, context={"request": request}).data
         try:
             p = user.profile_settings
             data["birth_date"] = (
@@ -217,12 +204,12 @@ class LoginView(APIView):
                 user.is_online = True
                 user.save()
 
-                refresh = RefreshToken.for_user(user)
+                refresh = issue_refresh(user, request)
                 update_last_login(None, user)
 
                 return Response(
                     {
-                        "user": UserSerializer(user).data,
+                        "user": UserSerializer(user, context={"request": request}).data,
                         "tokens": {
                             "refresh": str(refresh),
                             "access": str(refresh.access_token),
@@ -316,12 +303,12 @@ class GoogleAuthView(APIView):
                 login(request, user)
                 user.is_online = True
                 user.save()
-                refresh = RefreshToken.for_user(user)
+                refresh = issue_refresh(user, request)
                 update_last_login(None, user)
 
                 return Response(
                     {
-                        "user": UserSerializer(user).data,
+                        "user": UserSerializer(user, context={"request": request}).data,
                         "tokens": {
                             "refresh": str(refresh),
                             "access": str(refresh.access_token),
@@ -362,13 +349,13 @@ class GoogleAuthCallbackView(APIView):
 
         if not cached_state:
             return Response(
-                {"error": "Сессия истекла. Пожалуйста, попробуйте войти снова."}, 
+                {"error": "Сессия истекла. Пожалуйста, попробуйте войти снова."},
                 status=400
             )
 
         if state != cached_state:
             return Response({"error": "Invalid state parameter"}, status=400)
-        
+
         cache.delete(f"google_oauth_state:{state}")
 
         try:
@@ -476,10 +463,10 @@ class GoogleAuthExchangeView(APIView):
             user = User.objects.get(pk=user_id, is_active=True)
         except User.DoesNotExist:
             return Response({"error": "invalid_or_expired_code"}, status=400)
-        refresh = RefreshToken.for_user(user)
+        refresh = issue_refresh(user, request)
         update_last_login(None, user)
         return Response({
-            "user": UserSerializer(user).data,
+            "user": UserSerializer(user, context={"request": request}).data,
             "tokens": {"refresh": str(refresh), "access": str(refresh.access_token)},
         })
 
@@ -530,6 +517,9 @@ class LogoutView(APIView):
                 RefreshToken(refresh_value).blacklist()
             except Exception:
                 pass
+        sid = current_session_key(request)
+        if sid:
+            revoke_sessions(user, only=sid)
         logout(request)
         return Response({"message": "����� ��������"})
 
@@ -539,7 +529,7 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return User.objects.select_related("subscription").all()
+        return User.objects.select_related("subscription", "privacy_settings", "profile_settings").all()
 
     def get_object(self):
         return self.request.user
@@ -551,14 +541,14 @@ class UserPublicProfileView(generics.RetrieveAPIView):
     lookup_field = "pk"
 
     def get_queryset(self):
-        return User.objects.select_related("subscription").all()
+        return User.objects.select_related("subscription", "privacy_settings", "profile_settings").all()
 
     def get_object(self):
         pk = self.kwargs.get("pk")
         try:
-            return User.objects.get(pk=pk)
+            return self.get_queryset().get(pk=pk)
         except User.DoesNotExist:
-            raise generics.NotFound("Пользователь не найден")
+            raise NotFound("Пользователь не найден")
 
 
 class UserProfileByNicknameView(generics.RetrieveAPIView):
@@ -566,17 +556,17 @@ class UserProfileByNicknameView(generics.RetrieveAPIView):
     permission_classes = (AllowAny,)
 
     def get_queryset(self):
-        return User.objects.select_related("subscription").all()
+        return User.objects.select_related("subscription", "privacy_settings", "profile_settings").all()
 
     def get_object(self):
         nickname = self.kwargs.get("nickname", "").lstrip("@")
         try:
-            return User.objects.get(nickname=nickname)
+            return self.get_queryset().get(nickname=nickname)
         except User.DoesNotExist:
             try:
                 return User.objects.get(username=nickname)
             except User.DoesNotExist:
-                raise generics.NotFound(f"Пользователь @{nickname} не найден")
+                raise NotFound(f"Пользователь @{nickname} не найден")
 
 
 @api_view(["POST"])
@@ -626,8 +616,7 @@ def consume_reset_token(token):
 def revoke_all_refresh_tokens(user):
     from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 
-    for outstanding in OutstandingToken.objects.filter(user=user):
-        BlacklistedToken.objects.get_or_create(token=outstanding)
+    revoke_sessions(user)
 
 
 class ProfileUpdateView(generics.UpdateAPIView):
@@ -639,30 +628,25 @@ class ProfileUpdateView(generics.UpdateAPIView):
 
 
 class UserSessionsView(generics.ListAPIView):
-    serializer_class = UserSessionSerializer
+    serializer_class = ActiveSessionSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return UserSession.objects.filter(user=self.request.user)
+        return ActiveSession.objects.filter(user=self.request.user)
 
 
 class UserSessionDetailView(generics.DestroyAPIView):
-    serializer_class = UserSessionSerializer
+    serializer_class = ActiveSessionSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return UserSession.objects.filter(user=self.request.user)
+        return ActiveSession.objects.filter(user=self.request.user)
 
     def perform_destroy(self, instance):
-        from django.contrib.sessions.models import Session
-
-        try:
-            Session.objects.filter(session_key=instance.session_key).delete()
-        except Exception as exc:
-            import logging
-            logging.getLogger(__name__).error("Session delete failed for %s: %s", instance.session_key, exc)
-            raise
-
+        if instance.session_key == current_session_key(self.request):
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError("Используйте выход для текущей сессии")
+        revoke_sessions(self.request.user, only=instance.session_key)
         instance.delete()
 
 
@@ -687,75 +671,76 @@ class OnlineStatusView(APIView):
         from core.online_status import online_status
 
         ids_list = [int(x.strip()) for x in user_ids.split(",") if x.strip().isdigit()]
-        
-        online_data = online_status.get_online_users()
-        online_ids = set(u.get("user_id") for u in online_data if u.get("user_id"))
 
-        result = {}
-        for uid in ids_list:
-            result[uid] = uid in online_ids
+        if len(set(ids_list)) > 200:
+            return Response({'error': 'Передайте до 200 ids'}, status=400)
+        online_ids = set(online_status.get_users_data(ids_list))
+        users = User.objects.filter(pk__in=ids_list).select_related('settings', 'profile_settings')
+        visible = {user.pk for user in users if user.pk == request.user.pk or
+                   getattr(getattr(user, 'settings', None), 'show_online_status', True) and
+                   getattr(getattr(user, 'profile_settings', None), 'show_online_status', True)}
+        result = {uid: uid in online_ids and uid in visible for uid in ids_list}
 
         return Response(result)
 
 
 class OnlineUsersView(generics.ListAPIView):
-    serializer_class = UserSerializer
+    serializer_class = PublicUserSerializer
     permission_classes = (IsAuthenticated,)
 
     def list(self, request, *args, **kwargs):
         from core.online_status import online_status
 
-        online_data = online_status.get_online_users()
-        online_ids = set(u.get("user_id") for u in online_data if u.get("user_id"))
-        online_ids.discard(request.user.id)
-
-        if not online_ids:
-            return Response({"results": [], "count": 0})
-
-        queryset = User.objects.filter(id__in=online_ids).select_related("settings")
-
-        queryset = queryset.filter(
-            Q(settings__isnull=True) | Q(settings__show_online_status=True)
-        )
-
-        search = request.query_params.get("search", "").strip()
+        raw_ids = request.query_params.get('ids')
+        if raw_ids is not None:
+            try:
+                ids = {int(value) for value in raw_ids.split(',') if value}
+                if len(ids) > 200 or any(pk <= 0 for pk in ids):
+                    raise ValueError()
+            except ValueError:
+                return Response({'error': 'Передайте до 200 положительных ids'}, status=400)
+            users = User.objects.filter(pk__in=ids).select_related('settings', 'profile_settings')
+            online = online_status.get_users_data(ids)
+            return Response({'results': [{'id': user.pk, 'is_online': bool(user.pk in online and
+                getattr(getattr(user, 'settings', None), 'show_online_status', True) and
+                getattr(getattr(user, 'profile_settings', None), 'show_online_status', True))} for user in users]})
+        try:
+            page = max(1, int(request.query_params.get('page', 1)))
+        except ValueError:
+            return Response({'error': 'Некорректная страница'}, status=400)
+        search = request.query_params.get('search', '').strip()
+        queryset = User.objects.exclude(pk=request.user.pk).select_related('settings', 'privacy_settings', 'profile_settings')
         if search:
-            queryset = queryset.filter(
-                Q(username__icontains=search)
-                | Q(nickname__icontains=search)
-                | Q(display_name__icontains=search)
-            )
-
-        ordering = request.query_params.get("ordering", "-last_login")
-        valid = [
-            "username",
-            "-username",
-            "nickname",
-            "-nickname",
-            "display_name",
-            "-display_name",
-            "level",
-            "-level",
-            "-last_login",
-        ]
-        queryset = queryset.order_by(ordering if ordering in valid else "-last_login")
-
-        serializer = UserSerializer(queryset, many=True)
-        data = serializer.data
+            queryset = queryset.filter(Q(username__icontains=search) | Q(nickname__icontains=search) | Q(display_name__icontains=search))
+            candidates = list(queryset.order_by('pk')[(page - 1) * 50:page * 50 + 1])
+            online_ids = set(online_status.get_users_data([user.pk for user in candidates]))
+            has_more = len(candidates) > 50
+            users = [user for user in candidates[:50] if user.pk in online_ids]
+        else:
+            rows = online_status.get_online_users(limit=51, offset=(page - 1) * 50)
+            has_more = len(rows) > 50
+            online_ids = {row['user_id'] for row in rows[:50] if row.get('user_id')}
+            users = list(queryset.filter(pk__in=online_ids).order_by('-last_login', 'pk'))
+        users = [user for user in users if
+                 getattr(getattr(user, 'settings', None), 'show_online_status', True) and
+                 getattr(getattr(user, 'profile_settings', None), 'show_online_status', True)]
+        data = PublicUserSerializer(users, many=True, context={'request': request}).data
         for item in data:
-            item["is_online"] = True
-
-        return Response({"results": data, "count": len(data)})
+            item['is_online'] = True
+        return Response({'results': data, 'count': len(data), 'has_more': has_more, 'next': page + 1 if has_more else None})
 
 
 class UserSearchView(generics.ListAPIView):
-    serializer_class = UserSerializer
+    serializer_class = PublicUserSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         queryset = User.objects.exclude(id=self.request.user.id).select_related(
-            "settings"
+            "settings", "privacy_settings", "profile_settings"
         )
+        exact_username = self.request.query_params.get('username', '').strip()
+        if exact_username:
+            return queryset.filter(username__iexact=exact_username).order_by('pk')[:1]
 
         search = self.request.query_params.get("search", "").strip()
         if search:
@@ -810,9 +795,7 @@ class RealtimeUpdatesView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        limit = int(request.query_params.get("limit", 50))
-        events = event_publisher.get_recent_events(limit)
-        return Response({"events": events})
+        return Response({"detail": "Use the authenticated WebSocket event stream."}, status=410)
 
 
 from django.contrib.sessions.models import Session
@@ -825,7 +808,7 @@ from apps.users.infrastructure.models.users import (
     UserProfileSettings,
     NotificationSettings,
     PrivacySettings,
-    UserAnalytics,
+    UserActivitySummary,
 )
 
 
@@ -836,7 +819,6 @@ def create_user_settings(sender, instance, created, **kwargs):
         UserProfileSettings.objects.create(user=instance)
         NotificationSettings.objects.create(user=instance)
         PrivacySettings.objects.create(user=instance)
-        UserAnalytics.objects.create(user=instance)
 
 
 @receiver(post_save, sender=Session)
@@ -902,7 +884,7 @@ from apps.users.infrastructure.models.users import (
     PrivacySettings,
     UserTheme,
     ChatBackground,
-    UserAnalytics,
+    UserActivitySummary,
 )
 from apps.users.presentation.serializers.users_serializers import (
     UserProfileSettingsSerializer,
@@ -911,7 +893,7 @@ from apps.users.presentation.serializers.users_serializers import (
     PrivacySettingsSerializer,
     UserThemeSerializer,
     ChatBackgroundSerializer,
-    UserAnalyticsSerializer,
+    UserActivitySummarySerializer,
 )
 
 
@@ -934,14 +916,14 @@ class UserProfileSettingsViewSet(viewsets.ModelViewSet):
 
         premium_fields = ['nickname_color', 'nickname_gradient_start', 'nickname_gradient_end', 'nickname_glow_enabled', 'nickname_glow_color', 'nickname_glow_intensity']
         changed_premium_fields = [f for f in premium_fields if f in request.data]
-        
+
         if changed_premium_fields:
             if not instance.is_premium:
                 return Response(
                     {"error": "Изменение цвета никнейма доступно только для премиум пользователей"},
                     status=status.HTTP_403_FORBIDDEN
                 )
-        
+
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
@@ -956,57 +938,34 @@ class SessionViewSet(viewsets.ViewSet):
 
     def list(self, request):
         sessions = ActiveSession.objects.filter(user=request.user)
-        serializer = ActiveSessionSerializer(sessions, many=True)
+        serializer = ActiveSessionSerializer(sessions, many=True, context={"request": request})
         return Response(serializer.data)
 
     @action(detail=False, methods=["post"])
     def terminate(self, request):
-        session_key = request.data.get("session_key")
-
-        if not session_key:
-            return Response({"error": "session_key ����������"}, status=400)
-
-        if session_key == request.session.session_key:
-            return Response({"error": "������ ��������� ������� ������"}, status=400)
-
-        try:
-            session = Session.objects.get(session_key=session_key)
-            session_data = session.get_decoded()
-            if (
-                "_auth_user_id" not in session_data
-                or str(request.user.id) != session_data["_auth_user_id"]
-            ):
-                return Response({"error": "������ ��������"}, status=403)
-
-            session.delete()
-
-            ActiveSession.objects.filter(session_key=session_key).delete()
-
-            return Response({"success": True})
-
-        except Session.DoesNotExist:
-            return Response({"error": "������ �� �������"}, status=404)
+        selector = str(request.data.get("session_key") or "")
+        if not selector.isdigit() or len(selector) > 19 or int(selector) > 9223372036854775807:
+            return Response({"error": "Некорректная сессия"}, status=400)
+        session = ActiveSession.objects.filter(user=request.user, pk=selector).first()
+        if not session:
+            return Response({"error": "Сессия не найдена"}, status=404)
+        if session.session_key == current_session_key(request):
+            return Response({"error": "Выберите другую сессию"}, status=400)
+        revoke_sessions(request.user, only=session.session_key)
+        data = {"success": True}
+        if request.auth and not request.auth.get('sid'):
+            refresh = issue_refresh(request.user, request)
+            data['tokens'] = {"refresh": str(refresh), "access": str(refresh.access_token)}
+        return Response(data)
 
     @action(detail=False, methods=["post"])
     def terminate_all_others(self, request):
-        current_session_key = request.session.session_key
-
-        user_sessions = Session.objects.filter(expire_date__gte=timezone.now())
-        sessions_to_delete = []
-
-        for session in user_sessions:
-            session_data = session.get_decoded()
-            if (
-                "_auth_user_id" in session_data
-                and str(request.user.id) == session_data["_auth_user_id"]
-                and session.session_key != current_session_key
-            ):
-                sessions_to_delete.append(session.session_key)
-
-        Session.objects.filter(session_key__in=sessions_to_delete).delete()
-        ActiveSession.objects.filter(session_key__in=sessions_to_delete).delete()
-
-        return Response({"success": True, "terminated_count": len(sessions_to_delete)})
+        count = revoke_sessions(request.user, keep=current_session_key(request))
+        data = {"success": True, "terminated_count": count}
+        if request.auth and not request.auth.get('sid'):
+            refresh = issue_refresh(request.user, request)
+            data['tokens'] = {"refresh": str(refresh), "access": str(refresh.access_token)}
+        return Response(data)
 
 
 class NotificationSettingsViewSet(viewsets.ModelViewSet):
@@ -1023,7 +982,7 @@ class NotificationSettingsViewSet(viewsets.ModelViewSet):
         return settings
 
 
-class PrivacySettingsViewSet(viewsets.ModelViewSet):
+class PrivacySettingsViewSet(viewsets.GenericViewSet):
     serializer_class = PrivacySettingsSerializer
     permission_classes = [IsAuthenticated]
 
@@ -1035,6 +994,16 @@ class PrivacySettingsViewSet(viewsets.ModelViewSet):
             user=self.request.user
         )
         return settings
+
+    @action(detail=False, methods=["get", "patch"], url_path="me")
+    def me(self, request):
+        instance = self.get_object()
+        if request.method == "GET":
+            return Response(self.get_serializer(instance).data)
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
     @action(detail=False, methods=["get"])
     def check_visibility(self, request):
@@ -1207,14 +1176,6 @@ class ChatBackgroundViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
-class UserAnalyticsViewSet(viewsets.ReadOnlyModelViewSet):
-    serializer_class = UserAnalyticsSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return UserAnalytics.objects.filter(user=self.request.user)
-
-
 from rest_framework.permissions import BasePermission
 
 
@@ -1322,7 +1283,7 @@ class AdminComplaintsView(APIView):
             snapshot = c.target_snapshot or {}
             target_available = False
             complainant_url = f"/profile/@{c.complainant.nickname}" if c.complainant.nickname else f"/profile/{c.complainant.username}"
-            
+
             try:
                 if c.content_object:
                     obj = c.content_object
@@ -1774,8 +1735,10 @@ class ChangePasswordView(APIView):
 
     def post(self, request):
         user = request.user
-        current_password = request.data.get("current_password")
+        current_password = request.data.get("current_password") or request.data.get("old_password")
         new_password = request.data.get("new_password")
+        if request.data.get("confirm_password", new_password) != new_password:
+            return Response({"confirm_password": "Пароли не совпадают"}, status=400)
 
         if not current_password or not new_password:
             return Response(
@@ -1803,23 +1766,60 @@ class ChangePasswordView(APIView):
         from apps.users.application.email_service import dispatch_transactional_email
         transaction.on_commit(lambda: dispatch_transactional_email(user, "password_changed"))
 
-        return Response({"success": True, "message": "Пароль успешно изменён"})
+        refresh = issue_refresh(user, request)
+        return Response({"success": True, "message": "Пароль успешно изменён",
+            "tokens": {"refresh": str(refresh), "access": str(refresh.access_token)}})
 
 
 class AccountDeletionView(APIView):
     permission_classes = [IsAuthenticated]
 
+    def get(self, request):
+        from apps.social.infrastructure.models.social import Message, Post, PostComment
+        from apps.playlists.infrastructure.models.playlists import Playlist
+
+        user = request.user
+        return Response({
+            "mode": "immediate",
+            "recoverable": False,
+            "counts": {
+                "messages": Message.objects.filter(sender=user).count(),
+                "posts": Post.objects.filter(author=user).count(),
+                "comments": PostComment.objects.filter(author=user).count(),
+                "playlists": Playlist.objects.filter(user=user).count(),
+            },
+        })
+
     def post(self, request):
         user = request.user
         password = request.data.get("password")
+
+        if request.data.get("final_confirmation") is not True:
+            return Response(
+                {"final_confirmation": "Требуется явное подтверждение удаления."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if not password or not user.check_password(password):
             return Response(
                 {"error": "Неверный пароль"}, status=status.HTTP_400_BAD_REQUEST
             )
 
-        user.delete()
-        return Response({"success": True, "message": "Аккаунт удалён"})
+        two_factor = getattr(user, "two_factor", None)
+        if two_factor and two_factor.is_enabled:
+            code = str(request.data.get("two_factor_code") or "").strip()
+            if not code or not two_factor.verify_code(code):
+                return Response(
+                    {"two_factor_code": "Неверный код двухфакторной аутентификации."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        from apps.users.application.data_management import delete_user_account
+
+        deleted = delete_user_account(user.pk)
+        if not deleted:
+            return Response({"error": "Аккаунт уже удалён"}, status=status.HTTP_409_CONFLICT)
+        return Response({"success": True, "message": "Аккаунт и связанные данные удалены без возможности восстановления."})
 
 
 class ChatBackgroundSettingsView(APIView):
@@ -1836,39 +1836,154 @@ class StorageUsageView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        return Response(
-            {
-                "used": 0,
-                "total": 100 * 1024 * 1024,
-                "percentage": 0,
-            }
-        )
+        from apps.users.application.storage_service import StorageService
+        return Response(StorageService(request.user).get_storage_usage())
 
 
 class SyncSettingsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        return Response({"sync_enabled": True})
+        from apps.users.infrastructure.models.users import SyncSettings
+        instance, _ = SyncSettings.objects.get_or_create(user=request.user)
+        from django.forms.models import model_to_dict
+        return Response({k: v for k, v in model_to_dict(instance).items() if k not in ('id', 'user')})
+
+    def put(self, request):
+        from apps.users.infrastructure.models.users import SyncSettings
+        from rest_framework import serializers
+        class Preferences(serializers.ModelSerializer):
+            class Meta:
+                model = SyncSettings
+                exclude = ['id', 'user']
+                read_only_fields = ['sync_status', 'last_sync_time', 'next_sync_time', 'updated_at']
+        instance, _ = SyncSettings.objects.get_or_create(user=request.user)
+        serializer = Preferences(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
     def post(self, request):
-        return Response({"success": True})
+        return Response({"detail": "Изменения аккаунта сохраняются автоматически. Отдельная фоновая синхронизация пока недоступна."}, status=409)
 
 
 class ExportDataView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        return Response({"message": "Экспорт запущен"})
+        from apps.users.application.data_management import expire_exports
+        from apps.users.infrastructure.models.users import DataExport
+
+        expire_exports()
+        records = DataExport.objects.filter(user=request.user).order_by("-created_at")[:50]
+        return Response({"exports": [self._serialize(record) for record in records]})
 
     def post(self, request):
-        return Response({"success": True, "message": "Экспорт данных запущен"})
+        from datetime import timedelta
+        from apps.users.application.data_management import EXPORT_CATEGORIES, EXPORT_FORMATS, build_user_export
+        from apps.users.application.user_data_tasks import build_data_export_task
+        from apps.users.infrastructure.models.users import DataExport
+
+        items = request.data.get("items")
+        output_format = request.data.get("format", "json")
+        if not isinstance(items, list) or not items or any(item not in EXPORT_CATEGORIES for item in items):
+            return Response({"items": "Выберите хотя бы одну поддерживаемую категорию."}, status=400)
+        if len(items) != len(set(items)):
+            return Response({"items": "Категории не должны повторяться."}, status=400)
+        if output_format not in EXPORT_FORMATS:
+            return Response({"format": "Поддерживаются json, csv и html."}, status=400)
+
+        record = DataExport.objects.create(
+            user=request.user,
+            items=items,
+            format=output_format,
+            expires_at=timezone.now() + timedelta(hours=settings.DATA_EXPORT_TTL_HOURS),
+        )
+        try:
+            build_data_export_task.delay(record.pk)
+        except Exception:
+            build_user_export(record.pk)
+        record.refresh_from_db()
+        return Response(self._serialize(record), status=status.HTTP_202_ACCEPTED)
+
+    @staticmethod
+    def _serialize(record):
+        return {
+            "id": record.pk,
+            "items": record.items,
+            "format": record.format,
+            "status": record.status,
+            "size": int(record.size) if record.size.isdigit() else None,
+            "created_at": record.created_at,
+            "expires_at": record.expires_at,
+            "error_code": record.error_code or None,
+            "download_url": f"/api/users/export-data/{record.pk}/download/" if record.status == "ready" else None,
+        }
+
+
+class ExportDataDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, request, export_id):
+        from apps.users.infrastructure.models.users import DataExport
+        return DataExport.objects.filter(pk=export_id, user=request.user).first()
+
+    def get(self, request, export_id):
+        record = self.get_object(request, export_id)
+        if record is None:
+            return Response({"detail": "Экспорт не найден."}, status=404)
+        return Response(ExportDataView._serialize(record))
+
+    def delete(self, request, export_id):
+        from apps.users.application.data_management import delete_export_file
+
+        record = self.get_object(request, export_id)
+        if record is None:
+            return Response({"detail": "Экспорт не найден."}, status=404)
+        if record.status not in ("queued", "processing"):
+            return Response({"detail": "Этот экспорт уже нельзя отменить."}, status=409)
+        record.status = "canceled"
+        record.save(update_fields=["status"])
+        delete_export_file(record)
+        return Response(ExportDataView._serialize(record))
+
+
+class ExportDataDownloadView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, export_id):
+        from apps.users.application.data_management import delete_export_file, safe_export_path
+        from apps.users.infrastructure.models.users import DataExport
+
+        record = DataExport.objects.filter(pk=export_id, user=request.user).first()
+        if record is None:
+            return Response({"detail": "Экспорт не найден."}, status=404)
+        if record.expires_at <= timezone.now():
+            delete_export_file(record)
+            record.status = "expired"
+            record.file_path = ""
+            record.save(update_fields=["status", "file_path"])
+            return Response({"detail": "Срок хранения экспорта истёк."}, status=410)
+        path = safe_export_path(record.file_path)
+        if record.status != "ready" or path is None or not path.is_file():
+            return Response({"detail": "Экспорт ещё не готов."}, status=409)
+        response = FileResponse(path.open("rb"), as_attachment=True, filename=f"anilux-export-{record.pk}.zip")
+        response["Cache-Control"] = "private, no-store"
+        response["Pragma"] = "no-cache"
+        response["X-Content-Type-Options"] = "nosniff"
+        return response
 
 
 class ClearCacheView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        from apps.users.application.storage_service import StorageService
+        items = request.data.get('items', ['cache'])
+        allowed = {'cache', 'images', 'videos', 'search', 'thumbnails', 'temp', 'fonts'}
+        if not isinstance(items, list) or any(not isinstance(item, str) or item not in allowed for item in items):
+            return Response({'detail': 'Можно очищать только временный кэш. Данные аккаунта не удаляются.'}, status=400)
+        StorageService(request.user).clear_cache()
         return Response({"success": True, "message": "Кэш очищен"})
 
 
@@ -1947,18 +2062,73 @@ class UserStatsView(APIView):
 class AllSettingsView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        user = request.user
-        return Response(
-            {
-                "theme": "dark",
-                "notifications": True,
-                "privacy": "public",
-            }
+    @staticmethod
+    def _response(user):
+        from apps.users.infrastructure.models.users import (
+            NotificationSettings, PrivacySettings, TwoFactorAuth, UserProfileSettings,
+        )
+        from apps.users.presentation.serializers.users_serializers import (
+            NotificationSettingsSerializer, PrivacySettingsSerializer,
+            TwoFactorAuthSerializer, UserProfileSettingsSerializer,
         )
 
+        profile, _ = UserProfileSettings.objects.get_or_create(user=user)
+        notifications, _ = NotificationSettings.objects.get_or_create(user=user)
+        privacy, _ = PrivacySettings.objects.get_or_create(user=user)
+        two_factor, _ = TwoFactorAuth.objects.get_or_create(user=user)
+        return {
+            "user": {
+                "display_name": user.display_name,
+                "nickname": user.nickname,
+                "avatar": user.avatar.url if user.avatar else None,
+                "bio": user.bio,
+                "favorite_genres": user.favorite_genres,
+                "website": user.website,
+                "vk_profile": user.vk_profile,
+                "telegram": user.telegram,
+                "phone_number": user.phone_number,
+                "email": user.email,
+                "email_verified": user.email_verified,
+                "phone_verified": user.phone_verified,
+            },
+            "profile_settings": UserProfileSettingsSerializer(profile).data,
+            "notification_settings": NotificationSettingsSerializer(notifications).data,
+            "privacy_settings": PrivacySettingsSerializer(privacy).data,
+            "two_factor_settings": TwoFactorAuthSerializer(two_factor).data,
+        }
+
+    def get(self, request):
+        return Response(self._response(request.user))
+
     def put(self, request):
-        return Response({"success": True})
+        from apps.users.infrastructure.models.users import (
+            NotificationSettings, PrivacySettings, UserProfileSettings,
+        )
+        from apps.users.presentation.serializers.users_serializers import (
+            NotificationSettingsSerializer, PrivacySettingsSerializer,
+            ProfileUpdateSerializer, UserProfileSettingsSerializer,
+        )
+
+        user = request.user
+        serializers_to_save = []
+        if "user" in request.data:
+            serializers_to_save.append(ProfileUpdateSerializer(user, data=request.data["user"], partial=True))
+        if "profile_settings" in request.data:
+            instance, _ = UserProfileSettings.objects.get_or_create(user=user)
+            serializers_to_save.append(UserProfileSettingsSerializer(instance, data=request.data["profile_settings"], partial=True))
+        if "notification_settings" in request.data:
+            instance, _ = NotificationSettings.objects.get_or_create(user=user)
+            serializers_to_save.append(NotificationSettingsSerializer(instance, data=request.data["notification_settings"], partial=True))
+        if "privacy_settings" in request.data:
+            instance, _ = PrivacySettings.objects.get_or_create(user=user)
+            serializers_to_save.append(PrivacySettingsSerializer(instance, data=request.data["privacy_settings"], partial=True))
+        for serializer in serializers_to_save:
+            serializer.is_valid(raise_exception=True)
+        with transaction.atomic():
+            for serializer in serializers_to_save:
+                serializer.save()
+        user.refresh_from_db()
+        return Response(self._response(user))
 
 
 class UsersListView(APIView):
@@ -1979,27 +2149,22 @@ class UsersListView(APIView):
         except (TypeError, ValueError):
             page, page_size = 1, 24
 
-        online_users_data = online_status.get_online_users()
-        online_ids = set(
-            u["user_id"]
-            for u in online_users_data
-            if isinstance(u, dict) and "user_id" in u
+        online_ids = set(online_status.get_online_ids()) if tab in ('online', 'offline') else set()
+        visible_online = Q(id__in=online_ids) & (
+            Q(pk=request.user.pk) | (
+                (Q(profile_settings__isnull=True) | Q(profile_settings__show_online_status=True)) &
+                (Q(settings__isnull=True) | Q(settings__show_online_status=True))
+            )
         )
-        online_by_id = {
-            item["user_id"]: item
-            for item in online_users_data
-            if isinstance(item, dict) and "user_id" in item
-        }
-
         if tab == "online":
             users_qs = (
-                User.objects.filter(id__in=list(online_ids))
+                User.objects.filter(visible_online)
                 if online_ids
                 else User.objects.none()
             )
         elif tab == "offline":
             users_qs = (
-                User.objects.exclude(id__in=list(online_ids))
+                User.objects.exclude(visible_online)
                 if online_ids
                 else User.objects.all()
             )
@@ -2013,13 +2178,19 @@ class UsersListView(APIView):
                 | Q(display_name__icontains=search)
             )
 
-        users_qs = users_qs.select_related("subscription", "profile_settings")
+        users_qs = users_qs.select_related("subscription", "profile_settings", "privacy_settings", "settings")
         total_count = users_qs.count()
-        
+
         start = (page - 1) * page_size
         end = start + page_size
-        users = users_qs[start:end]
+        users = list(users_qs[start:end])
+        online_by_id = online_status.get_users_data([user.pk for user in users])
+        online_ids = set(online_by_id)
 
+        from apps.users.application.privacy import prepare_privacy
+        prepare_privacy(users, request.user, {"avatar_url", "last_login"})
+        default_avatar_dir = Path(settings.MEDIA_ROOT) / "def_avatars"
+        default_avatars = (list(default_avatar_dir.glob("*.jpg")) + list(default_avatar_dir.glob("*.jpeg"))) if default_avatar_dir.exists() else []
         result = []
         for user in users:
             is_online = user.id in online_ids
@@ -2037,12 +2208,9 @@ class UsersListView(APIView):
             if user.avatar:
                 avatar_url = user.avatar.url
             else:
-                def_ava_dir = settings.MEDIA_ROOT / "def_avatars"
-                if def_ava_dir.exists():
-                    jpg_files = list(def_ava_dir.glob("*.jpg")) + list(def_ava_dir.glob("*.jpeg"))
-                    if jpg_files:
-                        selected_avatar = jpg_files[user.id % len(jpg_files)]
-                        avatar_url = f"/media/def_avatars/{selected_avatar.name}"
+                if default_avatars:
+                    selected_avatar = default_avatars[user.id % len(default_avatars)]
+                    avatar_url = f"/media/def_avatars/{selected_avatar.name}"
 
             result.append(
                 {
@@ -2062,6 +2230,8 @@ class UsersListView(APIView):
                 }
             )
 
+        from apps.users.application.privacy import project_user
+        result = [project_user(data, user, request.user) for data, user in zip(result, users)]
         return Response(
             {
                 "results": result,

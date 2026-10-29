@@ -9,7 +9,8 @@ from config.disabled_features import disabled_feature
 from . import views
 from . import views_library
 from . import views_subscription
-from .views.auth_views import SafeTokenRefreshView
+from .views.auth_views import SafeTokenRefreshView, SessionTokenObtainPairView
+from .views.profile_media import profile_media
 from apps.social.presentation.views.views_support import SupportTicketViewSet
 
 try:
@@ -33,7 +34,6 @@ router.register(r"themes", views.UserThemeViewSet, basename="themes")
 router.register(
     r"chat-backgrounds", views.ChatBackgroundViewSet, basename="chat-backgrounds"
 )
-router.register(r"analytics", views.UserAnalyticsViewSet, basename="analytics")
 router.register(r"library", views.UserLibraryViewSet, basename="library")
 router.register(r"favorites", views_library.UserFavoritesViewSet, basename="favorites")
 router.register(
@@ -46,10 +46,11 @@ router.register(
 )
 
 urlpatterns = [
+    path("profile-media/<path:name>", profile_media),
     path("library/wrapped/", views.UserWrappedView.as_view(), name="library_wrapped"),
     path("", include(router.urls)),
     path("me/", views.CurrentUserView.as_view(), name="current_user"),
-    path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("token/", SessionTokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("token/refresh/", SafeTokenRefreshView.as_view(), name="token_refresh"),
     path("register/", views.RegisterView.as_view(), name="register"),
     path("login/", views.LoginView.as_view(), name="login"),
@@ -151,6 +152,8 @@ urlpatterns = [
     path("storage-usage/", views.StorageUsageView.as_view(), name="storage_usage"),
     path("sync-settings/", views.SyncSettingsView.as_view(), name="sync_settings"),
     path("export-data/", views.ExportDataView.as_view(), name="export_data"),
+    path("export-data/<int:export_id>/", views.ExportDataDetailView.as_view(), name="export_data_detail"),
+    path("export-data/<int:export_id>/download/", views.ExportDataDownloadView.as_view(), name="export_data_download"),
     path("clear-cache/", views.ClearCacheView.as_view(), name="clear_cache"),
     path("online/", views.OnlineUsersView.as_view(), name="online_users"),
     path("realtime/", views.RealtimeUpdatesView.as_view(), name="realtime_updates"),

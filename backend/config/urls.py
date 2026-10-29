@@ -1,5 +1,6 @@
 from apps.social.presentation.views.chat_media import public_chat_file_denied
 from apps.social.presentation.views.post_media import serve_post_media
+from apps.users.presentation.views.profile_media import profile_media
 
 import re
 
@@ -12,6 +13,7 @@ from django.views.generic import RedirectView
 from apps.anime.presentation.views.clip_views import ClipCreateView, ClipStatusView
 from django.views.generic import TemplateView
 from config import feature_flags
+from config.health import liveness, readiness
 from config.disabled_features import disabled_feature
 
 try:
@@ -59,6 +61,9 @@ def seo_admin_shell(request):
     return page_html(request, request.path.lstrip('/'))
 
 urlpatterns = [
+    path('health/live/', liveness),
+    path('health/ready/', readiness),
+    re_path(r"^(?:data/)?media/(?P<name>avatars/.+)$", profile_media),
     re_path(r'^admin/(?:complaints|franchises|kodik-import)/?$',
             seo_admin_shell),
     path('api/application/', include('apps.native_apps.urls')),
@@ -66,7 +71,7 @@ urlpatterns = [
     path('media/posts/<path:name>', lambda request, name: serve_post_media(request, 'posts/' + name)),
     path('data/media/posts/<path:name>', lambda request, name: serve_post_media(request, 'posts/' + name)),
     path("admin/", admin.site.urls),
-    path("api/status/", api_status),  
+    path("api/status/", api_status),
     path("api/integrations/brevo/transactional-events/", BrevoTransactionalEventsView.as_view()),
     path("api/users/", include("apps.users.presentation.urls")),
     path("api/anime/", include("apps.anime.presentation.urls")),

@@ -46,6 +46,28 @@ def response(data, status=200):
     return result
 
 
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def excerpt_checks(request):
+    class Reference(serializers.Serializer):
+        id = serializers.IntegerField(min_value=1)
+        token = serializers.UUIDField(required=False, allow_null=True)
+        owner = serializers.BooleanField(default=False)
+        key = serializers.CharField(max_length=200)
+    if not isinstance(request.data, dict) or not isinstance(request.data.get('items'), list) or len(request.data['items']) > 100:
+        raise ValidationError('Передайте до 100 отрывков')
+    values = Reference(data=request.data['items'], many=True)
+    values.is_valid(raise_exception=True)
+    rows = {row.pk: row for row in Excerpt.objects.filter(pk__in=[item['id'] for item in values.validated_data]).select_related('anime')}
+    result = []
+    for item in values.validated_data:
+        row = rows.get(item['id'])
+        owns = bool(row and item['owner'] and request.user.is_authenticated and row.author_id == request.user.pk)
+        shared = bool(row and not item['owner'] and row.shared and item.get('token') == row.share_token)
+        result.append({'key': item['key'], 'excerpt': excerpt_data(row, owner=owns) if owns or shared else None})
+    return response({'results': result})
+
+
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def excerpts(request):

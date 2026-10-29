@@ -30,6 +30,7 @@ def main():
     if not ids:
         raise RuntimeError('Start the isolated lab first')
     images = json.loads(command(['docker', 'inspect', *ids]))
+    tracked_sources = set(command(['git', 'ls-files', '-z']).split('\0'))
     observer_compose = ['docker', 'compose', '--env-file', '.env.example', '-f', 'deploy/scalability/compose.yml']
     if any(item['Config']['Labels'].get('com.docker.compose.service') == 'rabbitmq' for item in images):
         observer_compose += ['-f', 'deploy/scalability/compose.queues.yml', '-f', 'deploy/scalability/compose.rabbitmq.yml']
@@ -43,11 +44,12 @@ def main():
         'dirty': bool(command(['git', 'status', '--porcelain'])),
         'profile_settings': vars(args),
         'generator_image_id': command(['docker', 'image', 'inspect', 'animecore-scalability-backend:lab', '--format', '{{.Id}}']),
-        'source_files_sha256': {str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
+        'source_files_sha256': {path.relative_to(ROOT).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
             for pattern in ('tests/scalability/*.py', 'backend/core/*.py', 'backend/config/*.py',
                             'deploy/scalability/*.yml', 'backend/apps/social/application/live_projection.py',
                             'backend/apps/social/application/post_feed.py', 'backend/apps/social/application/tasks_chat.py',
-                            'backend/apps/anime/application/recommendations.py') for path in ROOT.glob(pattern)},
+                            'backend/apps/anime/application/recommendations.py') for path in ROOT.glob(pattern)
+            if path.relative_to(ROOT).as_posix() in tracked_sources},
         'docker_host_cpu_memory': command(['docker', 'info', '--format', '{{.NCPU}} {{.MemTotal}}']),
         'shared_host_generator': True,
         'containers': [{'name': item['Name'], 'image_id': item['Image'],

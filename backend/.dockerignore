@@ -6,6 +6,18 @@ __pycache__/
 env/
 venv/
 .env
+.env.*
+.venv/
+ENV/
+*.pem
+*.key
+*.p12
+*.pfx
+*.sql
+*.sql.gz
+# Local-only helpers are also excluded by the repository .gitignore.
+config/settings_site_rebuild_copy.py
+fix_users3.py
 .git/
 .gitignore
 node_modules/

@@ -1,0 +1,20 @@
+{
+  "synthetic_only": true,
+  "route": "/anime?section=recommendations",
+  "errors": [],
+  "samples": [
+    {
+      "width": 1280,
+      "elapsed_ms": 2737,
+      "title": "РљР°С‚Р°Р»РѕРі Р°РЅРёРјРµ вЂ” СЃРјРѕС‚СЂРµС‚СЊ РѕРЅР»Р°Р№РЅ | AniLux",
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "elapsed_ms": 3099,
+      "title": "РљР°С‚Р°Р»РѕРі Р°РЅРёРјРµ вЂ” СЃРјРѕС‚СЂРµС‚СЊ РѕРЅР»Р°Р№РЅ | AniLux",
+      "overflow": false
+    }
+  ],
+  "authenticated_profile_status": 200
+}

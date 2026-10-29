@@ -1,0 +1,7 @@
+{
+  "countdown_retry": {
+    "retried": 1,
+    "completed": true
+  },
+  "broker_scheme": "amqp"
+}

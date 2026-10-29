@@ -1,0 +1,6 @@
+{
+  "event_id": 1,
+  "outbox_published": true,
+  "duplicate_task_completed": true,
+  "client_delivery_verified": false
+}

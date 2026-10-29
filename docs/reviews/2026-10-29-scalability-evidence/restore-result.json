@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "synthetic_only": true,
+  "production_rpo_rto_certified": false,
+  "backup_bytes": 5751305,
+  "backup_sha256": "98797037580b394feb6678cd5c74f2e179d448d21976e9d5bda85f2dac924157",
+  "restore_seconds": 71.98399999999674,
+  "tables": {
+    "users_user": {
+      "rows": 120,
+      "mysql_checksum": "4149803977"
+    },
+    "anime_anime": {
+      "rows": 3000,
+      "mysql_checksum": "1085434213"
+    },
+    "social_post": {
+      "rows": 10000,
+      "mysql_checksum": "835666209"
+    },
+    "social_message": {
+      "rows": 1,
+      "mysql_checksum": "636186636"
+    },
+    "social_chatevent": {
+      "rows": 1,
+      "mysql_checksum": "155413330"
+    },
+    "django_migrations": {
+      "rows": 146,
+      "mysql_checksum": "3309590099"
+    }
+  },
+  "checksums_and_counts_match": true,
+  "scope": "database dump/restore in another schema; not host failover or media restore"
+}

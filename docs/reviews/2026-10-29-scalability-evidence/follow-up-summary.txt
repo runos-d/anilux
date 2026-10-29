@@ -1,0 +1,7 @@
+Inventory and isolated-routing follow-up
+Ran 7 tests in 0.012s
+
+OK
+Network: none; no database access.
+All 88 application tasks match actual Celery router, fixed queues only.
+Unregistered beat tasks: 0.

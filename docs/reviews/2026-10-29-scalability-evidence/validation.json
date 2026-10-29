@@ -1,0 +1,87 @@
+{
+  "date": "2026-10-29",
+  "capacity_certified": false,
+  "external_infrastructure_available": false,
+  "backend": {
+    "tests": 334,
+    "seconds": 481.789,
+    "passed": true,
+    "database": "isolated MySQL test_scalability_lab",
+    "django_check_issues": 0,
+    "model_drift": false
+  },
+  "frontend": {
+    "files": 91,
+    "tests": 284,
+    "passed": true,
+    "type_check": true,
+    "eslint": true,
+    "analytics_architecture": true,
+    "production_build": true,
+    "bundle_entry_js_bytes": 148227,
+    "bundle_entry_css_bytes": 70960,
+    "bundle_budget_passed": true
+  },
+  "infrastructure": {
+    "lab_compose_variants_valid": true,
+    "isolated_worker_compose_valid": true,
+    "nginx_syntax_valid": true,
+    "fresh_lab_migrations_completed": true,
+    "api_replicas_checked": [
+      2,
+      4
+    ],
+    "legacy_defaults_preserved": true
+  },
+  "object_storage": {
+    "sdk": "boto3 1.43.121",
+    "optional_image_built": true,
+    "pip_check_passed": true,
+    "transfer_config_checked": true,
+    "provider_compatibility_verified": false,
+    "live_cutover": false
+  },
+  "scope_limits": [
+    "No production deployment or user database load",
+    "No 6000 or million active-user certification",
+    "No full-domain mixed acceptance, long soak or reconnect/replay/failover acceptance",
+    "No Centrifugo D0031 security equivalence",
+    "No database replica promotion or S3/CDN migration"
+  ],
+  "source_commit": "fc6f982036135dbf58a68a07a26a7de5c37ba0a9",
+  "packaging": {
+    "commit": "4d06b42",
+    "tracked_only_source_hashes_checked": true,
+    "backend_image_rebuilt": true,
+    "backend_image_id": "sha256:03c02d6e97a6c39177f2a836848b8f2ce45fe1cee9ff22eccd6d9beed9c39715",
+    "excluded_local_files_absence_checked": true
+  },
+  "cleanup": {
+    "owned_lab_project": "animecore-scalability-lab",
+    "remaining_lab_containers": 0,
+    "lab_volumes_preserved": true,
+    "working_containers_still_running": true,
+    "owned_browser_session_closed": true
+  },
+  "follow_up": {
+    "source_commit": "a50cbf4",
+    "targeted_tests": 7,
+    "seconds": 0.012,
+    "passed": true,
+    "network": "none",
+    "database_access": false,
+    "http_route_entries": 994,
+    "ws_patterns": 3,
+    "application_tasks": 88,
+    "all_static_queues_match_actual_celery_router": true,
+    "unregistered_scheduled_tasks": [],
+    "default_queue_tasks": [
+      "config.celery.debug_task",
+      "scalability.lab_retry_probe"
+    ],
+    "latest_image_id": "sha256:ceb5437444242e1b72acafaf4375f6812ff1bc469e1f62ab3d04f1fa20c15bff",
+    "full_mixed_probe_repeated_after_follow_up": false,
+    "legacy_default_changed": false,
+    "authorization_or_delivery_pipeline_changed": false
+  }
+}

@@ -1,0 +1,457 @@
+{
+  "mixed-12-two-api": {
+    "result": {
+      "schema_version": 1,
+      "capacity_certified": false,
+      "profile": "mixed-chat-http-smoke",
+      "users": 12,
+      "sockets": 24,
+      "fixture_room_size": 60,
+      "connected_users_per_room": [
+        6,
+        6
+      ],
+      "seconds": 20,
+      "offered_http_rps": 5,
+      "http_expected": 100,
+      "http_offered": 100,
+      "http_completed": 100,
+      "statuses": {
+        "200": 100
+      },
+      "generator_dropped": 0,
+      "durable_sends": 20,
+      "acks": 20,
+      "expected_deliveries": 240,
+      "unique_deliveries": 240,
+      "duplicates": 0,
+      "unexpected_recipients": 0,
+      "frame_errors": 0,
+      "max_received_frame_bytes": 66398,
+      "response_frame_budget_bytes": 1048576,
+      "http_ms": {
+        "p95": 87,
+        "p99": 170
+      },
+      "delivery_ms": {
+        "p95": 365,
+        "p99": 590
+      },
+      "generator": {
+        "schedule_delay_p99_ms": 6,
+        "cpu_seconds": 0.6023201,
+        "max_rss_kib": 39084
+      },
+      "passed_smoke": true,
+      "api_replicas": 2,
+      "proposed_roadmap_latency_passed": true
+    },
+    "resource_samples": 5,
+    "observed_outbox_oldest_age_seconds_peak": 0,
+    "observed_queue_ready_peak": 0,
+    "observed_db_connections_peak": 2,
+    "dataset_at_last_sample": {
+      "users": 120,
+      "anime": 3000,
+      "posts": 10000,
+      "messages": 115,
+      "rooms": 4,
+      "memberships": 124
+    },
+    "resource_peaks_include_connection_ramp": true,
+    "resources": {
+      "animecore-scalability-lab-observer-1": {
+        "cpu_percent_peak": 9.7,
+        "memory_bytes_peak": 71051509.76,
+        "network_first": "359kB / 118kB",
+        "network_last": "454kB / 148kB",
+        "pids_peak": 1
+      },
+      "animecore-scalability-lab-api-2": {
+        "cpu_percent_peak": 47.63,
+        "memory_bytes_peak": 127297126.4,
+        "network_first": "5.88MB / 4.61MB",
+        "network_last": "10.7MB / 8.29MB",
+        "pids_peak": 7
+      },
+      "animecore-scalability-lab-background-1": {
+        "cpu_percent_peak": 0.12,
+        "memory_bytes_peak": 137048883.2,
+        "network_first": "2.23MB / 838kB",
+        "network_last": "2.8MB / 1.16MB",
+        "pids_peak": 2
+      },
+      "animecore-scalability-lab-api-1": {
+        "cpu_percent_peak": 15.77,
+        "memory_bytes_peak": 133274009.6,
+        "network_first": "9.12MB / 7MB",
+        "network_last": "11.4MB / 9.15MB",
+        "pids_peak": 8
+      },
+      "animecore-scalability-lab-events-1": {
+        "cpu_percent_peak": 2.68,
+        "memory_bytes_peak": 136629452.8,
+        "network_first": "2.46MB / 1.3MB",
+        "network_last": "2.74MB / 1.92MB",
+        "pids_peak": 2
+      },
+      "animecore-scalability-lab-rabbitmq-1": {
+        "cpu_percent_peak": 100.6,
+        "memory_bytes_peak": 192623411.2,
+        "network_first": "3.28MB / 5.12MB",
+        "network_last": "3.33MB / 5.17MB",
+        "pids_peak": 71
+      },
+      "animecore-scalability-lab-frontend-1": {
+        "cpu_percent_peak": 0.85,
+        "memory_bytes_peak": 64214794.24,
+        "network_first": "2.93MB / 1.35MB",
+        "network_last": "5.26MB / 2.21MB",
+        "pids_peak": 9
+      },
+      "animecore-scalability-lab-lab-broker-1": {
+        "cpu_percent_peak": 0.69,
+        "memory_bytes_peak": 4886364.16,
+        "network_first": "1.15MB / 766kB",
+        "network_last": "1.22MB / 790kB",
+        "pids_peak": 6
+      },
+      "animecore-scalability-lab-lab-cache-1": {
+        "cpu_percent_peak": 4.19,
+        "memory_bytes_peak": 4959764.48,
+        "network_first": "2.95MB / 8.84MB",
+        "network_last": "3.24MB / 9.4MB",
+        "pids_peak": 6
+      },
+      "animecore-scalability-lab-lab-mysql-1": {
+        "cpu_percent_peak": 26.13,
+        "memory_bytes_peak": 1188632199.168,
+        "network_first": "162MB / 288MB",
+        "network_last": "165MB / 295MB",
+        "pids_peak": 46
+      },
+      "animecore-scalability-lab-lab-realtime-1": {
+        "cpu_percent_peak": 5.06,
+        "memory_bytes_peak": 5455740.928,
+        "network_first": "8.82MB / 5.06MB",
+        "network_last": "9.58MB / 5.55MB",
+        "pids_peak": 6
+      },
+      "animecore-scalability-lab-generator-run-9fba13d09f81": {
+        "cpu_percent_peak": 2.77,
+        "memory_bytes_peak": 27189575.68,
+        "network_first": "557kB / 44.3kB",
+        "network_last": "1.04MB / 102kB",
+        "pids_peak": 2
+      }
+    }
+  },
+  "mixed-120-two-api": {
+    "result": {
+      "schema_version": 1,
+      "capacity_certified": false,
+      "profile": "mixed-chat-http-smoke",
+      "users": 120,
+      "sockets": 240,
+      "fixture_room_size": 60,
+      "connected_users_per_room": [
+        60,
+        60
+      ],
+      "seconds": 60,
+      "offered_http_rps": 10,
+      "http_expected": 600,
+      "http_offered": 600,
+      "http_completed": 600,
+      "statuses": {
+        "200": 600
+      },
+      "generator_dropped": 0,
+      "durable_sends": 60,
+      "acks": 60,
+      "expected_deliveries": 7200,
+      "unique_deliveries": 6688,
+      "duplicates": 0,
+      "unexpected_recipients": 0,
+      "frame_errors": 0,
+      "max_received_frame_bytes": 66437,
+      "response_frame_budget_bytes": 1048576,
+      "http_ms": {
+        "p95": 1744,
+        "p99": 2865
+      },
+      "delivery_ms": {
+        "p95": 18808,
+        "p99": 19450
+      },
+      "generator": {
+        "schedule_delay_p99_ms": 13,
+        "cpu_seconds": 5.8718234,
+        "max_rss_kib": 52604
+      },
+      "passed_smoke": false,
+      "api_replicas": 2,
+      "proposed_roadmap_latency_passed": false
+    },
+    "resource_samples": 19,
+    "observed_outbox_oldest_age_seconds_peak": 0.236819,
+    "observed_queue_ready_peak": 0,
+    "observed_db_connections_peak": 15,
+    "dataset_at_last_sample": {
+      "users": 120,
+      "anime": 3000,
+      "posts": 10000,
+      "messages": 179,
+      "rooms": 4,
+      "memberships": 124
+    },
+    "resource_peaks_include_connection_ramp": true,
+    "resources": {
+      "animecore-scalability-lab-observer-1": {
+        "cpu_percent_peak": 14.33,
+        "memory_bytes_peak": 76189532.16,
+        "network_first": "1.38MB / 437kB",
+        "network_last": "1.81MB / 572kB",
+        "pids_peak": 8
+      },
+      "animecore-scalability-lab-api-2": {
+        "cpu_percent_peak": 105.98,
+        "memory_bytes_peak": 144074342.4,
+        "network_first": "11.2MB / 9.01MB",
+        "network_last": "49.7MB / 40.6MB",
+        "pids_peak": 18
+      },
+      "animecore-scalability-lab-background-1": {
+        "cpu_percent_peak": 11.26,
+        "memory_bytes_peak": 137258598.4,
+        "network_first": "2.9MB / 1.22MB",
+        "network_last": "7.95MB / 2.65MB",
+        "pids_peak": 2
+      },
+      "animecore-scalability-lab-api-1": {
+        "cpu_percent_peak": 101.99,
+        "memory_bytes_peak": 160746700.8,
+        "network_first": "11.8MB / 9.8MB",
+        "network_last": "52.7MB / 44.1MB",
+        "pids_peak": 19
+      },
+      "animecore-scalability-lab-events-1": {
+        "cpu_percent_peak": 25.32,
+        "memory_bytes_peak": 137468313.6,
+        "network_first": "2.86MB / 2.01MB",
+        "network_last": "5.58MB / 12.3MB",
+        "pids_peak": 4
+      },
+      "animecore-scalability-lab-rabbitmq-1": {
+        "cpu_percent_peak": 101.92,
+        "memory_bytes_peak": 195139993.6,
+        "network_first": "3.48MB / 5.49MB",
+        "network_last": "3.69MB / 5.73MB",
+        "pids_peak": 71
+      },
+      "animecore-scalability-lab-frontend-1": {
+        "cpu_percent_peak": 6.31,
+        "memory_bytes_peak": 72299315.2,
+        "network_first": "5.51MB / 2.34MB",
+        "network_last": "32.9MB / 20.3MB",
+        "pids_peak": 9
+      },
+      "animecore-scalability-lab-lab-broker-1": {
+        "cpu_percent_peak": 1.26,
+        "memory_bytes_peak": 5004853.248,
+        "network_first": "1.22MB / 792kB",
+        "network_last": "1.49MB / 901kB",
+        "pids_peak": 6
+      },
+      "animecore-scalability-lab-lab-cache-1": {
+        "cpu_percent_peak": 9.93,
+        "memory_bytes_peak": 5266997.248,
+        "network_first": "3.26MB / 9.43MB",
+        "network_last": "3.95MB / 15.1MB",
+        "pids_peak": 6
+      },
+      "animecore-scalability-lab-lab-mysql-1": {
+        "cpu_percent_peak": 78.86,
+        "memory_bytes_peak": 1192927166.464,
+        "network_first": "166MB / 296MB",
+        "network_last": "198MB / 364MB",
+        "pids_peak": 53
+      },
+      "animecore-scalability-lab-lab-realtime-1": {
+        "cpu_percent_peak": 17.96,
+        "memory_bytes_peak": 6914310.144,
+        "network_first": "9.71MB / 5.62MB",
+        "network_last": "27.5MB / 17.4MB",
+        "pids_peak": 6
+      },
+      "animecore-scalability-lab-generator-run-86b9cf6560ff": {
+        "cpu_percent_peak": 11.57,
+        "memory_bytes_peak": 42635100.16,
+        "network_first": "913kB / 59.3kB",
+        "network_last": "16.6MB / 1.33MB",
+        "pids_peak": 2
+      }
+    }
+  },
+  "mixed-120-four-api": {
+    "result": {
+      "schema_version": 1,
+      "capacity_certified": false,
+      "profile": "mixed-chat-http-smoke",
+      "users": 120,
+      "sockets": 240,
+      "fixture_room_size": 60,
+      "connected_users_per_room": [
+        60,
+        60
+      ],
+      "seconds": 60,
+      "offered_http_rps": 10,
+      "http_expected": 600,
+      "http_offered": 600,
+      "http_completed": 600,
+      "statuses": {
+        "200": 600
+      },
+      "generator_dropped": 0,
+      "durable_sends": 60,
+      "acks": 60,
+      "expected_deliveries": 7200,
+      "unique_deliveries": 7200,
+      "duplicates": 0,
+      "unexpected_recipients": 0,
+      "frame_errors": 0,
+      "max_received_frame_bytes": 66500,
+      "response_frame_budget_bytes": 1048576,
+      "http_ms": {
+        "p95": 184,
+        "p99": 276
+      },
+      "delivery_ms": {
+        "p95": 982,
+        "p99": 1313
+      },
+      "generator": {
+        "schedule_delay_p99_ms": 8,
+        "cpu_seconds": 3.9965417000000003,
+        "max_rss_kib": 52772
+      },
+      "passed_smoke": true,
+      "api_replicas": 4,
+      "proposed_roadmap_latency_passed": false
+    },
+    "resource_samples": 17,
+    "observed_outbox_oldest_age_seconds_peak": 0.086445,
+    "observed_queue_ready_peak": 0,
+    "observed_db_connections_peak": 5,
+    "dataset_at_last_sample": {
+      "users": 120,
+      "anime": 3000,
+      "posts": 10000,
+      "messages": 234,
+      "rooms": 4,
+      "memberships": 124
+    },
+    "resource_peaks_include_connection_ramp": true,
+    "resources": {
+      "animecore-scalability-lab-api-4": {
+        "cpu_percent_peak": 85.64,
+        "memory_bytes_peak": 134112870.4,
+        "network_first": "2.11MB / 885kB",
+        "network_last": "30MB / 26MB",
+        "pids_peak": 6
+      },
+      "animecore-scalability-lab-api-3": {
+        "cpu_percent_peak": 91.72,
+        "memory_bytes_peak": 121425100.8,
+        "network_first": "1.85MB / 615kB",
+        "network_last": "36.6MB / 28.1MB",
+        "pids_peak": 11
+      },
+      "animecore-scalability-lab-observer-1": {
+        "cpu_percent_peak": 9.28,
+        "memory_bytes_peak": 71575797.76,
+        "network_first": "3.05MB / 966kB",
+        "network_last": "3.48MB / 1.09MB",
+        "pids_peak": 1
+      },
+      "animecore-scalability-lab-api-2": {
+        "cpu_percent_peak": 65.02,
+        "memory_bytes_peak": 134322585.6,
+        "network_first": "51.2MB / 42.2MB",
+        "network_last": "55.9MB / 47.5MB",
+        "pids_peak": 15
+      },
+      "animecore-scalability-lab-background-1": {
+        "cpu_percent_peak": 0.31,
+        "memory_bytes_peak": 137258598.4,
+        "network_first": "8.09MB / 2.73MB",
+        "network_last": "8.13MB / 2.76MB",
+        "pids_peak": 2
+      },
+      "animecore-scalability-lab-api-1": {
+        "cpu_percent_peak": 31.63,
+        "memory_bytes_peak": 151938662.4,
+        "network_first": "53MB / 44.7MB",
+        "network_last": "62.7MB / 51.6MB",
+        "pids_peak": 9
+      },
+      "animecore-scalability-lab-events-1": {
+        "cpu_percent_peak": 23.52,
+        "memory_bytes_peak": 138202316.8,
+        "network_first": "5.73MB / 12.4MB",
+        "network_last": "8.28MB / 22.2MB",
+        "pids_peak": 4
+      },
+      "animecore-scalability-lab-rabbitmq-1": {
+        "cpu_percent_peak": 100.57,
+        "memory_bytes_peak": 195664281.6,
+        "network_first": "3.89MB / 6.17MB",
+        "network_last": "4.03MB / 6.34MB",
+        "pids_peak": 71
+      },
+      "animecore-scalability-lab-frontend-1": {
+        "cpu_percent_peak": 6.76,
+        "memory_bytes_peak": 71816970.24,
+        "network_first": "222kB / 223kB",
+        "network_last": "26.9MB / 18MB",
+        "pids_peak": 9
+      },
+      "animecore-scalability-lab-lab-broker-1": {
+        "cpu_percent_peak": 3.99,
+        "memory_bytes_peak": 4952424.448,
+        "network_first": "1.49MB / 901kB",
+        "network_last": "1.66MB / 961kB",
+        "pids_peak": 6
+      },
+      "animecore-scalability-lab-lab-cache-1": {
+        "cpu_percent_peak": 6.5,
+        "memory_bytes_peak": 4746903.552,
+        "network_first": "3.97MB / 15.1MB",
+        "network_last": "4.38MB / 16.5MB",
+        "pids_peak": 6
+      },
+      "animecore-scalability-lab-lab-mysql-1": {
+        "cpu_percent_peak": 62.78,
+        "memory_bytes_peak": 1202590842.88,
+        "network_first": "200MB / 369MB",
+        "network_last": "230MB / 433MB",
+        "pids_peak": 52
+      },
+      "animecore-scalability-lab-lab-realtime-1": {
+        "cpu_percent_peak": 11.09,
+        "memory_bytes_peak": 6725566.464,
+        "network_first": "27.8MB / 17.6MB",
+        "network_last": "46.3MB / 31.1MB",
+        "pids_peak": 6
+      },
+      "animecore-scalability-lab-generator-run-590ff289db62": {
+        "cpu_percent_peak": 8.52,
+        "memory_bytes_peak": 42572185.6,
+        "network_first": "1.4MB / 88.9kB",
+        "network_last": "16.6MB / 1.22MB",
+        "pids_peak": 2
+      }
+    }
+  }
+}

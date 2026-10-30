@@ -14,6 +14,7 @@ import time
 from collections import defaultdict
 from contextvars import ContextVar
 from contextlib import contextmanager
+from weakref import WeakKeyDictionary
 
 logger = logging.getLogger('core.telemetry')
 BUCKETS = (.01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10, 30)
@@ -22,9 +23,10 @@ DOMAINS = frozenset(('anime', 'users', 'social', 'playlists', 'notifications',
 TRACEPARENT = re.compile(r'^00-([0-9a-f]{32})-([0-9a-f]{16})-[0-9a-f]{2}$')
 current_domain = ContextVar('operational_domain', default='other')
 current_ws_operation = ContextVar('operational_ws_operation', default=None)
-WS_OPERATIONS = frozenset(('session', 'chat_acl', 'projection', 'room', 'global', 'command'))
+WS_OPERATIONS = frozenset(('session', 'chat_acl', 'projection', 'room', 'global', 'command', 'event_loop'))
 WS_PHASES = frozenset(('batch_wait', 'executor_wait', 'work', 'connection', 'sql',
-                       'prepare', 'serialize', 'send', 'publication_to_handler'))
+                       'prepare', 'serialize', 'send', 'publication_to_handler',
+                       'dispatch_wait', 'authorization', 'transaction', 'commit', 'broker_publish', 'lag'))
 
 
 def domain_for(path):
@@ -201,6 +203,24 @@ class OperationalTelemetry:
         self.token = token.encode('utf-8')
         self.sample_rate = max(0., min(1., sample_rate))
         self.registry = registry or Registry()
+        self.loop_probes = WeakKeyDictionary()
+
+    def monitor_loop(self):
+        loop = asyncio.get_running_loop()
+        if loop in self.loop_probes:
+            return
+        def sample(expected):
+            self.registry.observe_ws_phase('event_loop', 'lag', loop.time()-expected)
+            with self.registry.lock:
+                active = sum(self.registry.active.values())
+            if active:
+                schedule()
+            else:
+                self.loop_probes.pop(loop, None)
+        def schedule():
+            expected = loop.time()+.1
+            self.loop_probes[loop] = loop.call_at(expected, sample, expected)
+        schedule()
 
     async def __call__(self, scope, receive, send):
         kind = scope['type']
@@ -225,10 +245,14 @@ class OperationalTelemetry:
         domain_token = current_domain.set(domain)
         with self.registry.lock:
             self.registry.active[kind] += 1
+        self.monitor_loop()
 
         async def counted_receive():
             message = await receive()
             if message['type'] == 'websocket.receive':
+                # Server-owned monotonic timestamp; never trust a client clock
+                # or put it into the decoded command / outgoing DTO.
+                message = {**message, '_site_received_at': time.monotonic()}
                 with self.registry.lock:
                     self.registry.frames['received'] += 1
             return message

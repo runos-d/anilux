@@ -66,7 +66,8 @@ async def run(args):
                     continue
                 if data.get('action') == 'message_ack' and not command['acked']:
                     command['acked'] = True
-                    ack.add(time.monotonic()-command['start'])
+                    command['ack_ms'] = (time.monotonic()-command['start'])*1000
+                    ack.add(command['ack_ms']/1000)
                 if data.get('action') == 'new_message':
                     key = (user['user_id'], kind)
                     if str(rooms['rooms'][str(user['user_id'])]) != str(command['room']):
@@ -77,6 +78,7 @@ async def run(args):
                         command['received'].add(key)
                         delivery.add(time.monotonic()-command['start'])
                         delivery_by_socket[kind].add(time.monotonic()-command['start'])
+                        command['last_delivery_ms'] = (time.monotonic()-command['start'])*1000
         async def heartbeat():
             nonlocal frame_errors
             while True:
@@ -161,6 +163,10 @@ async def run(args):
                 'max_received_frame_bytes': max_frame_received, 'response_frame_budget_bytes': 1048576,
                 'http_ms': {'p95': http.percentile(.95), 'p99': http.percentile(.99)},
                 'ack_ms': {'p95': ack.percentile(.95), 'p99': ack.percentile(.99)},
+                'command_timeline': [{'offset_seconds': row['start']-started,
+                    'ack_ms': row.get('ack_ms'), 'last_delivery_ms': row.get('last_delivery_ms'),
+                    'received': len(row['received']), 'expected': row['expected']}
+                    for row in commands.values()],
                 'delivery_ms': {'p95': delivery.percentile(.95), 'p99': delivery.percentile(.99)},
                 'delivery_by_socket_ms': {kind: {'count': hist.count, 'p95': hist.percentile(.95), 'p99': hist.percentile(.99)}
                                           for kind, hist in delivery_by_socket.items()},

@@ -5,6 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import subprocess
+import sys
 import time
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -54,7 +55,10 @@ def main():
         'docker_host_cpu_memory': command(['docker', 'info', '--format', '{{.NCPU}} {{.MemTotal}}']),
         'shared_host_generator': True,
         'containers': [{'name': item['Name'], 'image_id': item['Image'],
-            'memory_limit_bytes': item['HostConfig']['Memory'], 'nano_cpus': item['HostConfig']['NanoCpus']}
+            'memory_limit_bytes': item['HostConfig']['Memory'], 'nano_cpus': item['HostConfig']['NanoCpus'],
+            'compose_files': [Path(path).name for path in
+                item['Config']['Labels'].get('com.docker.compose.project.config_files', '').split(',') if path],
+            'service': item['Config']['Labels'].get('com.docker.compose.service')}
             for item in images]}
     (folder/'manifest.json').write_text(json.dumps(metadata, indent=2))
     compose = ['docker', 'compose', '--env-file', '.env.example', '-f', 'deploy/scalability/compose.yml',
@@ -83,6 +87,8 @@ def main():
                     ['docker', 'stats', '--no-stream', '--format', '{{json .}}', *live]).splitlines()]
                 sample['observer'] = json.loads(command(['docker', 'exec',
                     'animecore-scalability-lab-observer-1', 'cat', '/tmp/scalability-observer.json']))
+                sample['api_cgroups'] = json.loads(command([sys.executable,
+                    'tests/scalability/engine_stats.py', *live]))
             except (subprocess.SubprocessError, ValueError):
                 sample['probe_unavailable'] = True
             resources.write(json.dumps(sample)+'\n')

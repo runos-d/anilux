@@ -8,6 +8,16 @@ from core.telemetry import OperationalTelemetry, Registry
 
 
 class TelemetryTests(IsolatedAsyncioTestCase):
+    async def test_single_loop_probe_stops_when_no_requests_or_sockets_remain(self):
+        app = OperationalTelemetry(None, enabled=True)
+        app.monitor_loop()
+        handle = next(iter(app.loop_probes.values()))
+        app.monitor_loop()
+        self.assertEqual(list(app.loop_probes.values()), [handle])
+        await asyncio.sleep(.12)
+        self.assertFalse(app.loop_probes)
+        self.assertEqual(app.registry.ws_phases[('event_loop', 'lag')][0], 1)
+
     async def request(self, app, path='/api/users/123/secret?q=token', headers=(), kind='http'):
         sent = []
         async def receive():
@@ -130,3 +140,17 @@ class TelemetryTests(IsolatedAsyncioTestCase):
         with self.assertRaises(RuntimeError):
             sql_timing(lambda *args: (_ for _ in ()).throw(RuntimeError()), 'private sql', [], False, {})
         self.assertNotIn(b'private', process_registry.render())
+
+    async def test_receive_timestamp_is_server_owned_and_not_sent(self):
+        async def application(scope, receive, send):
+            incoming = await receive()
+            self.assertIsInstance(incoming['_site_received_at'], float)
+            self.assertNotEqual(incoming['_site_received_at'], -123)
+            self.assertEqual(incoming['text'], 'private')
+            await send({'type': 'websocket.send', 'text': 'ok'})
+        async def receive():
+            return {'type': 'websocket.receive', 'text': 'private', '_site_received_at': -123}
+        sent = []
+        await OperationalTelemetry(application, enabled=True)(
+            {'type': 'websocket', 'path': '/ws/'}, receive, self.append_to(sent))
+        self.assertEqual(sent, [{'type': 'websocket.send', 'text': 'ok'}])

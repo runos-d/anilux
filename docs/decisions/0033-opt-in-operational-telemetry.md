@@ -14,3 +14,5 @@ SQL wrapper сохраняет только count/duration/errors, без тек
 Post-publication histogram разделяет transport/consumer wait, batch wait, executor, connection setup, SQL, DTO preparation, serialization и ASGI send. Только фиксированные labels, без IDs/payload; внутренний timestamp не отправляется клиенту. Вложенные spans не суммируются; wall-clock между hosts требует синхронизации. Client latency остаётся отдельным критерием.
 
 Command work включает execute, DB transaction и on-commit producer; SQL/connection имеют фиксированный command label. Generator публикует отдельный ACK histogram, чтобы не приписывать pre-publication хвост reader-у. Неуспешные end-to-end эксперименты сохраняются даже при улучшении SQL microprobe; неподтверждённые reader изменения откатываются.
+
+С 30 октября command work измеряет sync callback; отдельные dispatch/authorization/executor/transaction/commit/broker/send интервалы разлагают прежнее общее async work. Накопительные cgroup counters читаются снаружи через local Docker Engine API, command timeline ограничен 1800 агрегатами без payload/credentials. Вложенные интервалы не складываются; throttling samples не доказывают GIL/lock cause.

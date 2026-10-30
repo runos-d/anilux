@@ -13,6 +13,7 @@ from apps.social.infrastructure.models.social import (
     PrivateChat, GroupChat, ChatMember, Message, MessageReadStatus,
 )
 from apps.social.infrastructure.models.conversation import Conversation, ChatEvent, ConversationUserState
+from core.telemetry import ws_phase
 
 logger = logging.getLogger(__name__)
 
@@ -169,7 +170,8 @@ def record_event(chat, kind, payload, recipients=None):
 def enqueue_event(event_id):
     from apps.social.application.tasks_chat import deliver_chat_event
     try:
-        deliver_chat_event.delay(event_id)
+        with ws_phase('command', 'broker_publish'):
+            deliver_chat_event.delay(event_id)
     except Exception:
         logger.warning('Chat outbox delivery deferred: event=%s', event_id)
 
@@ -257,6 +259,7 @@ def validate_topic(chat, topic_id):
     return int(topic_id)
 
 
+@ws_phase('command', 'transaction')
 @transaction.atomic
 def send_message(chat, user, values, *, attachments=None, fingerprint=None):
     chat = type(chat).objects.select_for_update().get(pk=chat.pk)

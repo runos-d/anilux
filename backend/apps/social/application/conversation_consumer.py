@@ -21,6 +21,12 @@ from apps.users.infrastructure.models.users import User
 
 
 class ConversationConsumer(AsyncJsonWebsocketConsumer):
+    async def dispatch(self, message):
+        # Keep native Channels dispatch and connection cleanup. Its wait belongs
+        # to the incoming command, including a previous handler on this socket.
+        self._received_at = message.get('_site_received_at')
+        return await super().dispatch(message)
+
     @classmethod
     async def encode_json(cls, content):
         from core.telemetry import ws_phase
@@ -112,8 +118,11 @@ class ConversationConsumer(AsyncJsonWebsocketConsumer):
         except (APIException, type(self.chat).DoesNotExist):
             await self.close(code=4004)
 
-    @partial(database_sync_to_async, thread_sensitive=False)
-    def execute(self, data):
+    async def execute(self, data):
+        from core.telemetry import measured_database_call
+        return await measured_database_call(self.execute_sync, 'command', data)
+
+    def execute_sync(self, data):
         self.user = User.objects.get(pk=self.user.pk, is_active=True)
         if self.token_expires and self.token_expires <= timezone.now().timestamp():
             raise AuthenticationFailed('Обновите авторизацию')
@@ -149,9 +158,15 @@ class ConversationConsumer(AsyncJsonWebsocketConsumer):
         if not isinstance(data, dict):
             return
         action = data.get('action')
-        if self.token_expired() or not await self.active_account():
-            await self.close(code=4001)
-            return
+        from core.telemetry import process_registry, ws_phase
+        from django.conf import settings
+        received = getattr(self, '_received_at', None)
+        if received is not None and getattr(settings, 'OPERATIONAL_METRICS_ENABLED', False):
+            process_registry.observe_ws_phase('command', 'dispatch_wait', time.monotonic() - received)
+        with ws_phase('command', 'authorization'):
+            if self.token_expired() or not await self.active_account():
+                await self.close(code=4001)
+                return
         if action == 'ping':
             self.last_ping = time.monotonic()
             from core.group_events import renew_socket_groups
@@ -160,11 +175,10 @@ class ConversationConsumer(AsyncJsonWebsocketConsumer):
             await self.send_json({'action': 'pong'})
             return
         try:
-            from core.telemetry import ws_operation
-            with ws_operation('command'):
-                result = await self.execute(data)
+            result = await self.execute(data)
             if result:
-                await self.send_json(result)
+                with ws_phase('command', 'send'):
+                    await self.send_json(result)
             elif action in ('get_messages', 'set_topic'):
                 await self.send_snapshot()
             elif action in ('typing_start', 'typing_stop') and time.monotonic() - self.last_typing > 1:

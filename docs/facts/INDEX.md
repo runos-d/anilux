@@ -60,3 +60,4 @@ F0058,Адресные события чата объединяются по т�
 F0059,FileField inventory ограничен keyset страницей и приватным manifest,"media, data-integrity, verification",active
 F0060,Plain chat projection читает viewer IDs и использует покрывающий unread индекс,"chats, performance, data-integrity, verification",active
 F0061,Локальная реплика MySQL проверена без переключения API,"data-integrity, environment, access-control, verification",active
+F0062,Command telemetry разделяет dispatch и транзакцию с внешними cgroup counters,"realtime, performance, verification",active

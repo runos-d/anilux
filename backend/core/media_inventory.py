@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.db import models
 
-from core.object_migration import CHUNK, source_path
+from core.object_migration import CHUNK, source_path, storage_roots
 
 
 def file_fields(model):
@@ -20,8 +20,7 @@ def storage_domain(storage):
     if not isinstance(storage, FileSystemStorage):
         return None
     location = Path(storage.location).resolve()
-    for domain, root in (('chat', settings.CHAT_PRIVATE_MEDIA_ROOT),
-                         ('post', settings.POST_PRIVATE_MEDIA_ROOT), ('public', settings.MEDIA_ROOT)):
+    for domain, root in storage_roots().items():
         if location == Path(root).resolve():
             return domain
     return None

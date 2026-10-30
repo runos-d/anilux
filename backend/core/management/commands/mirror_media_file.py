@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
-from core.object_migration import mirror_file, s3_client, transfer_config
+from core.object_migration import mirror_file, s3_client, transfer_config, storage_roots
 
 
 class Command(BaseCommand):
@@ -18,8 +18,7 @@ class Command(BaseCommand):
         parser.add_argument('--apply', action='store_true')
 
     def handle(self, **options):
-        root = {'chat': settings.CHAT_PRIVATE_MEDIA_ROOT, 'post': settings.POST_PRIVATE_MEDIA_ROOT,
-                'public': settings.MEDIA_ROOT}[options['domain']]
+        root = storage_roots()[options['domain']]
         if options['apply'] and not options['manifest']:
             raise CommandError('--apply requires a private manifest path outside the checkout')
         given_manifest = Path(options['manifest']) if options['manifest'] else None

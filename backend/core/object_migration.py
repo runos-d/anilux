@@ -5,6 +5,13 @@ from pathlib import Path, PurePosixPath
 CHUNK = 65536
 
 
+def storage_roots():
+    from django.conf import settings
+    return {'public': settings.MEDIA_ROOT, 'chat': settings.CHAT_PRIVATE_MEDIA_ROOT,
+        'post': getattr(settings, 'POST_PRIVATE_MEDIA_ROOT', Path(settings.DATA_DIR)/'private_post_media'),
+        'downloads': getattr(settings, 'DOWNLOAD_ROOT', Path(settings.MEDIA_ROOT).parent/'private_downloads')}
+
+
 def source_path(root, name):
     relative = PurePosixPath(name)
     if not name or '\\' in name or relative.is_absolute() or '..' in relative.parts:

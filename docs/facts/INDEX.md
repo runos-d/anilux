@@ -61,3 +61,4 @@ F0059,FileField inventory ограничен keyset страницей и при
 F0060,Plain chat projection читает viewer IDs и использует покрывающий unread индекс,"chats, performance, data-integrity, verification",active
 F0061,Локальная реплика MySQL проверена без переключения API,"data-integrity, environment, access-control, verification",active
 F0062,Command telemetry разделяет dispatch и транзакцию с внешними cgroup counters,"realtime, performance, verification",active
+F0063,Физический storage inventory потоковый и сохраняет приватные имена вне checkout,"media, data-integrity, verification",active

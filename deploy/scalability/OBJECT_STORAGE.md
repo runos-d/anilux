@@ -36,3 +36,16 @@ python manage.py inventory_media_page --model social.Attachment --after-id LAST_
 Сохранять `through_id` первой страницы и продолжать `next_after_id`, пока `has_more=false`; новые записи после watermark обрабатываются следующей серией. Лимит hash I/O 0..64MiB на страницу, по умолчанию 0 (только stat); большие файлы откладываются без SHA, changed/missing/invalid/unreadable отмечаются отдельно. Рост файла во время hashing ограничен исходным размером +1 байт. Это наблюдение, не transaction snapshot файлов и не verified S3 mapping. После копирования повторять inventory и checksum, изменения за время обхода ещё требуют reconciliation/dual-write.
 
 Название `public` означает только MEDIA_ROOT: **видимость из storage domain не выводится**, profile/private legacy files не разрешаются для CDN. Unsupported storages сохраняются как явный status. Команда охватывает FileFields, а не пути внутри JSON/настроек, orphan files, export/download/FFmpeg caches или внешние URLs; `complete_storage_inventory=false` не позволяет принять такую страницу за полный manifest миграции. Не публиковать private pages в Git/logs/evidence.
+
+## Физические файлы и файлы без ссылок
+
+`inventory_storage_tree` дополняет FileField pages потоковым JSONL обходом public/chat/post/downloads roots. Работает в Linux storage-worker container, без SQL/SDK/сети. Встреченные файлы без ORM-ссылки, JSON/exports и caches тоже попадают в manifest, если физически находятся под выбранным root. Связь с владельцами/ACL и содержимое JSON команда не определяет. Defaults post/downloads совпадают с live storage даже при отсутствии optional settings.
+
+```sh
+python manage.py inventory_storage_tree --domain public --manifest /private-manifests/public-tree.jsonl --max-entries 100000 --max-seconds 300 --hash-budget-mib 64
+python manage.py inventory_storage_tree --domain downloads --prefix ready --manifest /private-manifests/downloads-ready.jsonl
+```
+
+Вывод: header, по одной строке на entry и footer с counts/scan_completed/tree_exhausted. Имена находятся только в новом private manifest вне checkout; stdout без путей. Обход удерживает максимум 64 directory handles, до 1 млн entries / 3600с и 0..64MiB hashing; defaults 10000 / 30с / metadata only. Дедлайн проверяется между filesystem operations, не прерывает зависший kernel/NFS call. При лимите/ошибке footer явно частичный; это не resumable cursor. Для большого дерева выделять непересекающиеся prefixes и сохранять каждый manifest отдельно; полный последующий проход/reconciliation обязателен.
+
+Directory-relative Linux descriptors с O_NOFOLLOW не обходят symlink, в том числе при замене каталога; special files не открываются. Hashing сверяет inode/mtime/ctime и имя после чтения, изменённые/нечитаемые файлы отмечаются ошибкой. Источники не меняются. Для согласованной inventory нужен readonly snapshot/freeze или повторная сверка: `scan_completed=true` означает завершённый наблюдаемый tree, **не** согласованный snapshot всех ссылок и файлов. `complete_storage_inventory=false` сохраняется: внешние roots/JSON references/legacy fallback mapping, reconciliation, dual-write и live migration ещё открыты.
